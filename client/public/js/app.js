@@ -1,17 +1,12 @@
-import * as Utils from "./utils.js";
-// import * as Cookies from "./cookies.js";
-import * as Theme from './theme.js';
+import * as Utils from "./utils/generator.js";
+import * as Theme from './utils/theme.js';
 
-var websocket;
-var current_chat = null;
-let chat_form;
-let input;
-var chatsContainer;
+let websocket;
+let current_chat = null;
+let chatsContainer;
 
 async function init() {
     websocket = new WebSocket("ws://localhost:456/");
-    chat_form = document.getElementById("chat-form");
-    input = document.getElementById("chat-input");
 
     websocket.addEventListener("open", async (event) => {
         console.log("Connected to server");
@@ -35,18 +30,6 @@ async function init() {
     websocket.addEventListener("message", async (event) => {
         await handleSocketMessage(event.data)
     });
-
-    chat_form.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        let message = input.value;
-
-        if (message.length < 1) return;
-        if (message.trim() === "") return;
-
-        input.value = "";
-        sendChatMessage(current_chat, message)
-    })
 }
 
 async function handleSocketMessage(socketMessage) {
@@ -88,11 +71,6 @@ async function handleSocketMessage(socketMessage) {
         let chat_data = JSON.parse(socketData);
 
         await updateChatElement(chat_data)
-
-        // for (let index in messages) {
-        //     let message = messages[index];
-        //     createChatMessageElement(message.message_uuid, message.message_content)
-        // }
     }
 }
 
@@ -103,9 +81,9 @@ async function sendSocketMessage(message) {
 }
 
 async function loadChat(chat_id) {
-    current_chat = chat_id;
+    if (current_chat === chat_id) return;
 
-    if (current_chat == null) return;
+    current_chat = chat_id;
 
     let request = { chat_id: current_chat }
     await sendSocketMessage("load_chat|||" + JSON.stringify(request));
@@ -126,49 +104,93 @@ async function updateChatElement(chat) {
 
     let chatHeader = document.getElementById("chat-header");
     let messagesContainer = document.getElementById("messages-container");
+    let chatForm = document.getElementById("chat-form");
+
 
     let messages = JSON.parse(chat.chat_messages);
 
     chatHeader.innerHTML = `
-    <div class="flex-grow ml-4 cursor-pointer">
+    <div class="flex-grow cursor-pointer">
         <div class="flex flex-row items-center relative w-full">
-        <div class="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
-            ${firstNameLetter}
-        </div>
-        <div class="ml-2 text-sm font-semibold">
-            ${chat.chat_name}
-        </div>
-    </div>
-  </div>
-  <button class="flex items-center justify-center text-gray-500 hover:text-gray-800 active:bg-indigo-200 dark:hover:text-gray-300 dark:active:bg-indigo-700 p-2 rounded-xl flex-shrink-0">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z">
-      </path>
-      <path d="M12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z">
-      </path>
-      <path d="M12 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z">
-      </path>
-    </svg>
-  </button>`
-
-  messagesContainer.innerHTML = ``;
-
-  for (let message in messages) {
-    messagesContainer.insertAdjacentHTML('beforeend', `
-    <div id="${messages[message].message_uuid}" class="col-start-6 col-end-13 p-3 rounded-lg">
-        <div class="flex items-center justify-start flex-row-reverse">
-            <div class="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
-                A
+            <div class="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
+                ${firstNameLetter}
             </div>
-            <div class="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
-                <div>${messages[message].message_content}</div>
+            <div class="ml-2 text-sm font-semibold">
+                ${chat.chat_name}
             </div>
         </div>
     </div>
+    <button class="flex items-center justify-center text-gray-500 hover:text-gray-800 active:bg-indigo-200 dark:hover:text-gray-300 dark:active:bg-indigo-400 p-2 rounded-xl flex-shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z">
+            </path>
+            <path d="M12 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z">
+            </path>
+            <path d="M12 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z">
+            </path>
+        </svg>
+    </button>`
+
+    messagesContainer.innerHTML = ``;
+
+    for (let message in messages) {
+        messagesContainer.insertAdjacentHTML('beforeend', `
+        <div id="${messages[message].message_uuid}" class="col-start-9 col-end-13 p-3 rounded-lg">
+            <div class="flex items-center justify-start flex-row-reverse">
+                <div class="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
+                    A
+                </div>
+                <div class="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
+                    <div>${messages[message].message_content}</div>
+                </div>
+            </div>
+        </div>
     `);
-  }
+    }
 
-  
+    chatForm.innerHTML = `<div class="flex-grow">
+        <div class="relative w-full">
+        <input
+            type="text"
+            autocomplete="off"
+            placeholder="Send a message to ${chat.chat_name}"
+            class="flex w-full border rounded-xl bg-[#fefefe] dark:bg-[#121212] focus:outline-none focus:border-indigo-300 px-4 h-10"
+            id="chat-input"
+        />
+        </div>
+    </div>
+    <button
+        class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 rounded-xl text-white ml-1 px-4 py-2 flex-shrink-0"
+    >
+        <svg
+        class="w-5 h-5 rotate-45"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        >
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+        ></path>
+        </svg>
+    </button>`
+
+    let input = document.getElementById("chat-input");
+
+    chatForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        let message = input.value;
+
+        if (message.length < 1) return;
+        if (message.trim() === "") return;
+
+        input.value = "";
+        sendChatMessage(current_chat, message)
+    })
 }
 
 async function createChatListElement(id, name, pending_messages) {
@@ -181,10 +203,13 @@ async function createChatListElement(id, name, pending_messages) {
             </div>
             <div class="ml-2 text-sm font-semibold">${name}
             </div> 
-            ${pending_messages > 0 ?
+            ${pending_messages > 0
+            ?
             `<div class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
                 ${pending_messages}
-            </div>` : ''}
+            </div>`
+            :
+            ''}
         </button>
     `);
 }

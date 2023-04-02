@@ -1,16 +1,14 @@
 import json
 
 class Chat:
-    def __init__(self,id, name, pending_messages):
+    def __init__(self,id, name, pending_messages = 0):
         self.id = id
         self.name = name
         self.pending_messages = pending_messages
         self.messages = []
-        print(self)
     
     def add_message(self,message):
         self.messages.append(message)
-        print(self.messages)
 
     def get_messages(self):
         return self.messages
