@@ -4,12 +4,16 @@ import logging
 import pprint
 import websockets
 import json
-from objects.message import Message
-from objects.chat import Chat
+from entities.message import Message
+from entities.chat import Chat
+from entities.user import User
+from database import Data
 
 # Setting up server ports and variables
 SERVER_PORT = 654
 WEBSOCKET_PORT = 456
+DB_HOST = 'localhost'
+DB_PORT = '27017'
 
 online_clients = list()
 chats = {}
@@ -24,12 +28,53 @@ chats[third_chat.id] = third_chat
 fourth_chat = Chat(4, "Charlie")
 chats[fourth_chat.id] = fourth_chat
 
+
+
 # Setting up logging to a file
 logging.basicConfig(
     filename="../logs/server.log", 
     level=logging.INFO, 
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
+
+# Function to start the server and websocket server
+async def start_server():
+    server = await asyncio.start_server((), 'localhost', SERVER_PORT)
+    logging.info(f"Server started on port: {SERVER_PORT}")
+
+    dbclient = Data(DB_HOST, DB_PORT)
+    chat_collections = await dbclient.get_database("privatemessage").chats
+
+    # Test chats insertions in database
+    # for chat in chats:
+    #     chat_collections.insert_one(chats[chat].to_json())
+
+    websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT)
+    logging.info(f"Websocket server started on port: {WEBSOCKET_PORT}")
+
+    await server.start_serving()
+    await websocket_server.wait_closed()
+
+# Function to handle incoming websocket connections
+async def handle_websocket(websocket, path):
+    ip_address = websocket.remote_address[0]
+    client = ClientConnection(websocket, ip_address)
+    online_clients.append(client)
+    logging.info(f"Client {ip_address} connected from {path}")
+
+    await client.start()
+
+# Function to shut down the server
+async def shutdown(loop):
+    logging.info("Closing connections...")
+
+    # Cancelling all tasks except the current task
+    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+    [task.cancel() for task in tasks]
+
+    # Waiting for all tasks to complete
+    await asyncio.gather(*tasks, return_exceptions=True)
+    loop.stop()
 
 # ------------------------------------------
 #       Socket and network methods
@@ -41,6 +86,15 @@ class ClientConnection:
         self.ip_adress = ip_adress
         self.user = None
         self.current_chat_id = None
+
+    async def start(self):
+        async for message in self.websocket:
+            socket_command, socket_request = message.split("|||", 1)
+            await self.handle_socket_command(socket_command, socket_request)
+
+        await self.websocket.close()
+        online_clients.remove(self)
+        logging.info(f"Client {self.ip_address} disconnected")
 
     async def send_socket_message(self, message):
         logging.info(f">> {message}")
@@ -70,16 +124,6 @@ class ClientConnection:
         else:
             print("Unknown socket command: %s" % socket_command)
             pass
-
-    async def start(self):
-        async for message in self.websocket:
-            socket_command, socket_request = message.split("|||", 1)
-            await self.handle_socket_command(socket_command, socket_request)
-
-        await self.websocket.close()
-        online_clients.remove(self)
-        logging.info(f"Client {self.ip_address} disconnected")
-
 
     # ------------------------------------------
     #       Chat app and messages methods
@@ -135,52 +179,6 @@ class ClientConnection:
 
     async def send_chat_message(self, message):
         await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
-
-    async def send_chat_message_to_everyone(self, message):
-        for client in online_clients:
-            if client is not self:
-                await client.send_chat_message(message)
-
-class User:
-
-    def __init__(self, id):
-        self.id = id
-        self.display_name = "Default display name"
-        self.username = "Default username"
-
-
-# Function to start the server and websocket server
-async def start_server():
-    server = await asyncio.start_server((), 'localhost', SERVER_PORT)
-    logging.info(f"Server started on port: {SERVER_PORT}")
-
-    websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT)
-    logging.info(f"Websocket server started on port: {WEBSOCKET_PORT}")
-
-    await server.start_serving()
-    await websocket_server.wait_closed()
-
-# Function to handle incoming websocket connections
-async def handle_websocket(websocket, path):
-    ip_address = websocket.remote_address[0]
-    client = ClientConnection(websocket, ip_address)
-    online_clients.append(client)
-    logging.info(f"Client {ip_address} connected from {path}")
-
-    await client.start()
-
-# Function to shut down the server
-async def shutdown(loop):
-    logging.info("Closing connections...")
-
-    # Cancelling all tasks except the current task
-    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-    [task.cancel() for task in tasks]
-
-    # Waiting for all tasks to complete
-    await asyncio.gather(*tasks, return_exceptions=True)
-    loop.stop()
-
 
 # ------------------------------------------
 #       To run after everything is loaded
