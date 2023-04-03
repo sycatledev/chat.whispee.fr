@@ -19,6 +19,10 @@ first_chat = Chat(1, "Arthur")
 chats[first_chat.id] = first_chat
 second_chat = Chat(2, "Vincent")
 chats[second_chat.id] = second_chat
+third_chat = Chat(3, "Ali")
+chats[third_chat.id] = third_chat
+fourth_chat = Chat(4, "Charlie")
+chats[fourth_chat.id] = fourth_chat
 
 # Setting up logging to a file
 logging.basicConfig(
