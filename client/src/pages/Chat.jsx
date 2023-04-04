@@ -41,6 +41,9 @@ const Chat = () => {
     init();
   }, [currentChat]);
 
+  const displayChat = async (id) => {
+    await loadChat(id);
+  };
   const handleSocketMessage = async (socketMessage) => {
     console.log(">> " + socketMessage);
     let socketContent = socketMessage.split("|||");
@@ -56,12 +59,9 @@ const Chat = () => {
       );
     } else if (socketCommand === "loaded_chats") {
       let chatsData = JSON.parse(socketData);
-
       setChats(chatsData);
       setReady(true);
       for (let index of chats) {
-        console.log(chats);
-
         let chat = chats[index];
         /*         createChatListElement(
           chat.chat_id,
@@ -71,7 +71,6 @@ const Chat = () => {
       }
     } else if (socketCommand === "chat_loaded") {
       let chat_data = JSON.parse(socketData);
-
       await updateChatElement(chat_data);
     }
   };
@@ -107,8 +106,8 @@ const Chat = () => {
     );
   };
   async function updateChatElement(chat) {
+    console.log(chat);
     let firstNameLetter = chat.chat_name[0];
-
     let chatHeader = document.getElementById("chat-header");
     let messagesContainer = document.getElementById("messages-container");
     let chatForm = document.getElementById("chat-form");
@@ -193,12 +192,13 @@ const Chat = () => {
       event.preventDefault();
 
       let message = input.value;
+      console.log(message);
 
       if (message.length < 1) return;
       if (message.trim() === "") return;
 
       input.value = "";
-      sendChatMessage(current_chat, message);
+      sendChatMessage(currentChat, message);
     });
   }
 
@@ -306,6 +306,7 @@ const Chat = () => {
                 {ready ? (
                   chats.map((chat) => (
                     <button
+                      onClick={() => displayChat(chat.chat_id)}
                       key={chat.chat_id}
                       data-user-id={chat.chat_id}
                       className="chat-button flex flex-row items-center hover:bg-indigo-100 active:bg-indigo-200 dark:hover:bg-indigo-500 dark:active:bg-indigo-600 rounded-xl p-2"
