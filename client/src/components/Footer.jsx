@@ -8,33 +8,32 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 const Footer = () => {
   return (
-    <div>
-      <h3>Private message up by Sycatle</h3>
-      <section>
-        <ul>
-          <li>USEFUL LINKS</li>
-          <li>About</li>
-          <li>Services</li>
-          <li>Contact</li>
-          <li>Blog</li>
-        </ul>
-        <ul>
-          <li>Contacts</li>
-          <li>
-            <address>1234, Code avenue, France</address>
-          </li>
-          <FontAwesomeIcon icon={faFacebook} />{" "}
-          <FontAwesomeIcon icon={faTwitter} />{" "}
-          <FontAwesomeIcon icon={faInstagram} />{" "}
-          <FontAwesomeIcon icon={faGithub} />{" "}
-        </ul>
-        <div>
-          <label htmlFor="sub">NEWS LETTER</label>
-          <input type="text" id="sub" placeholder="Your Email Adress" />
-          <button>SUBSCRIBE NOW</button>
-        </div>
-      </section>
-    </div>
+    <>
+      <div className="relative w-screen h-1 bg-gradient-to-b from-transparent to-neutral-300"></div>
+      <div className="bg-neutral-300 p-5">
+        <section className="flex justify-center space-x-24">
+          <ul className="relative text-xl space-y-5">
+            <li>Contacts</li>
+            <li>
+              <address className="underline underline-offset-4">1234, Code avenue, France</address>
+            </li>
+            <div className="flex space-x-10 mt-3">
+              <FontAwesomeIcon icon={faFacebook} className="h-8" />{" "}
+              <FontAwesomeIcon icon={faTwitter} className="h-8" />{" "}
+              <FontAwesomeIcon icon={faInstagram} className="h-8" />{" "}
+              <FontAwesomeIcon icon={faGithub} className="h-8" />{" "}
+            </div>
+          </ul>
+          <div className="relative right-10">
+            <label htmlFor="sub">
+              <input className="py-2 px-4 rounded-md border border-black valid:text-green outline-none" type="email" id="sub" placeholder="Your Email Adress" />
+              <button className="bg-blue-800 w-44 px-5 py-2 mt-5 rounded-lg ml-5 text-sm">SUBSCRIBE NOW</button>
+            </label>
+          </div>
+        </section>
+        <h3 className="font-karla text-gray-900">Private message up by Execan</h3>
+      </div>
+    </>
   );
 };
 
