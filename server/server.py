@@ -7,7 +7,7 @@ import json
 from entities.message import Message
 from entities.chat import Chat
 from entities.user import User
-from database import Data
+# from database import Data
 
 # Setting up server ports and variables
 SERVER_PORT = 654
@@ -29,21 +29,22 @@ fourth_chat = Chat(4, "Charlie")
 chats[fourth_chat.id] = fourth_chat
 
 
-
 # Setting up logging to a file
 logging.basicConfig(
-    filename="../logs/server.log", 
-    level=logging.INFO, 
+    filename="../logs/server.log",
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 # Function to start the server and websocket server
+
+
 async def start_server():
     server = await asyncio.start_server((), 'localhost', SERVER_PORT)
     logging.info(f"Server started on port: {SERVER_PORT}")
 
-    dbclient = Data(DB_HOST, DB_PORT)
-    chat_collections = await dbclient.get_database("privatemessage").chats
+   # dbclient = Data(DB_HOST, DB_PORT)
+    # chat_collections = await dbclient.get_database("privatemessage").chats
 
     # Test chats insertions in database
     # for chat in chats:
@@ -56,6 +57,8 @@ async def start_server():
     await websocket_server.wait_closed()
 
 # Function to handle incoming websocket connections
+
+
 async def handle_websocket(websocket, path):
     ip_address = websocket.remote_address[0]
     client = ClientConnection(websocket, ip_address)
@@ -65,6 +68,8 @@ async def handle_websocket(websocket, path):
     await client.start()
 
 # Function to shut down the server
+
+
 async def shutdown(loop):
     logging.info("Closing connections...")
 
@@ -79,6 +84,7 @@ async def shutdown(loop):
 # ------------------------------------------
 #       Socket and network methods
 # ------------------------------------------
+
 
 class ClientConnection:
     def __init__(self, websocket, ip_adress):
@@ -107,7 +113,8 @@ class ClientConnection:
             message_content = str(chat_data["message_content"])
 
             chat = chats[chat_id]
-            message = Message(chat_data["message_uuid"], chat.id, message_content)
+            message = Message(
+                chat_data["message_uuid"], chat.id, message_content)
 
             chat.add_message(message)
 
@@ -144,7 +151,7 @@ class ClientConnection:
         if chat is None:
             print("No chat found")
             return
-        
+
         await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_json()))
 
     async def send_message_to_chat(self, chat_id, message):
@@ -179,6 +186,7 @@ class ClientConnection:
 
     async def send_chat_message(self, message):
         await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
+
 
 # ------------------------------------------
 #       To run after everything is loaded
