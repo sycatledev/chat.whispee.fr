@@ -9,8 +9,7 @@ import {
 const Footer = () => {
   return (
     <>
-      <div className="relative w-screen h-1 bg-gradient-to-b from-transparent to-neutral-300"></div>
-      <div className="bg-neutral-300 p-5">
+      <div className="bg-white p-5">
         <section className="flex justify-center space-x-24">
           <ul className="relative text-xl space-y-5">
             <li>Contacts</li>
@@ -25,9 +24,9 @@ const Footer = () => {
             </div>
           </ul>
           <div className="relative right-10">
-            <label htmlFor="sub">
-              <input className="py-2 px-4 rounded-md border border-black valid:text-green outline-none" type="email" id="sub" placeholder="Your Email Adress" />
-              <button className="bg-blue-800 w-44 px-5 py-2 mt-5 rounded-lg ml-5 text-sm">SUBSCRIBE NOW</button>
+            <label htmlFor="subscribe-newsletter">
+              <input className="py-2 px-4 rounded-md border border-black valid:text-green outline-none" type="email" id="subscribe-newsletter" placeholder="Your Email Adress" />
+              <button className="bg-indigo-700 text-white w-44 px-5 py-2 mt-5 rounded-lg ml-5 text-sm">Subscribe newsletter</button>
             </label>
           </div>
         </section>
