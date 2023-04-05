@@ -1,30 +1,25 @@
-import json
-
 class Chat:
-    def __init__(self,id, name, pending_messages = 0):
+    def __init__(self,id, name):
         self.id = id
         self.name = name
-        self.pending_messages = pending_messages
-        self.messages = []
     
     def add_message(self,message):
-        self.messages.append(message)
+        from server import get_database
+
+        get_database().save_message(self.id, message.content)
 
     def get_messages(self):
-        return self.messages
-    
-    def get_messages_object(self):
-        messages_list = []
+        from server import get_database
 
-        for message in self.messages:
-            messages_list.append(message.to_json())
-        
-        return messages_list
+        return get_database().get_messages_from_chat_id(self.id)
+    
+    def get_messages_objects(self):
+        from server import get_database
+
+        return get_database().get_messages_to_objects_from_chat_id(self.id)
     
     def to_json(self):
         return {
             "chat_id": self.id,
-            "chat_name": self.name,
-            "chat_messages": json.dumps(self.get_messages_object()),
-            "chat_pending_messages": self.pending_messages,
+            "chat_name": self.name
         }

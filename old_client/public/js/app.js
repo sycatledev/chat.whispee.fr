@@ -46,7 +46,7 @@ async function handleSocketMessage(socketMessage) {
       messageData.message_uuid,
       messageData.message_content
     );
-  } else if (socketCommand === "loaded_chats") {
+  } else if (socketCommand === "chats_loaded") {
     let chatsData = JSON.parse(socketData);
 
     chatsContainer = document.getElementById("chats-container");
@@ -77,6 +77,17 @@ async function handleSocketMessage(socketMessage) {
     let chat_data = JSON.parse(socketData);
 
     await updateChatElement(chat_data);
+  } else if (socketCommand === "chat_messages_loaded") {
+    let messages = JSON.parse(socketData);
+
+    for (let message of messages) {
+      await createChatMessageElement(
+        Utils.generateUUID(),
+        message.message_text
+      );
+    }
+
+
   }
 }
 
@@ -113,8 +124,6 @@ async function updateChatElement(chat) {
   let messagesContainer = document.getElementById("messages-container");
   let chatForm = document.getElementById("chat-form");
 
-  let messages = JSON.parse(chat.chat_messages);
-
   chatHeader.innerHTML = `
     <div class="flex-grow cursor-pointer">
         <div class="flex flex-row items-center relative w-full">
@@ -138,24 +147,6 @@ async function updateChatElement(chat) {
     </button>`;
 
   messagesContainer.innerHTML = ``;
-
-  for (let message in messages) {
-    messagesContainer.insertAdjacentHTML(
-      "beforeend",
-      `
-        <div id="${messages[message].message_uuid}" class="col-start-9 col-end-13 p-3 rounded-lg">
-            <div class="flex items-center justify-start flex-row-reverse">
-                <div class="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
-                    A
-                </div>
-                <div class="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
-                    <div>${messages[message].message_content}</div>
-                </div>
-            </div>
-        </div>
-    `
-    );
-  }
 
   chatForm.innerHTML = `<div class="flex-grow">
         <div class="relative w-full">
@@ -214,13 +205,12 @@ async function createChatListElement(id, name, pending_messages) {
             </div>
             <div class="ml-2 text-sm font-semibold">${name}
             </div> 
-            ${
-              pending_messages > 0
-                ? `<div class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
+            ${pending_messages > 0
+      ? `<div class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
                 ${pending_messages}
             </div>`
-                : ""
-            }
+      : ""
+    }
         </button>
     `
   );

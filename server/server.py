@@ -1,13 +1,11 @@
 # Importing necessary modules
 import asyncio
 import logging
-import pprint
 import websockets
 import json
-from entities.message import Message
 from entities.chat import Chat
-from entities.user import User
-# from database import Data
+from entities.message import Message
+from database import Data
 
 # Setting up server ports and variables
 SERVER_PORT = 654
@@ -16,18 +14,7 @@ DB_HOST = 'localhost'
 DB_PORT = '27017'
 
 online_clients = list()
-chats = {}
-
-# Creating a couple of chats to test with (temporary code)
-first_chat = Chat(1, "Arthur")
-chats[first_chat.id] = first_chat
-second_chat = Chat(2, "Vincent")
-chats[second_chat.id] = second_chat
-third_chat = Chat(3, "Ali")
-chats[third_chat.id] = third_chat
-fourth_chat = Chat(4, "Charlie")
-chats[fourth_chat.id] = fourth_chat
-
+dbclient = None
 
 # Setting up logging to a file
 logging.basicConfig(
@@ -37,18 +24,9 @@ logging.basicConfig(
 )
 
 # Function to start the server and websocket server
-
-
 async def start_server():
     server = await asyncio.start_server((), 'localhost', SERVER_PORT)
     logging.info(f"Server started on port: {SERVER_PORT}")
-
-   # dbclient = Data(DB_HOST, DB_PORT)
-    # chat_collections = await dbclient.get_database("privatemessage").chats
-
-    # Test chats insertions in database
-    # for chat in chats:
-    #     chat_collections.insert_one(chats[chat].to_json())
 
     websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT)
     logging.info(f"Websocket server started on port: {WEBSOCKET_PORT}")
@@ -57,8 +35,6 @@ async def start_server():
     await websocket_server.wait_closed()
 
 # Function to handle incoming websocket connections
-
-
 async def handle_websocket(websocket, path):
     ip_address = websocket.remote_address[0]
     client = ClientConnection(websocket, ip_address)
@@ -68,8 +44,6 @@ async def handle_websocket(websocket, path):
     await client.start()
 
 # Function to shut down the server
-
-
 async def shutdown(loop):
     logging.info("Closing connections...")
 
@@ -81,15 +55,18 @@ async def shutdown(loop):
     await asyncio.gather(*tasks, return_exceptions=True)
     loop.stop()
 
-# ------------------------------------------
-#       Socket and network methods
-# ------------------------------------------
+# Function to connect to database
+def get_database():
+    global dbclient
+    if (dbclient == None):
+        dbclient = Data(DB_HOST, DB_PORT)
 
+    return dbclient
 
 class ClientConnection:
-    def __init__(self, websocket, ip_adress):
+    def __init__(self, websocket, ip_address):
         self.websocket = websocket
-        self.ip_adress = ip_adress
+        self.ip_address = ip_address
         self.user = None
         self.current_chat_id = None
 
@@ -112,13 +89,13 @@ class ClientConnection:
             chat_id = int(chat_data["chat_id"])
             message_content = str(chat_data["message_content"])
 
-            chat = chats[chat_id]
-            message = Message(
-                chat_data["message_uuid"], chat.id, message_content)
+            chat = get_database().get_chat(self.current_chat_id)
 
+            message = Message(chat_data["message_uuid"], chat.id, message_content)
+            
             chat.add_message(message)
 
-            await self.send_message_to_chat(chat.id, message)
+            await self.send_message_to_chat(self.current_chat_id, message)
         elif socket_command == "load_chat":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
@@ -137,22 +114,22 @@ class ClientConnection:
     # ------------------------------------------
 
     async def send_loaded_chats(self):
-        chat_list = []
-
-        for chat_id in chats.keys():
-            chat = chats[chat_id]
-            chat_list.append(chat.to_json())
-
-        await self.send_socket_message("loaded_chats|||" + json.dumps(chat_list))
+        await self.send_socket_message("chats_loaded|||" + json.dumps(get_database().get_all_chats_to_objects()))
 
     async def send_loaded_chat(self, chat_id):
-        chat = chats[chat_id]
+        chat = get_database().get_chat(chat_id)
 
         if chat is None:
             print("No chat found")
             return
 
         await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_json()))
+        await self.load_chat_messages(chat.id)
+
+    async def load_chat_messages(self, chat_id):
+        messages = get_database().get_messages_to_objects_from_chat_id(chat_id)
+
+        await self.send_socket_message("chat_messages_loaded|||" + json.dumps(messages))
 
     async def send_message_to_chat(self, chat_id, message):
         for client in online_clients:
@@ -166,40 +143,19 @@ class ClientConnection:
         for client in online_clients:
             await client.websocket.send_chat_message(message)
 
-    async def send_loaded_chats(self):
-        chat_list = []
-
-        for chat_id in chats.keys():
-            chat = chats[chat_id]
-            chat_list.append(chat.to_json())
-
-        await self.send_socket_message("loaded_chats|||" + json.dumps(chat_list))
-
-    async def send_loaded_chat(self, chat_id):
-        chat = chats[chat_id]
-
-        if chat is None:
-            print("No chat found")
-            return
-
-        await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_json()))
-
-    async def send_chat_message(self, message):
-        await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
 
 
-# ------------------------------------------
-#       To run after everything is loaded
-# ------------------------------------------
-loop = asyncio.get_event_loop()
-try:
-    # Starting the server and running it forever
-    loop.run_until_complete(start_server())
-    loop.run_forever()
-except KeyboardInterrupt:
-    # Handling a keyboard interrupt to shutdown the server
-    loop.run_until_complete(shutdown(loop))
-finally:
-    # Closing the server and logging the message
-    loop.close()
-    logging.info("Server closed")
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        # Starting the server and running it forever
+        loop.run_until_complete(start_server())
+        loop.run_forever()
+    except KeyboardInterrupt:
+        # Handling a keyboard interrupt to shutdown the server
+        loop.run_until_complete(shutdown(loop))
+    finally:
+        # Closing the server and logging the message
+        loop.close()
+        logging.info("Server closed")
