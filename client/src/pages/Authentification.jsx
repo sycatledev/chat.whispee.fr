@@ -14,45 +14,43 @@ const Authentification = () => {
   ])
   const [holderIsValid, setHolderIsValid] = useState(false)
   const [emailIsValid, setEmailIsValid] = useState(false)
-  const inputValueRef = useRef('')
+  const [holder, setHolder] = useState('')
 
-  const verifyEmail = userList.filter(user => user.email === inputValueRef.current)
-  const verifyUsername = userList.filter(user => user.identify === inputValueRef.current)
+  const verifyEmail = userList.filter(user => user.email === holder)
+  const verifyUsername = userList.filter(user => user.identify === holder)
   const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
  useEffect(() => {
-    regexEmail.test(inputValueRef) ? setEmailIsValid(true) : setEmailIsValid(false);
-    if(emailIsValid && verifyEmail.length){
+    setEmailIsValid(regexEmail.test(holder))
+
+    if(emailIsValid && verifyEmail.length > 0){
       setHolderIsValid(true)
-    } else if (verifyUsername.length) {
+    } else if (verifyUsername.length > 0) {
       setHolderIsValid(true)
     } else {
       setHolderIsValid(false)
     }
- }, [inputValueRef.current])
+ }, [holder])
 
   return (
-    <div>
+    <div class="font-karla">
       <div className="flex min-h-screen items-center justify-center">
-        <section className="flex space-x-48">
-          <div className="my-auto space-y-4">
+        <section className="gap-8 grid grid-cols-12 mx-auto">
+          <div className="m-auto space-y-2 col-span-12 lg:col-span-8 font-bold">
             <h1 className="text-5xl">
-              <span className="text-indigo-500 font-extrabold">
-                Private Message
-              </span>{" "}
-              App
+              <span className="text-indigo-500 font-extrabold">Private Message</span> App
             </h1>
-            <p className="text-lg">
-              A place where your{" "}
-              <span className="text-indigo-500">privacy</span> is by default.
+            <p className="text-lg text-center lg:text-left">
+              A place where your <span className="text-indigo-500">privacy</span> is by default.
             </p>
           </div>
-          
-              {!holderIsValid ?
-            <div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-300">
-              <h2 className="text-3xl">Sign up</h2>
+
+          <div className="col-span-12 lg:col-span-4 m-auto">
+            {!holderIsValid ?
+            <div className="p-10 px-18 lg:mx-4 rounded-xl shadow bg-white hover:shadow-lg duration-300">
+              <h2 className="text-3xl">Login or register</h2>
               <p className="text-gray-400 text-sm">
-                Enter your credentials to log back to PrivateMessage.
+                Enter your identifier to connect to PrivateMessage.
               </p>
               <form
               action=""
@@ -76,120 +74,120 @@ const Authentification = () => {
                   id="email"
                   placeholder="Email / Username"
                   defaultValue=""
-                  onInput={(e) => inputValueRef.current = e.currentTarget.value}
+                  onInput={(e) => setHolder(e.currentTarget.value)}
                 />
               </label>
     
-              <label
-                 className="flex items-center bg-white rounded-lg"
-                 htmlFor=""
-               >
-                 <FontAwesomeIcon
-                   icon={faLock}
-                   className="h-8 w-5 px-3 border-r-[1px] border-black"
-                 />
-                 <input
-                   className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
-                   type="password"
-                   minLength={7}
-                   maxLength={30}
-                   required
-                   name=""
-                   id=""
-                   placeholder="Password"
-                 />
-                 </label>
-                 <label
-                 className="flex items-center bg-white rounded-lg"
-                 htmlFor=""
-               >
-                 <FontAwesomeIcon
-                   icon={faLock}
-                   className="h-8 w-5 px-3 border-r-[1px] border-black"
-                 />
-                 <input
-                   className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
-                   type="password"
-                   minLength={7}
-                   maxLength={30}
-                   required
-                   name=""
-                   id=""
-                   placeholder="Valid Password"
-                 />
-               </label>
-               <div className="flex w-full justify-end">
+              {/* <label
+                  className="flex items-center bg-white rounded-lg"
+                  htmlFor=""
+                >
+                  <FontAwesomeIcon
+                    icon={faLock}
+                    className="h-8 w-5 px-3 border-r-[1px] border-black"
+                  />
+                  <input
+                    className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
+                    type="password"
+                    minLength={7}
+                    maxLength={30}
+                    required
+                    name=""
+                    id=""
+                    placeholder="Password"
+                  />
+                  </label>
+                  <label
+                  className="flex items-center bg-white rounded-lg"
+                  htmlFor=""
+                >
+                  <FontAwesomeIcon
+                    icon={faLock}
+                    className="h-8 w-5 px-3 border-r-[1px] border-black"
+                  />
+                  <input
+                    className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
+                    type="password"
+                    minLength={7}
+                    maxLength={30}
+                    required
+                    name=""
+                    id=""
+                    placeholder="Confirm password"
+                  />
+                </label> */}
+                <div className="flex w-full justify-end">
                 <button
                   type="submit"
-                  className="relative py-2 px-5 w-24 bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
-                >
-                  Sign up
+                  className="relative py-2 px-5 w-24 bg-gradient-to-r from-indigo-400 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
+                >Continue
                 </button>
               </div>
               </form>
-              </div>
-              :
-              <div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-300">
-              <h2 className="text-3xl">Sign in</h2>
-              <p className="text-gray-400 text-sm">
-                Enter your credentials to log back to PrivateMessage.
-              </p>
-              <form
-              action=""
-              method="post"
-              className="flex flex-col space-y-5 mt-5 "
-              onSubmit={(e) => {
-                e.preventDefault()
-              }}
+            </div>
+            :
+            <div className="p-10 px-18 lg:mx-4 rounded-xl shadow bg-white hover:shadow-lg duration-300">
+            <h2 className="text-3xl">Welcome back, %nom%</h2>
+            <p className="text-gray-400 text-sm">
+              Enter your password to login to PrivateMessage.
+            </p>
+            <form
+            action=""
+            method="post"
+            className="flex flex-col space-y-5 mt-5 "
+            onSubmit={(e) => {
+              e.preventDefault()
+            }}
+          >
+            <label
+              className="flex items-center bg-white rounded-lg"
+              htmlFor="identifier"
             >
-              <label
+              <FontAwesomeIcon
+                icon={faUser}
+                className="h-8 w-5 px-3 border-r-[1px] border-black"
+              />
+              <input
+                className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
+                type="text"
+                minLength={2}
+                maxLength={30}
+                id="identifier"
+                placeholder="Email / Username"
+                onChange={(e) => setHolder(e.currentTarget.value)}
+              />
+            </label>
+            <label
                 className="flex items-center bg-white rounded-lg"
-                htmlFor="identifier"
+                htmlFor=""
               >
                 <FontAwesomeIcon
-                  icon={faUser}
+                  icon={faLock}
                   className="h-8 w-5 px-3 border-r-[1px] border-black"
                 />
                 <input
                   className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
-                  type="text"
-                  minLength={2}
+                  type="password"
+                  minLength={7}
                   maxLength={30}
-                  id="identifier"
-                  placeholder="Email / Username"
-                  onChange={(e) => setHolder(e.currentTarget.value)}
+                  required
+                  name=""
+                  id=""
+                  placeholder="Password"
                 />
               </label>
-              <label
-                 className="flex items-center bg-white rounded-lg"
-                 htmlFor=""
-               >
-                 <FontAwesomeIcon
-                   icon={faLock}
-                   className="h-8 w-5 px-3 border-r-[1px] border-black"
-                 />
-                 <input
-                   className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
-                   type="password"
-                   minLength={7}
-                   maxLength={30}
-                   required
-                   name=""
-                   id=""
-                   placeholder="Password"
-                 />
-               </label>
-               <div className="flex w-full justify-end">
-                <button
-                  type="submit"
-                  className="relative py-2 px-5 w-24 bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
-                >
-                  Sign in
-                </button>
-              </div>
-              </form>
-              </div>
-              }
+              <div className="flex w-full justify-end">
+              <button
+                type="submit"
+                className="relative py-2 px-5 w-24 bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
+              >
+                Login
+              </button>
+            </div>
+            </form>
+            </div>
+            }
+          </div>
         </section>
       </div>
       <Footer />

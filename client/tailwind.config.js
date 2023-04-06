@@ -8,7 +8,8 @@ export default {
     extend: {},
     fontFamily: {
       'roboto': ['Roboto', 'sans-serif'],
-      'karla': ['Karla', 'sans-serif']
+      'karla': ['Karla', 'sans-serif'],
+      'arizona': ['Arizona']
     },
   },
   plugins: [],
