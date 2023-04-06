@@ -12,6 +12,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [inputDatas, setInputDatas] = useState("");
   const [isDark, setIsDark] = useState(false);
+  const [readyMessages, setReadyMessages] = useState(false);
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"
@@ -75,7 +76,6 @@ const Chat = () => {
     if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
       setMessages((messages) => [...messages, messageData]);
-      setReady(true);
     } else if (socketCommand === "chats_loaded") {
       let chatsData = JSON.parse(socketData);
       setChats(chatsData);
@@ -86,10 +86,15 @@ const Chat = () => {
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messages = JSON.parse(socketData);
-      console.log(messages);
       setMessages(messages);
+      setReadyMessages(true);
     }
   };
+  /*   useEffect(() => {
+    setTimeout(() => {
+      setReadyMessages(true);
+    }, 3000);
+  }, [messages]); */
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
@@ -303,22 +308,75 @@ const Chat = () => {
                         className="grid grid-cols-12 gap-y-2"
                         id="messages-container"
                       >
-                        {messages.map((message, index) => (
-                          <div
-                            key={index}
-                            id={message.message_uuid}
-                            className="col-start-9 col-end-13 p-3 rounded-lg"
-                          >
-                            <div className="flex items-center justify-start flex-row-reverse">
-                              <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
-                                A
-                              </div>
-                              <div className="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
-                                <div>{message.message_content}</div>
+                        {readyMessages ? (
+                          messages.map((message, index) => (
+                            <div
+                              key={index}
+                              id={message.message_uuid}
+                              className="col-start-9 col-end-13 p-3 rounded-lg"
+                            >
+                              <div className="flex items-center justify-start flex-row-reverse">
+                                <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
+                                  A
+                                </div>
+                                <div className="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
+                                  <div>{message.message_content}</div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))
+                        ) : (
+                          <>
+                            <div className="col-start-9 col-end-13 p-3 rounded-lg">
+                              <div className="animate-pulse flex space-x-4 items-center p-2">
+                                <div className="flex-1 space-y-6 py-1">
+                                  <div className="h-2 bg-slate-600 dark:bg-slate-400 rounded"></div>
+                                </div>
+                                <div className="rounded-full bg-slate-600 dark:bg-slate-400 h-10 w-10"></div>
+                              </div>
+                            </div>
+                            <div className="col-start-9 col-end-13 p-3 rounded-lg">
+                              <div className="animate-pulse flex space-x-4 items-center p-2">
+                                <div className="flex-1 space-y-6 py-1">
+                                  <div className="h-2 bg-slate-600 dark:bg-slate-400 rounded"></div>
+                                </div>
+                                <div className="rounded-full bg-slate-600 dark:bg-slate-400 h-10 w-10"></div>
+                              </div>
+                            </div>
+                            <div className="col-start-9 col-end-13 p-3 rounded-lg">
+                              <div className="animate-pulse flex space-x-4 items-center p-2">
+                                <div className="flex-1 space-y-6 py-1">
+                                  <div className="h-2 bg-slate-600 dark:bg-slate-400 rounded"></div>
+                                </div>
+                                <div className="rounded-full bg-slate-600 dark:bg-slate-400 h-10 w-10"></div>
+                              </div>
+                            </div>
+                            <div className="col-start-9 col-end-13 p-3 rounded-lg">
+                              <div className="animate-pulse flex space-x-4 items-center p-2">
+                                <div className="flex-1 space-y-6 py-1">
+                                  <div className="h-2 bg-slate-600 dark:bg-slate-400 rounded"></div>
+                                </div>
+                                <div className="rounded-full bg-slate-600 dark:bg-slate-400 h-10 w-10"></div>
+                              </div>
+                            </div>
+                            <div className="col-start-9 col-end-13 p-3 rounded-lg">
+                              <div className="animate-pulse flex space-x-4 items-center p-2">
+                                <div className="flex-1 space-y-6 py-1">
+                                  <div className="h-2 bg-slate-600 dark:bg-slate-400 rounded"></div>
+                                </div>
+                                <div className="rounded-full bg-slate-600 dark:bg-slate-400 h-10 w-10"></div>
+                              </div>
+                            </div>
+                            <div className="col-start-9 col-end-13 p-3 rounded-lg">
+                              <div className="animate-pulse flex space-x-4 items-center p-2">
+                                <div className="flex-1 space-y-6 py-1">
+                                  <div className="h-2 bg-slate-600 dark:bg-slate-400 rounded"></div>
+                                </div>
+                                <div className="rounded-full bg-slate-600 dark:bg-slate-400 h-10 w-10"></div>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
