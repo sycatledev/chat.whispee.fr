@@ -62,7 +62,7 @@ const Chat = () => {
       });
     };
     init();
-  }, [currentChat]);
+  });
 
   const displayChat = async (id) => {
     await loadChat(id);
