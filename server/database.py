@@ -55,7 +55,7 @@ class Data:
     def save_message(self, chat_id, message_text):
         messages_collection = self.database.messages
 
-        message = {"chat_id": chat_id, "message_text": message_text}
+        message = {"chat_id": chat_id, "message_content": message_text}
         result = messages_collection.insert_one(message)
     
     def get_chat(self, chat_id):
