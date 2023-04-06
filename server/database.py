@@ -5,6 +5,7 @@ from entities.chat import Chat
 DB_HOST = 'localhost'
 DB_PORT = '27017'
 
+
 class Data:
     def __init__(self, dbhost, dbport):
         self.dbhost = dbhost
@@ -13,7 +14,8 @@ class Data:
 
     # private method
     def get_client(self):
-        dbclient = pymongo.MongoClient(f"mongodb://{self.dbhost}:{self.dbport}/")
+        dbclient = pymongo.MongoClient(
+            f"mongodb://{self.dbhost}:{self.dbport}/")
         return dbclient
 
     # private method
@@ -45,26 +47,27 @@ class Data:
         messages_collection = self.database.messages
         messages = []
 
-        messages_cursor = messages_collection.find({"chat_id": chat_id}, {'_id': 0})
+        messages_cursor = messages_collection.find(
+            {"chat_id": chat_id}, {'_id': 0})
 
         for message_json in messages_cursor:
             messages.append(message_json)
 
         return messages
-    
+
     def save_message(self, chat_id, message_text):
         messages_collection = self.database.messages
 
         message = {"chat_id": chat_id, "message_content": message_text}
         result = messages_collection.insert_one(message)
-    
+
     def get_chat(self, chat_id):
         chats_collection = self.database.chats
         chat_cursor = chats_collection.find_one({"chat_id": chat_id})
 
         if (chat_cursor is None):
             return None
-        
+
         return Chat(chat_cursor["chat_id"], chat_cursor["chat_name"])
 
     # public method
@@ -77,5 +80,5 @@ class Data:
 
         for chat_json in chats_cursor:
             chats.append(chat_json)
-        
+
         return chats

@@ -5,11 +5,12 @@ import * as Cookies from "../utils/cookies.js";
 const Chat = () => {
   const [websocket, setWebsocket] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
-  const [chat, setChat] = useState([]);
+  const [chatsContainer, setChatsContainer] = useState([]);
   const [chats, setChats] = useState([]);
   const [ready, setReady] = useState(false);
   const [singlChat, setSingleChat] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [parsedMessages, setParsedMessages] = useState([]);
+  const [chatLoaded, setChatLoaded] = useState([]);
   const [inputDatas, setInputDatas] = useState("");
   const [isDark, setIsDark] = useState(false);
   useEffect(() => {
@@ -38,6 +39,14 @@ const Chat = () => {
     }
     Cookies.cookieManager.setCookie("theme", dark ? "dark" : "light");
   }
+
+  /*   function isThemeDark() {
+    const root = document.documentElement;
+    return root.classList.contains("dark");
+  }
+
+  const themeStatus = isThemeDark() ? "dark" : "light"; */
+
   useEffect(() => {
     const init = async () => {
       const ws = new WebSocket("ws://localhost:456/");
@@ -74,20 +83,24 @@ const Chat = () => {
 
     if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
-      setMessages((messages) => [...messages, messageData]);
+      console.log(messageData);
+      console.log(chatsContainer);
+      setChatsContainer((chatsContainer) => [...chatsContainer, messageData]);
       setReady(true);
     } else if (socketCommand === "chats_loaded") {
+      // affichage des chats [4]
       let chatsData = JSON.parse(socketData);
       setChats(chatsData);
       setReady(true);
     } else if (socketCommand === "chat_loaded") {
       let chat_data = JSON.parse(socketData);
-      setChat(chat_data);
+      console.log(chat_data); // les donnes chatid et chatname
+      setChatLoaded(chat_data);
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messages = JSON.parse(socketData);
-      console.log(messages);
-      setMessages(messages);
+      console.log(messages); // chatid et messages_text
+      setChatsContainer(messages);
     }
   };
 
@@ -123,13 +136,16 @@ const Chat = () => {
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    console.log("called");
     if (inputDatas.length < 1) return;
     if (inputDatas.trim() === "") return;
+    console.log(inputDatas);
     setInputDatas("");
     sendChatMessage(currentChat, inputDatas);
   };
-
+  const handleChangeTheme = () => {
+    console.log("clicked");
+  };
+  console.log(chatsContainer);
   return (
     <div className="bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500">
       <div className="flex h-screen antialiased text-gray-800">
@@ -153,8 +169,8 @@ const Chat = () => {
                 </svg>
               </button>
               <button
-                id="theme-button"
                 onClick={toggleTheme}
+                id="theme-button"
                 className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 dark:active:bg-indigo-400 active:bg-indigo-200 p-2 rounded-xl"
               >
                 <svg
@@ -271,10 +287,10 @@ const Chat = () => {
                     <div className="flex-grow cursor-pointer">
                       <div className="flex flex-row items-center relative w-full">
                         <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
-                          {ready && chat?.chat_name[0]}
+                          {chatLoaded?.chat_name[0]}
                         </div>
                         <div className="ml-2 text-sm font-semibold">
-                          {ready && chat?.chat_name}
+                          {chatLoaded?.chat_name}
                         </div>
                       </div>
                     </div>
@@ -303,22 +319,26 @@ const Chat = () => {
                         className="grid grid-cols-12 gap-y-2"
                         id="messages-container"
                       >
-                        {messages.map((message, index) => (
-                          <div
-                            key={index}
-                            id={message.message_uuid}
-                            className="col-start-9 col-end-13 p-3 rounded-lg"
-                          >
-                            <div className="flex items-center justify-start flex-row-reverse">
-                              <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
-                                A
-                              </div>
-                              <div className="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
-                                <div>{message.message_content}</div>
+                        {ready &&
+                          chatsContainer?.map((message, index) => (
+                            <div
+                              key={index}
+                              id={message.message_uuid}
+                              className="col-start-9 col-end-13 p-3 rounded-lg"
+                            >
+                              <div className="flex items-center justify-start flex-row-reverse">
+                                <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
+                                  A
+                                </div>
+                                <div className="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
+                                  <div>
+                                    {message.message_text ||
+                                      message.message_content}
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     </div>
                   </div>
@@ -334,7 +354,7 @@ const Chat = () => {
                           onChange={(e) => setInputDatas(e.target.value)}
                           type="text"
                           autoComplete="off"
-                          placeholder={`Send a message to ${chat?.chat_name}`}
+                          placeholder={`Send a message to ${chatLoaded?.chat_name}`}
                           className="flex w-full border rounded-xl bg-[#fefefe] dark:bg-[#121212] focus:outline-none focus:border-indigo-300 px-4 h-10"
                           id="chat-input"
                         />
