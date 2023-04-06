@@ -1,6 +1,7 @@
 import pymongo
 from entities.message import Message
 from entities.chat import Chat
+import bcrypt
 
 DB_HOST = 'localhost'
 DB_PORT = '27017'
@@ -82,3 +83,43 @@ class Data:
             chats.append(chat_json)
 
         return chats
+
+    #public method
+    def get_user_by_email(self, email):
+        user = self.database.users.find_one({"email": email})
+        return user
+
+    def get_user_by_username(self, username):
+        user = self.database.users.find_one({"username": username})
+        return user
+
+    def create_user(self,username, email, password):
+        # Hash the password before storing it
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Create a new player object with the hashed password
+        user = {
+            "username": username,
+            "email": email,
+            "password": hashed_password.decode('utf-8')
+        }
+
+        # Insert the player object into the database
+        self.database.users.insert_one(user)
+
+        # Return the ID of the inserted player
+        return str(user['_id'])
+    
+    def login_user(self, identifier, password):
+        user = None
+        # Check if identifier is email or username
+        if '@' in identifier:
+            user = self.get_user_by_email(identifier)
+        else:
+            user = self.get_user_by_username(identifier)
+
+        # Check if user exists and password is correct
+        if user is not None and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
+            return user
+        else:
+            return False
