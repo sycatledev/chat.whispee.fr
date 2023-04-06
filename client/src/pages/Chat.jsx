@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as Utils from "../utils/generator.js";
 import * as Theme from "../utils/theme.js";
 import * as Cookies from "../utils/cookies.js";
+
 const Chat = () => {
+  const chatContainerRef = useRef(null);
   const [websocket, setWebsocket] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
   const [chat, setChat] = useState([]);
@@ -10,9 +12,11 @@ const Chat = () => {
   const [ready, setReady] = useState(false);
   const [singlChat, setSingleChat] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [inputDatas, setInputDatas] = useState("");
   const [isDark, setIsDark] = useState(false);
   const [readyMessages, setReadyMessages] = useState(false);
+  const [messageIds, setMessageIds] = useState([]);
+  const inputRef = useRef(null);
+
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
       "(prefers-color-scheme: dark)"
@@ -40,6 +44,7 @@ const Chat = () => {
     Cookies.cookieManager.setCookie("theme", dark ? "dark" : "light");
   }
   useEffect(() => {
+    console.log("useEffectcalled");
     const init = async () => {
       const ws = new WebSocket("ws://localhost:456/");
       ws.addEventListener("open", async (event) => {
@@ -62,7 +67,7 @@ const Chat = () => {
       });
     };
     init();
-  });
+  }, []);
 
   const displayChat = async (id) => {
     await loadChat(id);
@@ -75,7 +80,11 @@ const Chat = () => {
 
     if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
-      setMessages((messages) => [...messages, messageData]);
+      if (!messageIds.includes(messageData.message_uuid)) {
+        setMessageIds([...messageIds, messageData.message_uuid]);
+        setMessages((messages) => [...messages, messageData]);
+        scrollToBottom();
+      }
     } else if (socketCommand === "chats_loaded") {
       let chatsData = JSON.parse(socketData);
       setChats(chatsData);
@@ -88,6 +97,7 @@ const Chat = () => {
       let messages = JSON.parse(socketData);
       setMessages(messages);
       setReadyMessages(true);
+      scrollToBottom();
     }
   };
   /*   useEffect(() => {
@@ -104,9 +114,11 @@ const Chat = () => {
 
   const loadChat = async (chat_id) => {
     if (currentChat === chat_id) return;
+    if (chat_id === null) return;
     setCurrentChat(chat_id);
-
-    let request = { chat_id: currentChat };
+    console.log(chat_id);
+    let request = { chat_id: chat_id };
+    console.log(request);
     await sendSocketMessage(
       websocket,
       "load_chat|||" + JSON.stringify(request)
@@ -128,13 +140,21 @@ const Chat = () => {
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    console.log("called");
+    const inputDatas = inputRef.current.value;
     if (inputDatas.length < 1) return;
     if (inputDatas.trim() === "") return;
-    setInputDatas("");
-    sendChatMessage(currentChat, inputDatas);
-  };
 
+    sendChatMessage(currentChat, inputDatas);
+    inputRef.current.value = "";
+  };
+  function scrollToBottom() {
+    chatContainerRef?.current?.scrollIntoView({
+      block: "end",
+    });
+  }
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   return (
     <div className="bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500">
       <div className="flex h-screen antialiased text-gray-800">
@@ -305,6 +325,7 @@ const Chat = () => {
                   >
                     <div className="flex flex-col h-full rounded-2xl">
                       <div
+                        ref={chatContainerRef}
                         className="grid grid-cols-12 gap-y-2"
                         id="messages-container"
                       >
@@ -388,8 +409,7 @@ const Chat = () => {
                     <div className="flex-grow">
                       <div className="relative w-full">
                         <input
-                          value={inputDatas}
-                          onChange={(e) => setInputDatas(e.target.value)}
+                          ref={inputRef}
                           type="text"
                           autoComplete="off"
                           placeholder={`Send a message to ${chat?.chat_name}`}
