@@ -93,7 +93,7 @@ const Authentification = () => {
                   <div className="flex w-full justify-end">
                     <button
                       type="submit"
-                      className="relative py-2 px-3 w-24 bg-gradient-to-r from-indigo-400 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
+                      className="relative py-2 px-3 w-24 !bg-gradient-to-r from-indigo-400 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
                     >Continue
                     </button>
                   </div>

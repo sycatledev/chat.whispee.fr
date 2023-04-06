@@ -108,7 +108,7 @@ export default function FormLogin(identifyInputValue){
                     <div className="flex w-full justify-end">
                       <button
                         type="submit"
-                        className="flex items-center relative py-2 px-5 w-24 bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
+                        className="flex items-center relative py-2 px-5 w-24 !bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 duration-300 hover:shadow active:scale-95 text-white right-0 rounded-md"
                       >
                         <p className="mx-auto">Login</p>
                         {loader ? <FontAwesomeIcon
