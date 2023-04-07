@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import BackButton from "./backButton";
 
 
-export default function FormRegister(identifyEmail){
+export default function FormRegister(identifyInputValue){
 
     const [userList, setUserList] = useState([
         { id: 1, identify: "Azones", email: "azones@gmail.com", password: "password" },
@@ -15,15 +16,20 @@ export default function FormRegister(identifyEmail){
     const [confirmPassword, setConfirmPassword] = useState('')
 
     useEffect(() => {
-        setEmail(identifyEmail.identifyEmail)
+        setEmail(identifyInputValue.identifyInputValue)
     }, [email, password, confirmPassword])
 
     return(
         <div className="p-10 px-18 lg:mx-4 rounded-xl shadow bg-white hover:shadow-lg duration-300">
-              <h2 className="text-3xl">Create Account</h2>
-              <p className="text-gray-400 text-sm">
-                Type your information to start talk !
-              </p>
+          <div className="flex items-center">
+            <BackButton />
+            <div className="flex flex-col ml-5">
+                <h2 className="text-3xl">Create Account</h2>
+                <p className="text-gray-400 text-sm">
+                  Type your information to start talk !
+                </p>
+            </div>
+          </div>
               <form
                 action=""
                 method="post"
@@ -73,6 +79,7 @@ export default function FormRegister(identifyEmail){
                     required
                     name=""
                     id=""
+                    value={password}
                     onInput={(e) => setPassword(e.currentTarget.value)}
                     placeholder="Password"
                   />

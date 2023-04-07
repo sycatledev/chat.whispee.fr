@@ -16,6 +16,9 @@ const Chat = () => {
   const [readyMessages, setReadyMessages] = useState(false);
   const [messageIds, setMessageIds] = useState([]);
   const inputRef = useRef(null);
+  const [messageNav, setMessageNav] = useState(true);
+  const [contactNav, setContactNav] = useState(false);
+  const [paramNav, setParamNav] = useState(false);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -68,6 +71,33 @@ const Chat = () => {
     };
     init();
   }, []);
+
+  const handleNav = (e) => {
+    let parent = e.target
+    console.log(parent)
+      for(let i = 0; i < 5; i++){
+        if(parent.id === 'messageNav'){
+          setMessageNav(true)
+          setParamNav(false)
+          setContactNav(false)
+          break;
+        } else if (parent.id === 'contactNav'){
+          setMessageNav(false)
+          setParamNav(false)
+          setContactNav(true)
+          break;
+        } else if (parent.id === 'paramNav'){
+          setMessageNav(false)
+          setParamNav(true)
+          setContactNav(false)
+          break;
+        } 
+        else {
+          parent = parent.parentNode
+        }
+      }
+
+  }
 
   const displayChat = async (id) => {
     await loadChat(id);
@@ -160,8 +190,28 @@ const Chat = () => {
       <div className="flex h-screen antialiased text-gray-800">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
           <div className="hidden lg:flex flex-col p-6 w-64 bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 flex-shrink-0">
-            <div className="flex flex-row items-center h-16 rounded-t-xl bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 w-full justify-between">
-              <button className="text-gray-500 hover:text-gray-800 active:bg-indigo-200 dark:hover:text-gray-300 dark:active:bg-indigo-400 p-2 rounded-xl">
+            <div className="flex flex-row items-center h-16 rounded-t-xl bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 w-full justify-between"
+                  onClick={handleNav}
+            >
+              <button
+                className={`active:bg-indigo-200 
+  dark:active:bg-indigo-400 p-2 rounded-xl ${messageNav ? "bg-indigo-200 dark:bg-indigo-400 text-white" : "text-gray-500 dark:hover:text-gray-300 hover:text-black"}`}
+                id="messageNav"
+              >
+                <svg
+                className="h-6 w-6" 
+                width="46" 
+                height="46" 
+                fill="currentColor" 
+                viewBox="0 0 24 24">
+                  <path d="M4 2h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H6l-3.99 4V4c0-1.1.89-2 1.99-2Zm14 7H6v2h12V9Zm-4 5H6v-2h8v2ZM6 8h12V6H6v2Z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+              <button 
+              className={`active:bg-indigo-200 
+              dark:active:bg-indigo-400 p-2 rounded-xl ${contactNav ? "bg-indigo-200 dark:bg-indigo-400 text-white" : "text-gray-500 dark:hover:text-gray-300"}`}
+              id="contactNav"
+              >
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -177,6 +227,7 @@ const Chat = () => {
                   <path d="M21 20.998v-2a4 4 0 0 0-3-3.85"></path>
                 </svg>
               </button>
+              
               <button
                 id="theme-button"
                 onClick={toggleTheme}
@@ -195,7 +246,10 @@ const Chat = () => {
                   <path d="M6 6h3.5L12 3.5 14.5 6H18v3.5l2.5 2.5-2.5 2.5V18h-3.5L12 20.5 9.5 18H6v-3.5L3.5 12 6 9.5V6Z"></path>
                 </svg>
               </button>
-              <button className="text-gray-500 hover:text-gray-800 active:bg-indigo-200 dark:hover:text-gray-300 dark:active:bg-indigo-400 p-2 rounded-xl">
+              <button className={`active:bg-indigo-200 
+                dark:active:bg-indigo-400 p-2 rounded-xl ${paramNav ? "bg-indigo-200 dark:bg-indigo-400 text-white" : "text-gray-500 dark:hover:text-gray-300"}`}
+                id="paramNav"
+                >
                 <svg
                   className="h-6 w-6"
                   fill="none"
@@ -210,7 +264,7 @@ const Chat = () => {
                 </svg>
               </button>
             </div>
-            <div className="flex flex-col my-4">
+            <div className={`flex flex-col my-4 ${!messageNav ? "hidden" : ""}`}>
               <div className="flex flex-row items-center justify-between text-xs">
                 <span className="font-bold">Active Chats </span>
                 <span
