@@ -6,7 +6,7 @@ class Chat:
     def add_message(self,message):
         from server import get_database
 
-        get_database().save_message(self.id, message.content)
+        get_database().save_message(self.id, message.content, message.date)
 
     def get_messages(self):
         from server import get_database

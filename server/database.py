@@ -23,8 +23,12 @@ class Data:
     def get_database(self, database_name):
         print("Connecting to database..")
         client = self.get_client()
-        database = client[database_name]
-        print(f"Successfuly connected to database '{database_name}'.")
+        try:
+            database = client[database_name]
+            print(f"Successfuly connected to database '{database_name}'.")
+        except Exception as e:
+            print("Failed to connect to database")
+        
 
         return database
 
@@ -38,6 +42,7 @@ class Data:
                 uuid=message_json["message_uuid"],
                 chat_id=message_json["chat_id"],
                 content=message_json["message_content"],
+                date=message_json["message_date"],
                 author=message_json["message_author"]
             )
             messages.append(message)
@@ -56,10 +61,10 @@ class Data:
 
         return messages
 
-    def save_message(self, chat_id, message_text):
+    def save_message(self, chat_id, message_text, message_date):
         messages_collection = self.database.messages
 
-        message = {"chat_id": chat_id, "message_content": message_text}
+        message = {"chat_id": chat_id, "message_content": message_text, "message_date": message_date}
         result = messages_collection.insert_one(message)
 
     def get_chat(self, chat_id):

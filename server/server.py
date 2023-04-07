@@ -1,5 +1,6 @@
 # Importing necessary modules
 import asyncio
+from datetime import datetime
 import logging
 import websockets
 import json
@@ -90,8 +91,10 @@ class ClientConnection:
             message_content = str(chat_data["message_content"])
 
             chat = get_database().get_chat(self.current_chat_id)
+            current_time = datetime.now()
 
-            message = Message(chat_data["message_uuid"], chat.id, message_content)
+
+            message = Message(chat_data["message_uuid"], chat.id, message_content, current_time.timestamp())
             
             chat.add_message(message)
 
