@@ -1,3 +1,5 @@
+import json
+import pprint
 import pymongo
 from entities.message import Message
 from entities.chat import Chat
@@ -54,17 +56,17 @@ class Data:
         messages = []
 
         messages_cursor = messages_collection.find(
-            {"chat_id": chat_id}, {'_id': 0})
+            {"chat_id": chat_id}, {"_id": 0})
 
         for message_json in messages_cursor:
             messages.append(message_json)
 
         return messages
 
-    def save_message(self, chat_id, message_text, message_date):
+    def save_message(self, chat_id, message_uuid, message_text, message_date):
         messages_collection = self.database.messages
 
-        message = {"chat_id": chat_id, "message_content": message_text, "message_date": message_date}
+        message = {"chat_id": chat_id, "message_uuid": message_uuid, "message_content": message_text, "message_date": message_date}
         result = messages_collection.insert_one(message)
 
     def get_chat(self, chat_id):
