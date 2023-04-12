@@ -4,7 +4,8 @@ import * as Cookies from "../utils/cookies.js";
 import Nav from "../components/Nav.jsx";
 import Chats from "../components/Chats.jsx";
 import ChatContainer from "../components/ChatContainer.jsx";
-import Empty_Chat_Container from "../components/EmptyChatContainer.jsx";
+import EmptyChatContainer from "../components/EmptyChatContainer.jsx";
+import { Contact } from "../components/Contact.jsx";
 
 const Chat = () => {
   const [websocket, setWebsocket] = useState(null);
@@ -12,7 +13,7 @@ const Chat = () => {
   const [chat, setChat] = useState([]);
   const [chats, setChats] = useState([]);
   const [ready, setReady] = useState(false);
-  const [singlChat, setSingleChat] = useState(false);
+  const [singleChat, setSingleChat] = useState(false);
   const [messages, setMessages] = useState([]);
   const [isDark, setIsDark] = useState(false);
   const [readyMessages, setReadyMessages] = useState(false);
@@ -159,13 +160,14 @@ const Chat = () => {
               messages={messages}
               messageNav={messageNav}
             />
+            <Contact contactNav={contactNav} />
           </div>
           <div className="flex flex-col flex-auto h-full lg:p-6">
             <div
               id="chat-wrapper"
               className="flex flex-col flex-auto flex-shrink-0 lg:rounded-2xl h-full bg-gradient-to-tl from-[#f8f6ff] to-[#e9e2ff] dark:from-[#2e2e2e] dark:to-black"
             >
-              {singlChat ? (
+              {singleChat ? (
                 <ChatContainer
                   ready={ready}
                   chat={chat}
@@ -175,7 +177,7 @@ const Chat = () => {
                   messages={messages}
                 />
               ) : (
-                <Empty_Chat_Container />
+                <EmptyChatContainer />
               )}
             </div>
           </div>

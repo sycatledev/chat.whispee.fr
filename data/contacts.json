@@ -1,0 +1,33 @@
+[{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be0"
+    },
+    "contact_id": 1,
+    "contact_name": "Arthur",
+    "contact_messages": "[]",
+    "contact_pending_messages": 0
+  },{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be1"
+    },
+    "contact_id": 2,
+    "contact_name": "Arthur",
+    "contact_messages": "[]",
+    "contact_pending_messages": 0
+  },{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be2"
+    },
+    "contact_id": 3,
+    "contact_name": "Arthur",
+    "contact_messages": "[]",
+    "contact_pending_messages": 0
+  },{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be3"
+    },
+    "contact_id": 4,
+    "contact_name": "Arthur",
+    "contact_messages": "[]",
+    "contact_pending_messages": 0
+  }]
