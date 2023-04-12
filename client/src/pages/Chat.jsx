@@ -32,7 +32,6 @@ const Chat = () => {
 
   function toggleTheme() {
     setIsDark((prevIsDark) => !prevIsDark);
-    console.log("clicked");
   }
 
   useEffect(() => {
@@ -49,7 +48,6 @@ const Chat = () => {
     Cookies.cookieManager.setCookie("theme", dark ? "dark" : "light");
   }
   useEffect(() => {
-    console.log("useEffectcalled");
     const init = async () => {
       const ws = new WebSocket("ws://localhost:456/");
       ws.addEventListener("open", async (event) => {
@@ -118,9 +116,7 @@ const Chat = () => {
     if (currentChat === chat_id) return;
     if (chat_id === null) return;
     setCurrentChat(chat_id);
-    console.log(chat_id);
     let request = { chat_id: chat_id };
-    console.log(request);
     await sendSocketMessage(
       websocket,
       "load_chat|||" + JSON.stringify(request)

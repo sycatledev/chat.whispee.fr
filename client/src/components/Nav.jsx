@@ -11,7 +11,6 @@ const Nav = ({
 }) => {
   const handleNav = (e) => {
     let parent = e.target;
-    console.log(parent);
     for (let i = 0; i < 5; i++) {
       if (parent.id === "messageNav") {
         setMessageNav(true);
