@@ -1,9 +1,8 @@
-import json
-import pprint
 import pymongo
 from entities.message import Message
 from entities.chat import Chat
 import bcrypt
+from bson import json_util
 
 DB_HOST = 'localhost'
 DB_PORT = '27017'
@@ -55,21 +54,21 @@ class Data:
         messages_collection = self.database.messages
         messages = []
 
-        messages_cursor = messages_collection.find(
-            {"chat_id": chat_id}, {"_id": 0})
+        messages_cursor = messages_collection.find({"chat_id": chat_id})
 
         for message_json in messages_cursor:
+            message_json['_id'] = json_util.dumps(message_json['_id'])
             messages.append(message_json)
 
         return messages
 
-    def save_message(self, chat_id, message_uuid, message_text, message_date):
+    def save_message(self, chat_id, message_uuid, message_text, message_date) -> None:
         messages_collection = self.database.messages
 
         message = {"chat_id": chat_id, "message_uuid": message_uuid, "message_content": message_text, "message_date": message_date}
-        result = messages_collection.insert_one(message)
+        messages_collection.insert_one(message)
 
-    def get_chat(self, chat_id):
+    def get_chat(self, chat_id : int) -> Chat:
         chats_collection = self.database.chats
         chat_cursor = chats_collection.find_one({"chat_id": chat_id})
 
@@ -84,9 +83,10 @@ class Data:
 
         chats_collection = self.database.chats
 
-        chats_cursor = chats_collection.find({}, {'_id': 0})
+        chats_cursor = chats_collection.find({})
 
         for chat_json in chats_cursor:
+            chat_json['_id'] = json_util.dumps(chat_json['_id'])
             chats.append(chat_json)
 
         return chats
