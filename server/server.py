@@ -116,11 +116,11 @@ class SocketHandler:
         elif socket_command == "login_user":
             credentials = json.loads(socket_request)
 
-            user_identifier = credentials["user_identifier"]
+            user_identifier = credentials["identifier"]
             if user_identifier == "":
                 return
 
-            user_password = credentials["user_password"]
+            user_password = credentials["password"]
             if user_password == "":
                 return
 
