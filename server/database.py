@@ -95,18 +95,16 @@ class Data:
     def get_user_by_email(self, email):
         user = self.database.users.find_one({"email": email})
 
-        print(user)
-
-        user['_id'] = json_util.dumps(user['_id'])
+        if user is not None:
+            user['_id'] = json_util.dumps(user['_id'])
 
         return user
 
     def get_user_by_username(self, username):
         user = self.database.users.find_one({"username": username})
 
-        print(user)
-
-        user['_id'] = json_util.dumps(user['_id'])
+        if user is not None:
+            user['_id'] = json_util.dumps(user['_id'])
 
         return user
 
