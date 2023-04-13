@@ -158,8 +158,6 @@ class SocketHandler:
 
             user_id = get_database().create_user(username, email, password)
 
-            print(user_id)
-
         elif socket_command == "send_chat_message":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
