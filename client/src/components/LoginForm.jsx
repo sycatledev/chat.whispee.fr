@@ -15,6 +15,22 @@ export default function LoginForm({identifier, ws}) {
 
     ws.send(message);
   };
+
+  let handleSocketMessage = async (socketMessage) => {
+    console.log(">> " + socketMessage);
+    let socketContent = socketMessage.split("|||");
+    let socketCommand = socketContent[0];
+    let socketData = socketContent[1];
+
+    if (socketCommand === "login_succeeded") { // User not exist in database
+      navigate('/app') // Redirect to register page
+    } else if (socketCommand === "identifier_found") {
+      let userData = JSON.parse(socketData)
+      setIdentify(true);
+      setLogin(true);
+    }
+  };
+
   let data;
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,12 +40,16 @@ export default function LoginForm({identifier, ws}) {
         password
     }
     await sendSocketMessage(ws, `login_user||| ${JSON.stringify(data)}`)
+
+    ws.addEventListener('message', (event) => {
+        handleSocketMessage(event.data)
+    })
   };
 
   return (
     <div className="p-10 px-18 lg:mx-4 rounded-xl shadow bg-white hover:shadow-lg duration-300">
       <h2 className="text-3xl">
-        Welcome back, 
+        Welcome back, {identifier}
       </h2>
 
       <p className="text-gray-400 text-sm">

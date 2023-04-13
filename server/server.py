@@ -135,7 +135,7 @@ class SocketHandler:
             self.session = Session(session_id, self.websocket, user)
 
             session_data = {
-                "session_id": self.session.id
+                "session_id": self.session.session_id
             }
             await self.send_socket_message("login_succeeded|||" + json.dumps(session_data))
 
