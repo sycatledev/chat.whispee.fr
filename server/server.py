@@ -109,7 +109,7 @@ class SocketHandler:
                 user = get_database().get_user_by_username(identifier)
 
             if user is None:
-                self.send_socket_message("no_identifier_found|||")
+                await self.send_socket_message("no_identifier_found|||")
             else:
                 await self.send_socket_message("identifier_found|||" + json.dumps(user))
 
