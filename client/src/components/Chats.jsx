@@ -2,7 +2,7 @@ import React from "react";
 
 const Chats = ({ messageNav, chats, ready, displayChat }) => {
   return (
-    <div className={`flex flex-col my-4 ${!messageNav ? "hidden" : ""}`}>
+    <div className={`flex flex-col my-4 h-full ${!messageNav ? "hidden" : ""}`}>
       <div className="flex flex-row items-center justify-between text-xs">
         <span className="font-bold">Active Chats </span>
         <span
@@ -13,7 +13,7 @@ const Chats = ({ messageNav, chats, ready, displayChat }) => {
         </span>
       </div>
       <div
-        className="flex flex-col space-y-1 mt-4 -mx-2 h-[22rem] overflow-y-auto"
+        className="flex flex-col h-full space-y-1 mt-4 -mx-2 overflow-y-auto"
         id="chats-container"
       >
         {ready ? (

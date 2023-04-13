@@ -6,6 +6,8 @@ import Chats from "../components/Chats.jsx";
 import ChatContainer from "../components/ChatContainer.jsx";
 import EmptyChatContainer from "../components/EmptyChatContainer.jsx";
 import { Contact } from "../components/Contact.jsx";
+import ProfilContainer from "../components/ProfilContainer.jsx";
+import ParamsModal from "../components/ParamsModal.jsx";
 
 const Chat = () => {
   const [websocket, setWebsocket] = useState(null);
@@ -21,6 +23,7 @@ const Chat = () => {
   const [messageNav, setMessageNav] = useState(true);
   const [contactNav, setContactNav] = useState(false);
   const [paramNav, setParamNav] = useState(false);
+  const [showParams, setShowParams] = useState(false);
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -136,27 +139,37 @@ const Chat = () => {
     );
   };
   return (
-    <div className="bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500">
+    <div className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500`}>
+      {showParams ? <ParamsModal showParams={showParams} setShowParams={setShowParams} /> : "" }
       <div className="flex h-screen antialiased text-gray-800">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
-          <div className="hidden lg:flex flex-col p-6 w-64 bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 flex-shrink-0">
-            <Nav
+          <div className="hidden lg:flex flex-col justify-between p-6 w-64 bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 flex-shrink-0">
+            <div className="h-full">
+                <Nav
+                  messageNav={messageNav}
+                  setMessageNav={setMessageNav}
+                  paramNav={paramNav}
+                  setParamNav={setParamNav}
+                  contactNav={contactNav}
+                  setContactNav={setContactNav}
+                />
+                <Chats
+                  chats={chats}
+                  ready={ready}
+                  displayChat={displayChat}
+                  messages={messages}
+                  messageNav={messageNav}
+                />
+                <Contact contactNav={contactNav} />
+            </div>
+            <ProfilContainer
               toggle={toggleTheme}
-              messageNav={messageNav}
-              setMessageNav={setMessageNav}
-              paramNav={paramNav}
-              setParamNav={setParamNav}
-              contactNav={contactNav}
-              setContactNav={setContactNav}
+              showParams={showParams}
+              setShowParams={setShowParams}
             />
-            <Chats
-              chats={chats}
-              ready={ready}
-              displayChat={displayChat}
-              messages={messages}
-              messageNav={messageNav}
-            />
-            <Contact contactNav={contactNav} />
+          </div>
+          <div>
+            
           </div>
           <div className="flex flex-col flex-auto h-full lg:p-6">
             <div
@@ -177,6 +190,7 @@ const Chat = () => {
               )}
             </div>
           </div>
+          
         </div>
       </div>
     </div>
