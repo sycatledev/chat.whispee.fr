@@ -6,53 +6,69 @@ import RegisterForm from "../components/RegisterForm.jsx";
 import LoginForm from "../components/LoginForm.jsx";
 
 const Authentification = () => {
-  const [userList, setUserList] = useState([
-    {
-      id: 1,
-      identify: "Azones",
-      email: "azones@gmail.com",
-      password: "password",
-    },
-    {
-      id: 2,
-      identify: "Sycatle",
-      email: "sycatle@gmail.com",
-      password: "password",
-    },
-    {
-      id: 3,
-      identify: "Arthur",
-      email: "arthur@gmail.com",
-      password: "password",
-    },
-  ]);
+
   const [identify, setIdentify] = useState(null);
   const [register, setRegister] = useState(false);
   const [login, setLogin] = useState(false);
   const [holder, setHolder] = useState("");
+  const [webSocket, setWebSocket] = useState(null)
 
-  const verifyEmail = userList.filter((user) => user.email === holder);
-  const verifyUsername = userList.filter((user) => user.identify === holder);
-  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const regexUsername = /^[a-zA-Z0-9_]{3,16}$/;
+  const sendSocketMessage = async (ws, message) => {
+    console.log("<< " + message);
 
-  const handleSubmit = (e) => {
+    ws.send(message);
+  };
+
+  let init = async () => {
+
+
+    const ws = new WebSocket("ws://localhost:456/")
+    setWebSocket(ws)
+    ws.addEventListener('open', async (event) => {
+      console.log("Connected to server")
+      await sendSocketMessage(ws, `check_identifier||| ${JSON.stringify(data)}`)
+    })
+
+    ws.addEventListener("close", async (event) => { 
+      console.log("Lost connection to server");
+    });
+
+    ws.addEventListener("error", async (event) => {
+      console.error("Websocket error", event);
+    });
+
+    ws.addEventListener("message", async (event) => {
+      await handleSocketMessage(event.data);
+    });
+
+
+
+    let handleSocketMessage = async (socketMessage) => {
+      console.log(">> " + socketMessage);
+      let socketContent = socketMessage.split("|||");
+      let socketCommand = socketContent[0];
+      let socketData = socketContent[1];
+  
+      if (socketCommand === "no_identifier_found") { // User not exist in database
+        setIdentify(true);  
+        setRegister(true); // Redirect to register page
+      } else if (socketCommand === "identifier_found") {
+        let userData = JSON.parse(socketData)
+        setIdentify(true);
+        setLogin(true);
+      }
+    };
+    return ws
+  }
+
+  let data;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const emailIsValid = regexEmail.test(holder);
-    const pseudoIsValid = regexUsername.test(holder);
-
-    if (emailIsValid && verifyEmail.length > 0) {
-      // if email is valid and exist in database
-      setIdentify(true);
-      setLogin(true); // Access to login page
-    } else if (emailIsValid && verifyEmail.length <= 0) {
-      // Or if email is valid but the user not exist
-      setIdentify(true);
-      setRegister(true); // Access to create account form
-    } else if (pseudoIsValid && verifyUsername.length > 0) {
-      setIdentify(true);
-      setLogin(true);
+    data = {
+      identifier: holder
     }
+    init()
   };
 
   return (
@@ -114,8 +130,8 @@ const Authentification = () => {
                 </form>
               </div>
             ) : null}
-            {login ? <LoginForm identifyInputValue={holder} /> : null}
-            {register ? <RegisterForm identifyInputValue={holder} /> : null}
+            {login ? <LoginForm identifier={holder} ws={webSocket} /> : null}
+            {register ? <RegisterForm identifier={holder} ws={webSocket} /> : null}
           </div>
         </section>
       </div>

@@ -3,34 +3,37 @@ import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import BackButton from "./BackButton.jsx";
 
-export default function RegisterForm(identifyInputValue) {
-  const [userList, setUserList] = useState([
-    {
-      id: 1,
-      identify: "Azones",
-      email: "azones@gmail.com",
-      password: "password",
-    },
-    {
-      id: 2,
-      identify: "Sycatle",
-      email: "sycatle@gmail.com",
-      password: "password",
-    },
-    {
-      id: 3,
-      identify: "Arthur",
-      email: "arthur@gmail.com",
-      password: "password",
-    },
-  ]);
+export default function RegisterForm({identifier, ws}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [loader, setLoader] = useState(false)
 
-  useEffect(() => {
-    setEmail(identifyInputValue.identifyInputValue);
-  }, [email, password, confirmPassword]);
+  const sendSocketMessage = async (ws, message) => {
+    console.log("<< " + message);
+
+    ws.send(message);
+  };
+
+  let data;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoader(true);
+    if (JSON.stringify(identifier).includes('@')) {
+      setEmail(identifier)
+    } else {
+      setUsername(identifier)
+    }
+
+    data = {
+        username: username,
+        email: email,
+        password: password
+    }
+    console.log(data)
+    await sendSocketMessage(ws, `register_user|||${JSON.stringify(data)}`)
+  };
 
   return (
     <div className="p-10 px-18 lg:mx-4 rounded-xl shadow bg-white hover:shadow-lg duration-300">
@@ -47,18 +50,7 @@ export default function RegisterForm(identifyInputValue) {
         action=""
         method="post"
         className="flex flex-col space-y-5 mt-5 "
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (
-            email &&
-            password &&
-            confirmPassword &&
-            password === confirmPassword
-          ) {
-            const verify = userList.map((user) => user.email === email);
-            console.log(verify);
-          }
-        }}
+        onSubmit={handleSubmit}
       >
         <label
           className="flex items-center bg-white rounded-lg"
@@ -74,9 +66,24 @@ export default function RegisterForm(identifyInputValue) {
             minLength={2}
             maxLength={30}
             id="identifier"
-            placeholder="Email / Username"
+            placeholder="Username"
+            value={username}
+            onInput={(e) => setUsername(e.currentTarget.value)}
+          />
+        </label>
+
+        <label className="flex items-center bg-white rounded-lg" htmlFor="">
+          <FontAwesomeIcon
+            icon={faLock}
+            className="h-8 w-5 px-3 border-r-[1px] border-black"
+          />
+          <input
+            className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
+            type="email"
+            required
             value={email}
             onInput={(e) => setEmail(e.currentTarget.value)}
+            placeholder="Email"
           />
         </label>
 
@@ -96,23 +103,6 @@ export default function RegisterForm(identifyInputValue) {
             value={password}
             onInput={(e) => setPassword(e.currentTarget.value)}
             placeholder="Password"
-          />
-        </label>
-        <label className="flex items-center bg-white rounded-lg" htmlFor="">
-          <FontAwesomeIcon
-            icon={faLock}
-            className="h-8 w-5 px-3 border-r-[1px] border-black"
-          />
-          <input
-            className="ml-2 py-2 px-2 outline-none rounded-lg rounded-b-none focus:rounded-l-none focus:invalid:border-[#e20000] focus:valid:border-[#125da9]"
-            type="password"
-            minLength={7}
-            maxLength={30}
-            required
-            name=""
-            id=""
-            onInput={(e) => setConfirmPassword(e.currentTarget.value)}
-            placeholder="Confirm Password"
           />
         </label>
 

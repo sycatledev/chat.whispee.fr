@@ -136,7 +136,7 @@ class Data:
             user = self.get_user_by_username(identifier)
 
         # Check if user exists and password is correct
-        if user is not None and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+        if user is not None and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
             return user
         else:
             return None
