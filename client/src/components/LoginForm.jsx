@@ -71,7 +71,7 @@ export default function LoginForm(identifyInputValue) {
       </h2>
 
       <p className="text-gray-400 text-sm">
-        Enter your password to login to PrivateMessage.
+        Enter your password to login to Whispee.
       </p>
       <form
         action=""
