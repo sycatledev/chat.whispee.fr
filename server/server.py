@@ -4,9 +4,12 @@ from datetime import datetime
 import logging
 import websockets
 import json
+import uuid
 from entities.chat import Chat
 from entities.message import Message
+from entities.user import User
 from database import Data
+from session import Session
 
 # Setting up server ports and variables
 SERVER_PORT = 654
@@ -37,10 +40,8 @@ async def start_server() -> None:
 
 # Function to handle incoming websocket connections
 async def handle_websocket(websocket, path) -> None:
-    ip_address = websocket.remote_address[0]
-    client = ClientConnection(websocket, ip_address)
+    client = SocketHandler(websocket)
     online_clients.append(client)
-    logging.info(f"Client {ip_address} connected from {path}")
 
     await client.start()
 
@@ -65,12 +66,11 @@ def get_database() -> Data:
 
     return dbclient
 
-class ClientConnection:
-    def __init__(self, websocket, ip_address):
+class SocketHandler:
+    def __init__(self, websocket):
         self.websocket = websocket
-        self.ip_address = ip_address
-        self.user = None
         self.current_chat_id = None
+        self.session = None
 
     async def start(self) -> None:
         async for message in self.websocket:
@@ -79,14 +79,54 @@ class ClientConnection:
 
         await self.websocket.close()
         online_clients.remove(self)
-        logging.info(f"Client {self.ip_address} disconnected")
 
     async def send_socket_message(self, message:str) -> None:
         logging.info(f">> {message}")
+
         await self.websocket.send(message)
 
     async def handle_socket_command(self, socket_command:str, socket_request:str) -> None:
-        if socket_command == "send_chat_message":
+        if socket_command == "check_session":
+
+            if self.session is not None:
+                if self.session.is_valid():
+                    await self.send_socket_message("active_session|||" + json.dumps(self.session.to_json()))
+                    return
+
+                else:
+                    self.session = None
+
+            await self.send_socket_message("session_inactive|||")
+
+        elif socket_command == "login_user":
+            credentials = json.loads(socket_request)
+
+            user_identifier = credentials["user_identifier"]
+            if user_identifier == "":
+                return
+
+            user_password = credentials["user_password"]
+            if user_password == "":
+                return
+
+            user = get_database().authenticate_user(user_identifier, user_password)
+
+            # If connection has not been established
+            if user is None:
+                await self.send_socket_message("login_failed|||")
+                return
+
+            session_id = str(uuid.uuid4())
+            self.session = Session(session_id, self.websocket, user)
+
+            session_data = {
+                "session_id": self.session.id
+            }
+            await self.send_socket_message("login_succeeded|||" + json.dumps(session_data))
+
+            return
+
+        elif socket_command == "send_chat_message":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
             message_content = str(chat_data["message_content"])
@@ -94,12 +134,12 @@ class ClientConnection:
             chat = get_database().get_chat(self.current_chat_id)
             current_time = datetime.now()
 
-
             message = Message(chat_data["message_uuid"], chat.id, message_content, current_time.timestamp())
             
             chat.add_message(message)
 
             await self.send_message_to_chat(self.current_chat_id, message)
+
         elif socket_command == "load_chat":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
@@ -107,11 +147,12 @@ class ClientConnection:
             self.current_chat_id = chat_id
 
             await self.send_loaded_chat(chat_id)
+
         elif socket_command == "load_chats":
             await self.send_loaded_chats()
+
         else:
             print("Unknown socket command: %s" % socket_command)
-            pass
 
     # ------------------------------------------
     #       Chat app and messages methods

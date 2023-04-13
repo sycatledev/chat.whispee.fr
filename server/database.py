@@ -94,10 +94,16 @@ class Data:
     #public method
     def get_user_by_email(self, email):
         user = self.database.users.find_one({"email": email})
+
+        print(user)
+
         return user
 
     def get_user_by_username(self, username):
         user = self.database.users.find_one({"username": username})
+
+        print(user)
+        
         return user
 
     def create_user(self,username, email, password):
@@ -117,7 +123,7 @@ class Data:
         # Return the ID of the inserted player
         return str(user['_id'])
     
-    def login_user(self, identifier, password):
+    def authenticate_user(self, identifier, password):
         user = None
         # Check if identifier is email or username
         if '@' in identifier:
@@ -129,4 +135,4 @@ class Data:
         if user is not None and bcrypt.checkpw(password.encode('utf-8'), user["password"].encode('utf-8')):
             return user
         else:
-            return False
+            return None
