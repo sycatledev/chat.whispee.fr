@@ -97,6 +97,21 @@ class SocketHandler:
                     self.session = None
 
             await self.send_socket_message("session_inactive|||")
+        
+        elif socket_command == "check_identifier":
+            credential = json.loads(socket_request)
+            identifier = credential["identifier"]
+
+            # Check if identifier is email or username
+            if '@' in identifier:
+                user = self.get_user_by_email(identifier)
+            else:
+                user = self.get_user_by_username(identifier)
+
+            if user is None:
+                self.send_socket_message("no_identifier_found|||")
+            else:
+                await self.send_socket_message("identifier_found|||" + json.dumps(user))
 
         elif socket_command == "login_user":
             credentials = json.loads(socket_request)
