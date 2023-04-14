@@ -7,6 +7,7 @@ import LoginForm from "../components/LoginForm.jsx";
 
 const Authentification = () => {
 
+  const [username, setUsername] = useState('');
   const [identify, setIdentify] = useState(null);
   const [register, setRegister] = useState(false);
   const [login, setLogin] = useState(false);
@@ -54,6 +55,7 @@ const Authentification = () => {
         setRegister(true); // Redirect to register page
       } else if (socketCommand === "identifier_found") {
         let userData = JSON.parse(socketData)
+        setUsername(userData.username)
         setIdentify(true);
         setLogin(true);
       }
@@ -130,7 +132,7 @@ const Authentification = () => {
                 </form>
               </div>
             ) : null}
-            {login ? <LoginForm identifier={holder} ws={webSocket} /> : null}
+            {login ? <LoginForm identifier={holder} username={username} ws={webSocket} /> : null}
             {register ? <RegisterForm identifier={holder} ws={webSocket} /> : null}
           </div>
         </section>

@@ -3,13 +3,16 @@ import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
+import { isEmpty } from "./Utils";
 
-export default function LoginForm({identifier, ws}) {
+export default function LoginForm({identifier, username, ws}) {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
+  const [user, setUser] = useState({})
 
-
+  
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
 
@@ -26,6 +29,7 @@ export default function LoginForm({identifier, ws}) {
       navigate('/app') // Redirect to register page
     } else if (socketCommand === "identifier_found") {
       let userData = JSON.parse(socketData)
+      setUser(userData)
       setIdentify(true);
       setLogin(true);
     }
@@ -45,11 +49,13 @@ export default function LoginForm({identifier, ws}) {
         handleSocketMessage(event.data)
     })
   };
-
+  useEffect(() => {
+      console.log(username)
+  }, [])
   return (
     <div className="p-10 px-18 lg:mx-4 rounded-xl shadow bg-white hover:shadow-lg duration-300">
       <h2 className="text-3xl">
-        Welcome back, {identifier}
+        Welcome back, {JSON.stringify(identifier).includes('@') ? username : identifier}
       </h2>
 
       <p className="text-gray-400 text-sm">
