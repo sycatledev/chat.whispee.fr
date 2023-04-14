@@ -28,6 +28,8 @@ logging.basicConfig(
 )
 
 # Function to start the server and websocket server
+
+
 async def start_server() -> None:
     server = await asyncio.start_server((), 'localhost', SERVER_PORT)
     logging.info(f"Server started on port: {SERVER_PORT}")
@@ -39,6 +41,8 @@ async def start_server() -> None:
     await websocket_server.wait_closed()
 
 # Function to handle incoming websocket connections
+
+
 async def handle_websocket(websocket, path) -> None:
     client = SocketHandler(websocket)
     online_clients.append(client)
@@ -46,6 +50,8 @@ async def handle_websocket(websocket, path) -> None:
     await client.start()
 
 # Function to shut down the server
+
+
 async def shutdown(loop) -> None:
     logging.info("Closing connections...")
 
@@ -58,13 +64,16 @@ async def shutdown(loop) -> None:
     loop.stop()
 
 # Function to connect to database
+
+
 def get_database() -> Data:
     global dbclient
-    
+
     if (dbclient == None):
         dbclient = Data(DB_HOST, DB_PORT)
 
     return dbclient
+
 
 class SocketHandler:
     def __init__(self, websocket):
@@ -80,12 +89,12 @@ class SocketHandler:
         await self.websocket.close()
         online_clients.remove(self)
 
-    async def send_socket_message(self, message:str) -> None:
+    async def send_socket_message(self, message: str) -> None:
         logging.info(f">> {message}")
 
         await self.websocket.send(message)
 
-    async def handle_socket_command(self, socket_command:str, socket_request:str) -> None:
+    async def handle_socket_command(self, socket_command: str, socket_request: str) -> None:
         if socket_command == "check_session":
 
             if self.session is not None:
@@ -97,7 +106,7 @@ class SocketHandler:
                     self.session = None
 
             await self.send_socket_message("session_inactive|||")
-        
+
         elif socket_command == "check_identifier":
             credential = json.loads(socket_request)
             identifier = credential["identifier"]
@@ -166,11 +175,19 @@ class SocketHandler:
             chat = get_database().get_chat(self.current_chat_id)
             current_time = datetime.now()
 
-            message = Message(chat_data["message_uuid"], chat.id, message_content, current_time.timestamp())
-            
+            message = Message(
+                chat_data["message_uuid"], chat.id, message_content, current_time.timestamp())
+
             chat.add_message(message)
 
             await self.send_message_to_chat(self.current_chat_id, message)
+
+        elif socket_command == "delete_chat_message":
+            chat_data = json.loads(socket_request)
+            message_uuid = str(chat_data["message_uuid"])
+            await get_database().delete_message(message_uuid)
+            deleted_message = {"message_uuid": message_uuid}
+            await self.message_deleted(deleted_message)
 
         elif socket_command == "load_chat":
             chat_data = json.loads(socket_request)
@@ -193,7 +210,7 @@ class SocketHandler:
     async def send_loaded_chats(self) -> None:
         await self.send_socket_message("chats_loaded|||" + json.dumps(get_database().get_all_chats_to_objects()))
 
-    async def send_loaded_chat(self, chat_id : int) -> None:
+    async def send_loaded_chat(self, chat_id: int) -> None:
         chat = get_database().get_chat(chat_id)
 
         if chat is None:
@@ -203,22 +220,26 @@ class SocketHandler:
         await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_json()))
         await self.load_chat_messages(chat.id)
 
-    async def load_chat_messages(self, chat_id:int) -> None:
+    async def load_chat_messages(self, chat_id: int) -> None:
         messages = get_database().get_messages_to_objects_from_chat_id(chat_id)
 
         await self.send_socket_message("chat_messages_loaded|||" + json.dumps(messages))
 
-    async def send_message_to_chat(self, chat_id:int, message:str) -> None:
+    async def send_message_to_chat(self, chat_id: int, message: str) -> None:
         for client in online_clients:
             if client.current_chat_id == chat_id:
                 await client.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
 
-    async def send_chat_message(self, message:str) -> None:
+    async def send_chat_message(self, message: str) -> None:
         await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
 
-    async def send_chat_message_to_everyone(self, message:str) -> None:
+    async def message_deleted(self, message):
+        await self.send_socket_message("chat_message_deleted|||" + json.dumps(message))
+
+    async def send_chat_message_to_everyone(self, message: str) -> None:
         for client in online_clients:
             await client.websocket.send_chat_message(message)
+
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()

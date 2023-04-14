@@ -29,7 +29,6 @@ class Data:
             print(f"Successfuly connected to database '{database_name}'.")
         except Exception as e:
             print("Failed to connect to database")
-        
 
         return database
 
@@ -65,10 +64,15 @@ class Data:
     def save_message(self, chat_id, message_uuid, message_text, message_date) -> None:
         messages_collection = self.database.messages
 
-        message = {"chat_id": chat_id, "message_uuid": message_uuid, "message_content": message_text, "message_date": message_date}
+        message = {"chat_id": chat_id, "message_uuid": message_uuid,
+                   "message_content": message_text, "message_date": message_date}
         messages_collection.insert_one(message)
 
-    def get_chat(self, chat_id : int) -> Chat:
+    async def delete_message(self, message_uuid):
+        messages_colletion = self.database.messages
+        messages_colletion.delete_one({"message_uuid": message_uuid})
+
+    def get_chat(self, chat_id: int) -> Chat:
         chats_collection = self.database.chats
         chat_cursor = chats_collection.find_one({"chat_id": chat_id})
 
@@ -91,7 +95,7 @@ class Data:
 
         return chats
 
-    #public method
+    # public method
     def get_user_by_email(self, email):
         user = self.database.users.find_one({"email": email})
 
@@ -108,9 +112,10 @@ class Data:
 
         return user
 
-    def create_user(self,username, email, password):
+    def create_user(self, username, email, password):
         # Hash the password before storing it
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(
+            password.encode('utf-8'), bcrypt.gensalt())
 
         # Create a new player object with the hashed password
         user = {
@@ -124,7 +129,7 @@ class Data:
 
         # Return the ID of the inserted player
         return str(user['_id'])
-    
+
     def authenticate_user(self, identifier, password):
         user = None
         # Check if identifier is email or username
