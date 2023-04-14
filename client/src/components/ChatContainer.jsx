@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import ChatSkeleton from "./ChatSkeleton.jsx";
-
+import { Modal, Button } from "flowbite-react";
+import { useState } from "react";
 const ChatContainer = ({
   ready,
   chat,
@@ -8,8 +9,10 @@ const ChatContainer = ({
   sendChatMessage,
   currentChat,
   messages,
+  deleteChatMessage,
 }) => {
   const chatContainerRef = useRef(null);
+  const [openModal, setOpenModal] = useState(false);
   const inputRef = useRef(null);
   function scrollToBottom() {
     chatContainerRef?.current?.scrollIntoView({
@@ -20,6 +23,26 @@ const ChatContainer = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  const messageTime = (time) => {
+    const timeMls = new Date(time * 1000);
+    const timeDifference = new Date() - timeMls;
+    const minutesDDifferences = Math.floor(timeDifference / (1000 * 60));
+    if (minutesDDifferences >= 60) {
+      const day = timeMls.getDate();
+      const month = timeMls.getMonth() + 1;
+      const year = timeMls.getFullYear();
+      const hours = timeMls.getHours();
+      const minutes = timeMls
+        .getMinutes()
+        .toString()
+        .slice(-2)
+        .padStart(2, "0");
+      return `reçu le ${day}-${month}-${year} ${hours}:${minutes}`;
+    } else if (minutesDDifferences <= 0) {
+      return `reçu à l'instant`;
+    }
+    return `reçu depuis ${minutesDDifferences} minutes`;
+  };
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
@@ -28,6 +51,13 @@ const ChatContainer = ({
     if (inputDatas.trim() === "") return;
     sendChatMessage(currentChat, inputDatas);
     inputRef.current.value = "";
+  };
+  const handleDeleteChatMessage = (chat_uuid) => {
+    deleteChatMessage(chat_uuid);
+    setOpenModal(false);
+  };
+  const handdleCloseModal = () => {
+    setOpenModal(false);
   };
   return (
     <>
@@ -76,14 +106,72 @@ const ChatContainer = ({
                 <div
                   key={index}
                   id={message.message_uuid}
-                  className="col-start-9 col-end-13 p-3 rounded-lg"
+                  className="col-start-9 col-end-13 p-3 rounded-lg group"
                 >
-                  <div className="flex items-center justify-start flex-row-reverse">
+                  <div className="flex items-center justify-start flex-row-reverse group">
                     <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
                       A
                     </div>
                     <div className="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
                       <div>{message.message_content}</div>
+                    </div>
+                    <div className="flex items-center justify-center h-10 w-60  text-white bg-indigo-400 flex-shrink-0">
+                      {messageTime(message.message_date)}
+                    </div>
+
+                    <div
+                      onClick={() => setOpenModal(true)}
+                      className=" items-center justify-center h-10 w-10 rounded-full text-white  flex-shrink-0 cursor-pointer hidden group-hover:flex "
+                    >
+                      <svg
+                        width="20"
+                        height="46"
+                        fill="none"
+                        stroke="black"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M4 7h16"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                        <path d="m5 7 1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12"></path>
+                        <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path>
+                      </svg>
+                    </div>
+                    <div className="modal">
+                      <React.Fragment>
+                        <Modal
+                          show={openModal}
+                          onClose={() => setOpenModal(false)}
+                        >
+                          <Modal.Header>Delete a message</Modal.Header>
+                          <Modal.Body>
+                            <div className="space-y-6">
+                              <p className="text-base leading-relaxed text-gray-900 dark:text-gray-400">
+                                Are you sure you want to delete this message ?
+                              </p>
+                              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400"></p>
+                            </div>
+                          </Modal.Body>
+                          <Modal.Footer>
+                            <Button
+                              className="bg-rose-950"
+                              color="gray"
+                              onClick={() =>
+                                handleDeleteChatMessage(message.message_uuid)
+                              }
+                            >
+                              I accept
+                            </Button>
+                            <Button color="gray" onClick={handdleCloseModal}>
+                              Decline
+                            </Button>
+                          </Modal.Footer>
+                        </Modal>
+                      </React.Fragment>
                     </div>
                   </div>
                 </div>
