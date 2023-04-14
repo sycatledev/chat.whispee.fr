@@ -24,6 +24,9 @@ const Chat = () => {
   const [contactNav, setContactNav] = useState(false);
   const [paramNav, setParamNav] = useState(false);
   const [showParams, setShowParams] = useState(false);
+  const [loadedMessages, setLoadedMessages] = useState([]);
+  const [delated, setdelated] = useState(false);
+  const [delatedMessage, setDelatedMessage] = useState("");
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -101,13 +104,23 @@ const Chat = () => {
       let messages = JSON.parse(socketData);
       setMessages(messages);
       setReadyMessages(true);
+    } else if (socketCommand === "chat_message_deleted") {
+      let messageDate = JSON.parse(socketData);
+      setReadyMessages(false);
+      setDelatedMessage(messageDate);
+      setdelated(true);
     }
   };
-  /*   useEffect(() => {
-    setTimeout(() => {
-      setReadyMessages(true);
-    }, 3000);
-  }, [messages]); */
+  useEffect(() => {
+    if (delated) {
+      setMessages(
+        messages.filter(
+          (message) => message.message_uuid !== delatedMessage?.message_uuid
+        )
+      ),
+        setReadyMessages(true);
+    }
+  }, [delatedMessage]);
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
@@ -138,29 +151,44 @@ const Chat = () => {
       `send_chat_message|||${JSON.stringify(data)}`
     );
   };
+  const deleteChatMessage = async (message_uuid) => {
+    let data = {
+      message_uuid,
+    };
+    await sendSocketMessage(
+      websocket,
+      `delete_chat_message|||${JSON.stringify(data)}`
+    );
+  };
   return (
-    <div className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500`}>
-      {showParams ? <ParamsModal showParams={showParams} setShowParams={setShowParams} /> : "" }
+    <div
+      className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500`}
+    >
+      {showParams ? (
+        <ParamsModal showParams={showParams} setShowParams={setShowParams} />
+      ) : (
+        ""
+      )}
       <div className="flex h-screen antialiased text-gray-800">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
           <div className="hidden lg:flex flex-col justify-between p-6 w-64 bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 flex-shrink-0">
             <div className="h-full">
-                <Nav
-                  messageNav={messageNav}
-                  setMessageNav={setMessageNav}
-                  paramNav={paramNav}
-                  setParamNav={setParamNav}
-                  contactNav={contactNav}
-                  setContactNav={setContactNav}
-                />
-                <Chats
-                  chats={chats}
-                  ready={ready}
-                  displayChat={displayChat}
-                  messages={messages}
-                  messageNav={messageNav}
-                />
-                <Contact contactNav={contactNav} />
+              <Nav
+                messageNav={messageNav}
+                setMessageNav={setMessageNav}
+                paramNav={paramNav}
+                setParamNav={setParamNav}
+                contactNav={contactNav}
+                setContactNav={setContactNav}
+              />
+              <Chats
+                chats={chats}
+                ready={ready}
+                displayChat={displayChat}
+                messages={messages}
+                messageNav={messageNav}
+              />
+              <Contact contactNav={contactNav} />
             </div>
             <ProfilContainer
               toggle={toggleTheme}
@@ -168,9 +196,7 @@ const Chat = () => {
               setShowParams={setShowParams}
             />
           </div>
-          <div>
-            
-          </div>
+          <div></div>
           <div className="flex flex-col flex-auto h-full lg:p-6">
             <div
               id="chat-wrapper"
@@ -184,13 +210,13 @@ const Chat = () => {
                   sendChatMessage={sendChatMessage}
                   currentChat={currentChat}
                   messages={messages}
+                  deleteChatMessage={deleteChatMessage}
                 />
               ) : (
                 <EmptyChatContainer />
               )}
             </div>
           </div>
-          
         </div>
       </div>
     </div>
