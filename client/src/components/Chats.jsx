@@ -4,7 +4,7 @@ const Chats = ({ messageNav, chats, ready, displayChat }) => {
   return (
     <div className={`flex flex-col my-4 h-full ${!messageNav ? "hidden" : ""}`}>
       <div className="flex flex-row items-center justify-between text-xs">
-        <span className="font-bold">Active Chats </span>
+        <span className="font-bold">Active Conversations </span>
         <span
           id="active-chats-numbers"
           className="flex items-center justify-center bg-indigo-300 dark:bg-indigo-700 h-4 w-4 rounded-full"

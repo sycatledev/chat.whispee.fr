@@ -171,7 +171,7 @@ const Chat = () => {
       )}
       <div className="flex h-screen antialiased text-gray-800">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
-          <div className="hidden lg:flex flex-col justify-between p-6 w-64 bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-300 flex-shrink-0">
+          <div className="hidden lg:flex flex-col justify-between p-6 w-64 text-black dark:text-white bg-[#f7f7f7] dark:bg-[#1c1c1c] duration-200 flex-shrink-0">
             <div className="h-full">
               <Nav
                 messageNav={messageNav}
@@ -200,7 +200,7 @@ const Chat = () => {
           <div className="flex flex-col flex-auto h-full lg:p-6">
             <div
               id="chat-wrapper"
-              className="flex flex-col flex-auto flex-shrink-0 lg:rounded-2xl h-full bg-gradient-to-tl from-[#f8f6ff] to-[#e9e2ff] dark:from-[#2e2e2e] dark:to-black"
+              className="flex flex-col flex-auto flex-shrink-0 lg:rounded-2xl h-full bg-[#f7f7f7] dark:bg-[#1c1c1c]"
             >
               {singleChat ? (
                 <ChatContainer

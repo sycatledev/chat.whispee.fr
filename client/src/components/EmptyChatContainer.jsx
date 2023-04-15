@@ -5,7 +5,7 @@ const EmptyChatContainer = () => {
     <>
       <div
         id="chat-header"
-        className="flex flex-row items-center h-16 lg:rounded-t-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-300 w-full px-2"
+        className="flex flex-row items-center h-16 lg:rounded-t-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-2"
       ></div>
       <div
         id="chat-content"
@@ -19,7 +19,7 @@ const EmptyChatContainer = () => {
         </div>
         <form
           id="chat-form"
-          className="flex flex-row items-center h-16 p-4 lg:rounded-b-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-300 w-full px-4"
+          className="flex flex-row items-center h-16 p-4 lg:rounded-b-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-4"
         ></form>
       </div>
     </>
