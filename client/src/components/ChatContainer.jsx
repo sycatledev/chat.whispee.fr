@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import ChatSkeleton from "./ChatSkeleton.jsx";
 import { Modal, Button } from "flowbite-react";
+import { useState } from "react";
 import { Tooltip } from "flowbite-react";
-
 const ChatContainer = ({
   ready,
   chat,
@@ -13,18 +13,20 @@ const ChatContainer = ({
   deleteChatMessage,
 }) => {
   const chatContainerRef = useRef(null);
-  const inputRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
-
-  useEffect(() => {
-    chatContainerRef.current?.scrollIntoView({
+  const inputRef = useRef(null);
+  function scrollToBottom() {
+    chatContainerRef?.current?.scrollIntoView({
       block: "end",
     });
-  }, [messages]);
+  }
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   const messageTime = (time) => {
     const timeMls = new Date(time * 1000);
-    const timeDifference = Date.now() - timeMls;
+    const timeDifference = new Date() - timeMls;
     const secondsDifference = Math.floor(timeDifference / 1000);
     const minutesDDifferences = Math.floor(timeDifference / (1000 * 60));
     const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
@@ -52,17 +54,16 @@ const ChatContainer = ({
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    const inputDatas = inputRef.current.value.trim();
+    const inputDatas = inputRef.current.value;
     if (inputDatas.length < 1) return;
+    if (inputDatas.trim() === "") return;
     sendChatMessage(currentChat, inputDatas);
     inputRef.current.value = "";
   };
-
   const handleDeleteChatMessage = (chat_uuid) => {
     deleteChatMessage(chat_uuid);
     setOpenModal(false);
   };
-
   const handdleCloseModal = () => {
     setOpenModal(false);
   };
@@ -91,7 +92,7 @@ const ChatContainer = ({
       </div>
       <div
         id="chat-content"
-        className="flex flex-col h-full overflow-x-auto p-4 my-2"
+        className="flex flex-col h-full overflow-x-hidden p-4 my-2"
       >
         <div className="flex flex-col h-full rounded-2xl">
           <div
@@ -104,89 +105,90 @@ const ChatContainer = ({
                 <div
                   key={index}
                   id={message.message_uuid}
-                  className="col-start-9 col-end-13 p-3 rounded-lg group"
+                  className="col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
                 >
                   <div className="items-center justify-start group">
                     <div className="flex-row-reverse flex">
                       <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
                         A
                       </div>
-                      <div className="relative mr-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
+                      <div className="relative mx-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
                         <div>{message.message_content}</div>
-                      </div>
-                    </div>
+                        <div className="text-right ml-auto justify-end space-x-1 items-center text-xs text-gray-400">
+                          <div>{messageTime(message.message_date)}</div>
+                        </div>
 
-                    <div className="text-right ml-auto justify-end space-x-1 items-center text-xs text-gray-400">
-                      <div>{messageTime(message.message_date)}</div>
-                      <div
-                        id="message-actions"
-                        className="hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
-                      >
-                        <Tooltip
-                          content="Delete this message"
-                          animation="duration-200"
+                        <div
+                          id="message-actions"
+                          className="absolute -top-6 left-0 w-full hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
                         >
-                          <button
-                            onClick={() => setOpenModal(true)}
-                            className="bg-slate-500 hover:bg-red-500 text-white p-1 rounded duration-200"
+                          <Tooltip
+                            content="Delete this message"
+                            animation="duration-200"
                           >
-                            <svg
-                              className="h-5 w-5"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
+                            <button
+                              onClick={() => setOpenModal(true)}
+                              className="bg-slate-500 hover:bg-red-500 text-white p-1 rounded duration-200"
                             >
-                              <path d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7H6Zm4 12H8v-9h2v9Zm6 0h-2v-9h2v9Zm.618-15L15 2H9L7.382 4H3v2h18V4h-4.382Z"></path>
-                            </svg>
-                          </button>
-                        </Tooltip>
+                              <svg
+                                className="h-5 w-5"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7H6Zm4 12H8v-9h2v9Zm6 0h-2v-9h2v9Zm.618-15L15 2H9L7.382 4H3v2h18V4h-4.382Z"></path>
+                              </svg>
+                            </button>
+                          </Tooltip>
 
-                        <Tooltip
-                          content="Edit this message"
-                          animation="duration-200"
-                        >
-                          <button className="bg-slate-500 hover:bg-yellow-500 text-white p-1 rounded">
-                            <svg
-                              className="h-5 w-5"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263ZM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414Z"></path>
-                            </svg>
-                          </button>
-                        </Tooltip>
+                          <Tooltip
+                            content="Edit this message"
+                            animation="duration-200"
+                          >
+                            <button className="bg-slate-500 hover:bg-yellow-500 text-white p-1 rounded">
+                              <svg
+                                className="h-5 w-5"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263ZM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414Z"></path>
+                              </svg>
+                            </button>
+                          </Tooltip>
+                        </div>
                       </div>
-                    </div>
-                    <div className="modal">
-                      <React.Fragment>
-                        <Modal
-                          show={openModal}
-                          onClose={() => setOpenModal(false)}
-                        >
-                          <Modal.Header>Delete a message</Modal.Header>
-                          <Modal.Body>
-                            <div className="space-y-6">
-                              <p className="text-base leading-relaxed text-gray-900 dark:text-gray-400">
-                                Are you sure you want to delete this message ?
-                              </p>
-                              <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400"></p>
-                            </div>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button
-                              className="bg-rose-950"
-                              color="gray"
-                              onClick={() =>
-                                handleDeleteChatMessage(message.message_uuid)
-                              }
-                            >
-                              I accept
-                            </Button>
-                            <Button color="gray" onClick={handdleCloseModal}>
-                              Decline
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
-                      </React.Fragment>
+
+                      <div className="modal">
+                        <React.Fragment>
+                          <Modal
+                            show={openModal}
+                            onClose={() => setOpenModal(false)}
+                          >
+                            <Modal.Header>Delete a message</Modal.Header>
+                            <Modal.Body>
+                              <div className="space-y-6">
+                                <p className="text-base leading-relaxed text-gray-900 dark:text-gray-400">
+                                  Are you sure you want to delete this message ?
+                                </p>
+                                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400"></p>
+                              </div>
+                            </Modal.Body>
+                            <Modal.Footer>
+                              <Button
+                                className="bg-rose-950"
+                                color="gray"
+                                onClick={() =>
+                                  handleDeleteChatMessage(message.message_uuid)
+                                }
+                              >
+                                I accept
+                              </Button>
+                              <Button color="gray" onClick={handdleCloseModal}>
+                                Decline
+                              </Button>
+                            </Modal.Footer>
+                          </Modal>
+                        </React.Fragment>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -226,24 +228,18 @@ const ChatContainer = ({
             </div>
           </div>
         </div>
-        <Tooltip
-          content="Click here to send an encrypted mesage"
-          arrow={false}
-          animation="duration-200"
+        <button
+          type="submit"
+          className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 rounded-xl text-white ml-1 px-4 py-2 flex-shrink-0"
         >
-          <button
-            type="submit"
-            className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 rounded-xl text-white ml-1 px-4 py-2 flex-shrink-0"
+          <svg
+            className="w-6 h-6 -rotate-45"
+            fill="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-6 h-6 -rotate-45"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="m21.426 11.096-17-8A.999.999 0 0 0 3.03 4.243l1.939 7.758-1.94 7.758a.998.998 0 0 0 1.397 1.147l17-8a1.001 1.001 0 0 0 0-1.81ZM5.48 18.198l.839-3.357 5.68-2.84-5.68-2.84-.84-3.357 13.17 6.197-13.17 6.197Z"></path>
-            </svg>
-          </button>
-        </Tooltip>
+            <path d="m21.426 11.096-17-8A.999.999 0 0 0 3.03 4.243l1.939 7.758-1.94 7.758a.998.998 0 0 0 1.397 1.147l17-8a1.001 1.001 0 0 0 0-1.81ZM5.48 18.198l.839-3.357 5.68-2.84-5.68-2.84-.84-3.357 13.17 6.197-13.17 6.197Z"></path>
+          </svg>
+        </button>
       </form>
     </>
   );

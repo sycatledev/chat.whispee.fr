@@ -1,0 +1,33 @@
+[{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be0"
+    },
+    "friend_id": 1,
+    "friend_name": "Arthur",
+    "friend_messages": "[]",
+    "friend_pending_messages": 0
+  },{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be1"
+    },
+    "friend_id": 2,
+    "friend_name": "Arthur",
+    "friend_messages": "[]",
+    "friend_pending_messages": 0
+  },{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be2"
+    },
+    "friend_id": 3,
+    "friend_name": "Arthur",
+    "friend_messages": "[]",
+    "friend_pending_messages": 0
+  },{
+    "_id": {
+      "$oid": "642afa0a6615f581f0657be3"
+    },
+    "friend_id": 4,
+    "friend_name": "Arthur",
+    "friend_messages": "[]",
+    "friend_pending_messages": 0
+  }]

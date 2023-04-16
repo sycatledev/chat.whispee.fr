@@ -4,7 +4,7 @@ const Chats = ({ messageNav, chats, ready, displayChat }) => {
   return (
     <div className={`flex flex-col my-4 h-full ${!messageNav ? "hidden" : ""}`}>
       <div className="flex flex-row items-center justify-between text-xs">
-        <span className="font-bold">Active Conversations </span>
+        <span className="font-bold">My Chats </span>
         <span
           id="active-chats-numbers"
           className="flex items-center justify-center bg-indigo-300 dark:bg-indigo-700 h-4 w-4 rounded-full"
@@ -22,7 +22,7 @@ const Chats = ({ messageNav, chats, ready, displayChat }) => {
               onClick={() => displayChat(chat.chat_id)}
               key={chat.chat_id}
               data-user-id={chat.chat_id}
-              className="chat-button flex flex-row items-center hover:bg-indigo-100 active:bg-indigo-200 dark:hover:bg-indigo-500 dark:active:bg-indigo-600 rounded-xl p-2"
+              className="chat-button flex flex-row items-center hover:bg-slate-100 active:bg-slate-200 dark:hover:bg-slate-500 dark:active:bg-slate-600 rounded-xl p-2"
             >
               <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
                 {chat.chat_name[0]}
