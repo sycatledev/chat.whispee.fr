@@ -122,9 +122,12 @@ class Data:
             "password": hashed_password.decode('utf-8')
         }
 
-        stocked_user = self.database.users.insert_one(user)
+        result = self.database.users.insert_one(user)
 
-        return stocked_user
+        if result.inserted_id is not None:
+            user_id = json_util.dumps(result.inserted_id)
+
+        return user_id
 
     def authenticate_user(self, identifier, password) -> str:
         user = None

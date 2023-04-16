@@ -61,7 +61,6 @@ const Chat = () => {
         console.log("Connected to server");
 
         const sessionId = window.localStorage.getItem("session_id");
-
         let sessionData = {
           session_id: sessionId,
         };
@@ -103,9 +102,12 @@ const Chat = () => {
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
 
-      await handleUsername(sessionData.user.username).finally(() => {
-        console.log(username);
-      });
+      console.log(sessionData.user.username);
+
+      setUsername(sessionData.user.username);
+      // await handleUsername(sessionData.user.username).finally(() => {
+      // console.log(username);
+      // });
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
 
@@ -220,6 +222,7 @@ const Chat = () => {
               toggle={toggleTheme}
               showParams={showParams}
               setShowParams={setShowParams}
+              username={username}
             />
           </div>
           <div></div>

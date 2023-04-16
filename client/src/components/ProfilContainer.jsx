@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 import { Tooltip } from "flowbite-react";
+import { isEmpty } from "./Utils.jsx";
 
-export default function ProfilContainer({ toggle, showParams, setShowParams }) {
+export default function ProfilContainer({
+  toggle,
+  showParams,
+  setShowParams,
+  username,
+}) {
   return (
     <>
       <div className="flex justify-between items-center mt-5 pt-5 border-t-[1px] border-neutral-200 dark:border-neutral-600">
@@ -10,10 +16,12 @@ export default function ProfilContainer({ toggle, showParams, setShowParams }) {
           animation="duration-200"
         >
           <button className="flex items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 p-2 rounded-lg">
-            <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
-              V
+            <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full uppercase">
+              {!isEmpty(username) && username ? username[0] : ""}
             </div>
-            <h1 className="font-karla ml-2">Pseudonyme</h1>
+            <h1 className="font-karla ml-2">
+              {!isEmpty(username) && username ? username : ""}
+            </h1>
           </button>
         </Tooltip>
         <div className="flex">

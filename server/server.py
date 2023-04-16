@@ -3,6 +3,7 @@ import asyncio
 from datetime import datetime
 import logging
 import websockets
+import ssl
 import json
 import uuid
 from entities.chat import Chat
@@ -10,6 +11,7 @@ from entities.message import Message
 from entities.user import User
 from database import Data
 from session import Session
+
 
 # Setting up server ports and variables
 SERVER_PORT = 654
@@ -32,10 +34,14 @@ logging.basicConfig(
 
 
 async def start_server() -> None:
-    server = await asyncio.start_server((), 'localhost', SERVER_PORT)
+    # On production server (Web Secure Socket)
+    # ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    # ssl_context.load_cert_chain('chemin/vers/certificat.pem', 'chemin/vers/cle_privee.pem')
+
+    server = await asyncio.start_server((), 'localhost', SERVER_PORT) #, ssl=ssl_context)
     logging.info(f"Server started on port: {SERVER_PORT}")
 
-    websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT)
+    websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT) #, ssl=ssl_context)
     logging.info(f"Websocket server started on port: {WEBSOCKET_PORT}")
 
     await server.start_serving()
@@ -162,8 +168,6 @@ class Client:
             }
             await self.send_socket_message("login_succeeded|||" + json.dumps(session_data))
 
-            return
-
         elif socket_command == "register_user":
             credentials = json.loads(socket_request)
 
@@ -179,13 +183,22 @@ class Client:
             if password == "":
                 return
 
-            user_id = get_database().create_user(username, email, password)
+            creation = get_database().create_user(username, email, password)
 
-            user_data = {
-                "user_id": user_id
+            if (creation is None):
+                await self.send_socket_message("register_failed|||")
+                return
+            
+            user_instance = User(creation, username, email)
+
+            session_id = str(uuid.uuid4())
+            self.session = Session(session_id, self.websocket, user_instance)
+            sessions[session_id] = self.session
+
+            session_data = {
+                "session_id": self.session.session_id
             }
-
-            await self.send_socket_message("register_succeeded|||" + json.dumps(user_data))
+            await self.send_socket_message("register_succeeded|||" + json.dumps(session_data))
 
         elif socket_command == "send_chat_message":
             chat_data = json.loads(socket_request)

@@ -1,10 +1,10 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm({ identifier, ws }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -14,6 +14,21 @@ export default function RegisterForm({ identifier, ws }) {
     console.log("<< " + message);
 
     ws.send(message);
+  };
+
+  let handleSocketMessage = async (socketMessage) => {
+    console.log(">> " + socketMessage);
+    let socketContent = socketMessage.split("|||");
+    let socketCommand = socketContent[0];
+    let socketData = socketContent[1];
+
+    if (socketCommand === "register_succeeded") {
+      let sessionData = JSON.parse(socketData);
+
+      window.localStorage.setItem("session_id", sessionData["session_id"]);
+
+      navigate("/app");
+    }
   };
 
   let data;
@@ -34,6 +49,10 @@ export default function RegisterForm({ identifier, ws }) {
       password: password,
     };
     await sendSocketMessage(ws, `register_user|||${JSON.stringify(data)}`);
+
+    ws.addEventListener("message", (event) => {
+      handleSocketMessage(event.data);
+    });
   };
 
   return (
