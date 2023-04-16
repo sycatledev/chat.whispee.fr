@@ -84,8 +84,8 @@ const ChatContainer = ({
             </div>
           </div>
         </div>
-        <button className="flex items-center justify-center text-gray-500 hover:text-gray-800 active:bg-indigo-200 dark:hover:text-gray-300 dark:active:bg-indigo-400 p-2 rounded-xl flex-shrink-0">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl flex-shrink-0">
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"></path>
           </svg>
         </button>
@@ -104,7 +104,7 @@ const ChatContainer = ({
               messages.map((message, index) => (
                 <div
                   key={index}
-                  id={message.message_uuid}
+                  id={message.id}
                   className="col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
                 >
                   <div className="items-center justify-start group">
@@ -113,9 +113,9 @@ const ChatContainer = ({
                         A
                       </div>
                       <div className="relative mx-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
-                        <div>{message.message_content}</div>
+                        <div>{message.content}</div>
                         <div className="text-right ml-auto justify-end space-x-1 items-center text-xs text-gray-400">
-                          <div>{messageTime(message.message_date)}</div>
+                          <div>{messageTime(message.date)}</div>
                         </div>
 
                         <div
@@ -177,7 +177,7 @@ const ChatContainer = ({
                                 className="bg-rose-950"
                                 color="gray"
                                 onClick={() =>
-                                  handleDeleteChatMessage(message.message_uuid)
+                                  handleDeleteChatMessage(message.message_id)
                                 }
                               >
                                 I accept

@@ -1,12 +1,11 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
-import Footer from "../components/Footer.jsx";
 import React, { useState, useEffect } from "react";
 import RegisterForm from "../components/forms/RegisterForm.jsx";
 import LoginForm from "../components/forms/LoginForm.jsx";
 import Loader from "../components/Loader.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Authentification = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [identify, setIdentify] = useState(null);
   const [register, setRegister] = useState(false);
@@ -15,20 +14,22 @@ const Authentification = () => {
   const [webSocket, setWebSocket] = useState(null);
   const [loader, setLoader] = useState(false);
 
-  const sendSocketMessage = async (ws, message) => {
-    console.log("<< " + message);
-
-    ws.send(message);
-  };
-
-  let init = async () => {
+  useEffect(() => {
     const ws = new WebSocket("ws://localhost:456/");
+
     setWebSocket(ws);
+
     ws.addEventListener("open", async (event) => {
       console.log("Connected to server");
+
+      const sessionId = window.localStorage.getItem("session_id");
+      let sessionData = {
+        session_id: sessionId,
+      };
+
       await sendSocketMessage(
         ws,
-        `check_identifier||| ${JSON.stringify(data)}`
+        "check_session|||" + JSON.stringify(sessionData)
       );
     });
 
@@ -50,7 +51,9 @@ const Authentification = () => {
       let socketCommand = socketContent[0];
       let socketData = socketContent[1];
 
-      if (socketCommand === "no_identifier_found") {
+      if (socketCommand === "active_session") {
+        navigate("/app");
+      } else if (socketCommand === "no_identifier_found") {
         // User not exist in database
         setIdentify(true);
         setRegister(true); // Redirect to register page
@@ -61,18 +64,26 @@ const Authentification = () => {
         setLogin(true);
       }
     };
-    return ws;
-  };
+  }, []);
 
-  let data;
+  const sendSocketMessage = async (ws, message) => {
+    console.log("<< " + message);
+
+    ws.send(message);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);
-    data = {
+
+    let data = {
       identifier: holder,
     };
-    init();
+
+    await sendSocketMessage(
+      webSocket,
+      `check_identifier||| ${JSON.stringify(data)}`
+    );
   };
 
   return (

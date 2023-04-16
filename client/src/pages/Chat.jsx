@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import * as Utils from "../utils/generator.js";
 import * as Cookies from "../utils/cookies.js";
 import Nav from "../components/Nav.jsx";
-import Chats from "../components/Chats.jsx";
-import ChatContainer from "../components/ChatContainer.jsx";
-import EmptyChatContainer from "../components/EmptyChatContainer.jsx";
-import { Friend } from "../components/Friend.jsx";
+import { useNavigate } from "react-router-dom";
+import Chats from "../components/nav/Chats.jsx";
+import ChatContainer from "../components/chats/ChatContainer.jsx";
+import EmptyChatContainer from "../components/chats/EmptyChatContainer.jsx";
+import { Friend } from "../components/nav/Friends.jsx";
 import ProfilContainer from "../components/ProfilContainer.jsx";
 import ParamsModal from "../components/ParamsModal.jsx";
 
 const Chat = () => {
+  const navigate = useNavigate();
   const [websocket, setWebsocket] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
   const [chat, setChat] = useState([]);
@@ -102,17 +103,14 @@ const Chat = () => {
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
 
-      console.log(sessionData.user.username);
-
       setUsername(sessionData.user.username);
-      // await handleUsername(sessionData.user.username).finally(() => {
-      // console.log(username);
-      // });
+    } else if (socketCommand === "session_inactive") {
+      navigate("/");
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
 
-      if (!messageIds.includes(messageData.message_uuid)) {
-        setMessageIds([...messageIds, messageData.message_uuid]);
+      if (!messageIds.includes(messageData.message_id)) {
+        setMessageIds([...messageIds, messageData.message_id]);
         setMessages((messages) => [...messages, messageData]);
       }
     } else if (socketCommand === "chats_loaded") {
@@ -138,7 +136,7 @@ const Chat = () => {
     if (delated) {
       setMessages(
         messages.filter(
-          (message) => message.message_uuid !== delatedMessage?.message_uuid
+          (message) => message.message_id !== delatedMessage?.message_id
         )
       ),
         setReadyMessages(true);
@@ -165,8 +163,7 @@ const Chat = () => {
   const sendChatMessage = async (chat_id, message) => {
     let data = {
       chat_id: chat_id,
-      message_uuid: Utils.generateUUID(),
-      message_content: message,
+      content: message,
     };
 
     await sendSocketMessage(
@@ -174,9 +171,9 @@ const Chat = () => {
       `send_chat_message|||${JSON.stringify(data)}`
     );
   };
-  const deleteChatMessage = async (message_uuid) => {
+  const deleteChatMessage = async (message_id) => {
     let data = {
-      message_uuid,
+      message_id,
     };
     await sendSocketMessage(
       websocket,

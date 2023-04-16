@@ -10,14 +10,14 @@ class Session:
         # self.session_duration = 3600 # Session valid for 1 hour
         self.user = user
 
-    def to_json(self):
+    def to_object(self):
         return {
             "id": self.session_id,
             "ip_address": self.ip_address,
             # "creation_time": json.dumps(self.creation_time),
             # "session_duration": self.session_duration,
             # "session_validity": self.is_valid(),
-            "user": self.user.to_json()
+            "user": self.user.to_object()
         }
 
     # def is_valid(self):

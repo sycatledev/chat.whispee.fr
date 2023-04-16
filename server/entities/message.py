@@ -2,18 +2,18 @@ import json
 
 class Message:
 
-    def __init__(self,uuid, chat_id, content, date, author = None):
-        self.uuid = uuid
+    def __init__(self, id, author_id, chat_id, content, date):
+        self.id = id
+        self.author_id = author_id
         self.chat_id = chat_id
         self.content = content
         self.date = date
-        self.author = author
-    
-    def to_json(self):
+
+    def to_object(self):
         return {
-            "message_uuid": self.uuid,
+            "id": self.id,
+            "author_id": self.author_id,
             "chat_id": self.chat_id,
-            "message_content": self.content,
-            "message_date": json.dumps(self.date),
-            "message_author": self.author
+            "content": self.content,
+            "date": json.dumps(self.date)
         }

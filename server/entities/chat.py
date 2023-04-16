@@ -3,10 +3,14 @@ class Chat:
         self.id = id
         self.name = name
     
-    def add_message(self,message):
+    # TODO: Add recipients and attachments
+    def add_message(self, author_id, content, date):
         from server import get_database
+        from entities.message import Message
 
-        get_database().save_message(self.id, message.uuid, message.content, message.date)
+        result_id = get_database().save_message(self.id, author_id, content, date)
+
+        return Message(result_id, author_id, self.id, content, date)
 
     def get_messages(self):
         from server import get_database
@@ -18,7 +22,7 @@ class Chat:
 
         return get_database().get_messages_to_objects_from_chat_id(self.id)
     
-    def to_json(self):
+    def to_object(self):
         return {
             "chat_id": self.id,
             "chat_name": self.name

@@ -40,11 +40,11 @@ class Data:
         messages = []
         for message_json in messages_cursor:
             message = Message(
-                uuid=message_json["message_uuid"],
+                uuid=message_json["id"],
                 chat_id=message_json["chat_id"],
-                content=message_json["message_content"],
-                date=message_json["message_date"],
-                author=message_json["message_author"]
+                content=message_json["content"],
+                date=message_json["date"],
+                sender_id=message_json["sender_id"]
             )
             messages.append(message)
         return messages
@@ -62,16 +62,17 @@ class Data:
 
         return messages
 
-    def save_message(self, chat_id, message_uuid, message_text, message_date) -> None:
+    def save_message(self, chat_id, sender_id, message_text, message_date) -> str:
         messages_collection = self.database.messages
 
-        message = {"chat_id": chat_id, "message_uuid": message_uuid,
-                   "message_content": message_text, "message_date": message_date}
-        messages_collection.insert_one(message)
+        message = {"chat_id": chat_id, "sender_id": sender_id, "content": message_text, "date": message_date}
+        result = messages_collection.insert_one(message)
 
-    async def delete_message(self, message_uuid):
+        return json_util.dumps(result.inserted_id)
+
+    async def delete_message(self, message_id):
         messages_colletion = self.database.messages
-        messages_colletion.delete_one({"message_uuid": message_uuid})
+        messages_colletion.delete_one({"message_id": message_id})
 
     def get_chat(self, chat_id: int) -> Chat:
         chats_collection = self.database.chats

@@ -3,14 +3,14 @@ import asyncio
 from datetime import datetime
 import logging
 import websockets
-import ssl
+import os
+
 import json
 import uuid
-from entities.chat import Chat
-from entities.message import Message
 from entities.user import User
 from database import Data
 from session import Session
+# import ssl
 
 
 # Setting up server ports and variables
@@ -23,16 +23,28 @@ online_clients = list()
 sessions = dict()
 dbclient = None
 
+
 # Setting up logging to a file
+import os
+
+log_folder = "../logs/"
+log_file = "server.log"
+
+# Créer le dossier logs s'il n'existe pas déjà
+if not os.path.exists(log_folder):
+    os.makedirs(log_folder)
+
+log_file_path = os.path.join(log_folder, log_file)
+if not os.path.exists(log_file_path):
+    with open(log_file_path, 'w') as f:
+        print("The file ./logs/server.log has been created.")
 logging.basicConfig(
-    filename="../logs/server.log",
+    filename=log_folder + log_file,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 # Function to start the server and websocket server
-
-
 async def start_server() -> None:
     # On production server (Web Secure Socket)
     # ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -117,7 +129,9 @@ class Client:
 
                 if session is not None:
                 #if session.is_valid():
-                    await self.send_socket_message("active_session|||" + json.dumps(session.to_json()))
+                    self.session = session
+
+                    await self.send_socket_message("active_session|||" + json.dumps(session.to_object()))
                     return
                 # else:
                     # self.session = None
@@ -203,25 +217,22 @@ class Client:
         elif socket_command == "send_chat_message":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
-            message_content = str(chat_data["message_content"])
+            content = str(chat_data["content"])
 
             chat = get_database().get_chat(self.current_chat_id)
             current_time = datetime.now()
 
-            message = Message(
-                chat_data["message_uuid"], chat.id, message_content, current_time.timestamp())
-
-            chat.add_message(message)
+            message = chat.add_message(self.session.user.id, content, current_time.timestamp())
 
             await self.send_message_to_chat(self.current_chat_id, message)
 
         elif socket_command == "delete_chat_message":
             chat_data = json.loads(socket_request)
-            message_uuid = str(chat_data["message_uuid"])
-            await get_database().delete_message(message_uuid)
-            deleted_message = {"message_uuid": message_uuid}
-            await self.message_deleted(deleted_message)
+            message_id = str(chat_data["message_id"])
+            await get_database().delete_message(message_id)
+            deleted_message = {"message_id": message_id}
 
+            await self.message_deleted(deleted_message)
         elif socket_command == "load_chat":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
@@ -250,7 +261,7 @@ class Client:
             print("No chat found")
             return
 
-        await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_json()))
+        await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_object()))
         await self.load_chat_messages(chat.id)
 
     async def load_chat_messages(self, chat_id: int) -> None:
@@ -261,10 +272,10 @@ class Client:
     async def send_message_to_chat(self, chat_id: int, message: str) -> None:
         for client in online_clients:
             if client.current_chat_id == chat_id:
-                await client.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
+                await client.send_socket_message("chat_message_sended|||" + json.dumps(message.to_object()))
 
     async def send_chat_message(self, message: str) -> None:
-        await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_json()))
+        await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_object()))
 
     async def message_deleted(self, message):
         await self.send_socket_message("chat_message_deleted|||" + json.dumps(message))

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { isEmpty } from "./Utils";
+import { isEmpty } from "../Utils";
 
 export function Friend({ friendNav }) {
   const [friends, setFriends] = useState([]);
