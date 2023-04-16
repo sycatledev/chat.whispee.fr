@@ -27,6 +27,10 @@ export default function LoginForm({ identifier, username, ws }) {
     let socketData = socketContent[1];
 
     if (socketCommand === "login_succeeded") {
+      let sessionData = JSON.parse(socketData);
+
+      window.localStorage.setItem("session_id", sessionData["session_id"]);
+
       // User not exist in database
       navigate("/app"); // Redirect to register page
     } else if (socketCommand === "identifier_found") {

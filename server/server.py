@@ -18,6 +18,7 @@ DB_HOST = 'localhost'
 DB_PORT = '27017'
 
 online_clients = list()
+sessions = dict()
 dbclient = None
 
 # Setting up logging to a file
@@ -44,14 +45,12 @@ async def start_server() -> None:
 
 
 async def handle_websocket(websocket, path) -> None:
-    client = SocketHandler(websocket)
+    client = Client(websocket)
     online_clients.append(client)
 
     await client.start()
 
 # Function to shut down the server
-
-
 async def shutdown(loop) -> None:
     logging.info("Closing connections...")
 
@@ -65,7 +64,6 @@ async def shutdown(loop) -> None:
 
 # Function to connect to database
 
-
 def get_database() -> Data:
     global dbclient
 
@@ -74,8 +72,17 @@ def get_database() -> Data:
 
     return dbclient
 
+async def get_all_sessions():
+    sessions = list()
 
-class SocketHandler:
+    for client in online_clients:
+        if client.session is None:
+            continue
+        sessions.append(client.session)
+
+    return sessions
+
+class Client:
     def __init__(self, websocket):
         self.websocket = websocket
         self.current_chat_id = None
@@ -96,14 +103,18 @@ class SocketHandler:
 
     async def handle_socket_command(self, socket_command: str, socket_request: str) -> None:
         if socket_command == "check_session":
+            session_data = json.loads(socket_request)
+            session_id = session_data["session_id"]
 
-            if self.session is not None:
-                if self.session.is_valid():
-                    await self.send_socket_message("active_session|||" + json.dumps(self.session.to_json()))
+            if session_id in sessions:
+                session = sessions[session_id]
+
+                if session is not None:
+                #if session.is_valid():
+                    await self.send_socket_message("active_session|||" + json.dumps(session.to_json()))
                     return
-
-                else:
-                    self.session = None
+                # else:
+                    # self.session = None
 
             await self.send_socket_message("session_inactive|||")
 
@@ -139,9 +150,12 @@ class SocketHandler:
             if user is None:
                 await self.send_socket_message("login_failed|||")
                 return
+            
+            user_instance = User(user["_id"], user["username"], user["email"])
 
             session_id = str(uuid.uuid4())
-            self.session = Session(session_id, self.websocket, user)
+            self.session = Session(session_id, self.websocket, user_instance)
+            sessions[session_id] = self.session
 
             session_data = {
                 "session_id": self.session.session_id
@@ -166,6 +180,12 @@ class SocketHandler:
                 return
 
             user_id = get_database().create_user(username, email, password)
+
+            user_data = {
+                "user_id": user_id
+            }
+
+            await self.send_socket_message("register_succeeded|||" + json.dumps(user_data))
 
         elif socket_command == "send_chat_message":
             chat_data = json.loads(socket_request)

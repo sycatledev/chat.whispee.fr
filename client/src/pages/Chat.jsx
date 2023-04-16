@@ -5,7 +5,7 @@ import Nav from "../components/Nav.jsx";
 import Chats from "../components/Chats.jsx";
 import ChatContainer from "../components/ChatContainer.jsx";
 import EmptyChatContainer from "../components/EmptyChatContainer.jsx";
-import { Contact } from "../components/Contact.jsx";
+import { Friend } from "../components/Friend.jsx";
 import ProfilContainer from "../components/ProfilContainer.jsx";
 import ParamsModal from "../components/ParamsModal.jsx";
 
@@ -21,12 +21,13 @@ const Chat = () => {
   const [readyMessages, setReadyMessages] = useState(false);
   const [messageIds, setMessageIds] = useState([]);
   const [messageNav, setMessageNav] = useState(true);
-  const [contactNav, setContactNav] = useState(false);
+  const [friendNav, setFriendNav] = useState(false);
   const [paramNav, setParamNav] = useState(false);
   const [showParams, setShowParams] = useState(false);
   const [loadedMessages, setLoadedMessages] = useState([]);
   const [delated, setdelated] = useState(false);
   const [delatedMessage, setDelatedMessage] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -58,6 +59,18 @@ const Chat = () => {
       const ws = new WebSocket("ws://localhost:456/");
       ws.addEventListener("open", async (event) => {
         console.log("Connected to server");
+
+        const sessionId = window.localStorage.getItem("session_id");
+
+        let sessionData = {
+          session_id: sessionId,
+        };
+
+        await sendSocketMessage(
+          ws,
+          "check_session|||" + JSON.stringify(sessionData)
+        );
+
         if (currentChat != null) {
           let request = { chat_id: currentChat };
           await sendSocketMessage(ws, "load_chat|||" + JSON.stringify(request));
@@ -82,12 +95,20 @@ const Chat = () => {
   };
   const handleSocketMessage = async (socketMessage) => {
     console.log(">> " + socketMessage);
+
     let socketContent = socketMessage.split("|||");
     let socketCommand = socketContent[0];
     let socketData = socketContent[1];
 
-    if (socketCommand === "chat_message_sended") {
+    if (socketCommand === "active_session") {
+      let sessionData = JSON.parse(socketData);
+
+      await handleUsername(sessionData.user.username).finally(() => {
+        console.log(username);
+      });
+    } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
+
       if (!messageIds.includes(messageData.message_uuid)) {
         setMessageIds([...messageIds, messageData.message_uuid]);
         setMessages((messages) => [...messages, messageData]);
@@ -160,9 +181,14 @@ const Chat = () => {
       `delete_chat_message|||${JSON.stringify(data)}`
     );
   };
+
+  const handleUsername = async (socket_username) => {
+    setUsername(socket_username);
+  };
+
   return (
     <div
-      className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-500`}
+      className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-200 overflow-x-hidden`}
     >
       {showParams ? (
         <ParamsModal showParams={showParams} setShowParams={setShowParams} />
@@ -178,8 +204,8 @@ const Chat = () => {
                 setMessageNav={setMessageNav}
                 paramNav={paramNav}
                 setParamNav={setParamNav}
-                contactNav={contactNav}
-                setContactNav={setContactNav}
+                friendNav={friendNav}
+                setFriendNav={setFriendNav}
               />
               <Chats
                 chats={chats}
@@ -188,7 +214,7 @@ const Chat = () => {
                 messages={messages}
                 messageNav={messageNav}
               />
-              <Contact contactNav={contactNav} />
+              <Friend friendNav={friendNav} />
             </div>
             <ProfilContainer
               toggle={toggleTheme}

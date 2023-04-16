@@ -1,6 +1,7 @@
 import pymongo
 from entities.message import Message
 from entities.chat import Chat
+from entities.user import User
 import bcrypt
 from bson import json_util
 
@@ -96,7 +97,7 @@ class Data:
         return chats
 
     # public method
-    def get_user_by_email(self, email):
+    def get_user_by_email(self, email) -> dict:
         user = self.database.users.find_one({"email": email})
 
         if user is not None:
@@ -104,7 +105,7 @@ class Data:
 
         return user
 
-    def get_user_by_username(self, username):
+    def get_user_by_username(self, username) -> dict:
         user = self.database.users.find_one({"username": username})
 
         if user is not None:
@@ -112,25 +113,20 @@ class Data:
 
         return user
 
-    def create_user(self, username, email, password):
-        # Hash the password before storing it
-        hashed_password = bcrypt.hashpw(
-            password.encode('utf-8'), bcrypt.gensalt())
+    def create_user(self, username, email, password) -> dict:
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        # Create a new player object with the hashed password
         user = {
             "username": username,
             "email": email,
             "password": hashed_password.decode('utf-8')
         }
 
-        # Insert the player object into the database
-        self.database.users.insert_one(user)
+        stocked_user = self.database.users.insert_one(user)
 
-        # Return the ID of the inserted player
-        return str(user['_id'])
+        return stocked_user
 
-    def authenticate_user(self, identifier, password):
+    def authenticate_user(self, identifier, password) -> str:
         user = None
         # Check if identifier is email or username
         if '@' in identifier:
