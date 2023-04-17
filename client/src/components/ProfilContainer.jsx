@@ -1,13 +1,21 @@
 import { useEffect } from "react";
 import { Tooltip } from "flowbite-react";
 import { isEmpty } from "./Utils.jsx";
+import { useState } from "react";
 
 export default function ProfilContainer({
   toggle,
   showParams,
   setShowParams,
+  showProfil,
+  setShowProfil,
   username,
 }) {
+
+  useEffect(() => {
+    console.log(showProfil)
+  }, [showProfil])
+
   return (
     <>
       <div className="flex justify-between items-center mt-5 pt-5 border-t-[1px] border-neutral-200 dark:border-neutral-600">
@@ -15,7 +23,9 @@ export default function ProfilContainer({
           content="Click here to access your profile"
           animation="duration-200"
         >
-          <button className="flex items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 p-2 rounded-lg">
+          <button className="flex items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 p-2 rounded-lg" onClick={() =>
+            showProfil ? setShowProfil(false) : setShowProfil(true)
+          }>
             <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full uppercase">
               {!isEmpty(username) && username ? username[0] : ""}
             </div>
