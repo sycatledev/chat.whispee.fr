@@ -8,27 +8,31 @@ import EmptyChatContainer from "../components/chats/EmptyChatContainer.jsx";
 import { Friend } from "../components/nav/Friends.jsx";
 import ProfilContainer from "../components/ProfilContainer.jsx";
 import ParamsModal from "../components/ParamsModal.jsx";
+import ProfilModal from "../components/ProfilModal.jsx";
 
-const Chat = () => {
-  const navigate = useNavigate();
-  const [websocket, setWebsocket] = useState(null);
-  const [currentChat, setCurrentChat] = useState(null);
-  const [chat, setChat] = useState([]);
-  const [chats, setChats] = useState([]);
-  const [ready, setReady] = useState(false);
-  const [singleChat, setSingleChat] = useState(false);
-  const [messages, setMessages] = useState([]);
+export default function Chat({
+  WebSocket,
+  chat,
+  chats,
+  ready,
+  singleChat,
+  delated,
+  delatedMessage,
+  username,
+  currentChat,
+  setCurrentChat,
+  messages,
+  readyMessages,
+  setReadyMessages,
+  setMessages,
+}){
+
   const [isDark, setIsDark] = useState(false);
-  const [readyMessages, setReadyMessages] = useState(false);
-  const [messageIds, setMessageIds] = useState([]);
   const [messageNav, setMessageNav] = useState(true);
   const [friendNav, setFriendNav] = useState(false);
   const [paramNav, setParamNav] = useState(false);
+  const [showProfil, setShowProfil] = useState(false)
   const [showParams, setShowParams] = useState(false);
-  const [loadedMessages, setLoadedMessages] = useState([]);
-  const [delated, setdelated] = useState(false);
-  const [delatedMessage, setDelatedMessage] = useState("");
-  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -55,83 +59,10 @@ const Chat = () => {
     }
     Cookies.cookieManager.setCookie("theme", dark ? "dark" : "light");
   }
-  useEffect(() => {
-    const init = async () => {
-      const ws = new WebSocket("ws://localhost:456/");
-      ws.addEventListener("open", async (event) => {
-        console.log("Connected to server");
-
-        const sessionId = window.localStorage.getItem("session_id");
-        let sessionData = {
-          session_id: sessionId,
-        };
-
-        await sendSocketMessage(
-          ws,
-          "check_session|||" + JSON.stringify(sessionData)
-        );
-
-        if (currentChat != null) {
-          let request = { chat_id: currentChat };
-          await sendSocketMessage(ws, "load_chat|||" + JSON.stringify(request));
-        }
-        await sendSocketMessage(ws, "load_chats|||");
-        setWebsocket(ws);
-      });
-      ws.addEventListener("close", async (event) => {
-        console.log("Lost connection to server");
-      });
-      ws.addEventListener("error", async (event) => {
-        console.error("Websocket error", event);
-      });
-      ws.addEventListener("message", async (event) => {
-        await handleSocketMessage(event.data);
-      });
-    };
-    init();
-  }, []);
   const displayChat = async (id) => {
     await loadChat(id);
   };
-  const handleSocketMessage = async (socketMessage) => {
-    console.log(">> " + socketMessage);
-
-    let socketContent = socketMessage.split("|||");
-    let socketCommand = socketContent[0];
-    let socketData = socketContent[1];
-
-    if (socketCommand === "active_session") {
-      let sessionData = JSON.parse(socketData);
-
-      setUsername(sessionData.user.username);
-    } else if (socketCommand === "session_inactive") {
-      navigate("/");
-    } else if (socketCommand === "chat_message_sended") {
-      let messageData = JSON.parse(socketData);
-
-      if (!messageIds.includes(messageData.message_id)) {
-        setMessageIds([...messageIds, messageData.message_id]);
-        setMessages((messages) => [...messages, messageData]);
-      }
-    } else if (socketCommand === "chats_loaded") {
-      let chatsData = JSON.parse(socketData);
-      setChats(chatsData);
-      setReady(true);
-    } else if (socketCommand === "chat_loaded") {
-      let chat_data = JSON.parse(socketData);
-      setChat(chat_data);
-      setSingleChat(true);
-    } else if (socketCommand === "chat_messages_loaded") {
-      let messages = JSON.parse(socketData);
-      setMessages(messages);
-      setReadyMessages(true);
-    } else if (socketCommand === "chat_message_deleted") {
-      let messageDate = JSON.parse(socketData);
-      setReadyMessages(false);
-      setDelatedMessage(messageDate);
-      setdelated(true);
-    }
-  };
+ 
   useEffect(() => {
     if (delated) {
       setMessages(
@@ -155,7 +86,7 @@ const Chat = () => {
     setCurrentChat(chat_id);
     let request = { chat_id: chat_id };
     await sendSocketMessage(
-      websocket,
+      WebSocket,
       "load_chat|||" + JSON.stringify(request)
     );
   };
@@ -167,7 +98,7 @@ const Chat = () => {
     };
 
     await sendSocketMessage(
-      websocket,
+      WebSocket,
       `send_chat_message|||${JSON.stringify(data)}`
     );
   };
@@ -176,14 +107,11 @@ const Chat = () => {
       message_id,
     };
     await sendSocketMessage(
-      websocket,
+      WebSocket,
       `delete_chat_message|||${JSON.stringify(data)}`
     );
   };
-
-  const handleUsername = async (socket_username) => {
-    setUsername(socket_username);
-  };
+  
 
   return (
     <div
@@ -191,6 +119,11 @@ const Chat = () => {
     >
       {showParams ? (
         <ParamsModal showParams={showParams} setShowParams={setShowParams} />
+      ) : (
+        ""
+      )}
+      {showProfil ? (
+        <ProfilModal showProfil={showParams} setShowProfil={setShowProfil} />
       ) : (
         ""
       )}
@@ -219,6 +152,8 @@ const Chat = () => {
               toggle={toggleTheme}
               showParams={showParams}
               setShowParams={setShowParams}
+              showProfil={showProfil}
+              setShowProfil={setShowProfil}
               username={username}
             />
           </div>
@@ -248,5 +183,3 @@ const Chat = () => {
     </div>
   );
 };
-
-export default Chat;
