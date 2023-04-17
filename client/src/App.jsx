@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Authentification from "./pages/Authentification.jsx";
-import { BrowserRouter, redirect, Route, Routes } from "react-router-dom";
+import { BrowserRouter, redirect, Route, Routes, useNavigate } from "react-router-dom";
 import Chat from "./pages/Chat.jsx";
 import { useEffect } from "react";
 function App() {
@@ -17,6 +17,8 @@ function App() {
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [readyMessages, setReadyMessages] = useState(false);
+  
+  const navigate = useNavigate()
 
     useEffect(() => {
       const init = async () => {

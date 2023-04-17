@@ -1,10 +1,5 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useEffect } from "react";
-import { isEmpty } from "../Utils";
 import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
 

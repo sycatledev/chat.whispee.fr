@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Tooltip } from "flowbite-react";
 import { isEmpty } from "./Utils.jsx";
-import { useState } from "react";
 
 export default function ProfilContainer({
   toggle,
