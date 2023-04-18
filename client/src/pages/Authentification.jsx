@@ -4,74 +4,32 @@ import LoginForm from "../components/forms/LoginForm.jsx";
 import Loader from "../components/Loader.jsx";
 import { useNavigate } from "react-router-dom";
 
-const Authentification = () => {
+export default function Authentification({
+  webSocket,
+  identify,
+  register,
+  username,
+  login,
+  handleSocketMessage,
+}) {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [identify, setIdentify] = useState(null);
-  const [register, setRegister] = useState(false);
-  const [login, setLogin] = useState(false);
   const [holder, setHolder] = useState("");
-  const [webSocket, setWebSocket] = useState(null);
   const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:456/");
-
-    setWebSocket(ws);
-
-    ws.addEventListener("open", async (event) => {
-      console.log("Connected to server");
-
-      const sessionId = window.localStorage.getItem("session_id");
-      let sessionData = {
-        session_id: sessionId,
-      };
-
-      await sendSocketMessage(
-        ws,
-        "check_session|||" + JSON.stringify(sessionData)
-      );
-    });
-
-    ws.addEventListener("close", async (event) => {
-      console.log("Lost connection to server");
-    });
-
-    ws.addEventListener("error", async (event) => {
-      console.error("Websocket error", event);
-    });
-
-    ws.addEventListener("message", async (event) => {
-      await handleSocketMessage(event.data);
-    });
-
-    let handleSocketMessage = async (socketMessage) => {
-      console.log(">> " + socketMessage);
-      let socketContent = socketMessage.split("|||");
-      let socketCommand = socketContent[0];
-      let socketData = socketContent[1];
-
-      if (socketCommand === "active_session") {
-        navigate("/app");
-      } else if (socketCommand === "no_identifier_found") {
-        // User not exist in database
-        setIdentify(true);
-        setRegister(true); // Redirect to register page
-      } else if (socketCommand === "identifier_found") {
-        let userData = JSON.parse(socketData);
-        setUsername(userData.username);
-        setIdentify(true);
-        setLogin(true);
+    if(window.localStorage.getItem('session_id')){
+        navigate('/app')
       }
-    };
-  }, []);
+    return () => {
+      
+    }
+  }, [])
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
 
     ws.send(message);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);
@@ -79,7 +37,7 @@ const Authentification = () => {
     let data = {
       identifier: holder,
     };
-
+    
     await sendSocketMessage(
       webSocket,
       `check_identifier||| ${JSON.stringify(data)}`
@@ -157,6 +115,7 @@ const Authentification = () => {
                   identifier={holder}
                   username={username}
                   ws={webSocket}
+                  handleSocketMessage={handleSocketMessage}
                 />
               ) : null}
               {register ? (
@@ -170,5 +129,3 @@ const Authentification = () => {
     </div>
   );
 };
-
-export default Authentification;

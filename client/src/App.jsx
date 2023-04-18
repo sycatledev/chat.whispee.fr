@@ -1,10 +1,12 @@
 import { useState } from "react";
 import Authentification from "./pages/Authentification.jsx";
-import { BrowserRouter, redirect, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Chat from "./pages/Chat.jsx";
 import { useEffect } from "react";
-function App() {
 
+export default function App() {
+
+  const [webSocket, setWebSocket] = useState(null)
   const [chat, setChat] = useState([]);
   const [chats, setChats] = useState([]);
   const [ready, setReady] = useState(false);
@@ -13,12 +15,14 @@ function App() {
   const [delated, setdelated] = useState(false);
   const [delatedMessage, setDelatedMessage] = useState("");
   const [username, setUsername] = useState("");
-  const [webSocket, setWebSocket] = useState(null)
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [readyMessages, setReadyMessages] = useState(false);
-  
-  const navigate = useNavigate()
+  const [session, setSession] = useState(false)
+  const [identify, setIdentify] = useState(null);
+  const [register, setRegister] = useState(false);
+  const [login, setLogin] = useState(false);
+  const [connectedUser, setConnectedUser] = useState(false)
 
     useEffect(() => {
       const init = async () => {
@@ -76,7 +80,9 @@ function App() {
   
         setUsername(sessionData.user.username);
       } else if (socketCommand === "session_inactive") {
-        navigate("/");
+        setSession(false)
+      } else if (socketCommand === "active_session") {
+        setSession(true)
       } else if (socketCommand === "chat_message_sended") {
         let messageData = JSON.parse(socketData);
   
@@ -101,6 +107,20 @@ function App() {
         setReadyMessages(false);
         setDelatedMessage(messageDate);
         setdelated(true);
+      } else if (socketCommand === "no_identifier_found") {
+        // User not exist in database
+        setIdentify(true);
+        setRegister(true); // Redirect to register page
+      } else if (socketCommand === "identifier_found") {
+        let userData = JSON.parse(socketData);
+        setUsername(userData.username);
+        setIdentify(true);
+        setLogin(true);
+      } else if (socketCommand === "login_succeeded") {
+        let sessionData = JSON.parse(socketData);
+  
+        window.localStorage.setItem("session_id", sessionData["session_id"]);
+        setConnectedUser(true)
       }
     };
 
@@ -109,9 +129,16 @@ function App() {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Authentification />} />
+          <Route path="/" element={<Authentification
+          webSocket={webSocket}
+          identify={identify}
+          register={register}
+          username={username}
+          login={login}
+          handleSocketMessage={handleSocketMessage}
+          />} />
           <Route path="/app" element={<Chat 
-          WebSocket={webSocket}
+          webSocket={webSocket}
           setWebSocket={setWebSocket}
           chat={chat}
           chats={chats}
@@ -126,11 +153,11 @@ function App() {
           readyMessages={readyMessages}
           setReadyMessages={setReadyMessages}
           setMessages={setMessages}
+          session={session}
+          setSession={setSession}
           />} />
         </Routes>
       </BrowserRouter>
     </div>
   );
 }
-
-export default App;

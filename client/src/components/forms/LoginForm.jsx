@@ -2,38 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
+import { useEffect } from "react";
 
-export default function LoginForm({ identifier, username, ws }) {
+export default function LoginForm({ 
+  identifier, 
+  username, 
+  ws,
+  handleSocketMessage,
+}) {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
-  const [user, setUser] = useState({});
+  const [invalidPassword, setInvalidPassword] = useState(false)
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
 
     ws.send(message);
-  };
-
-  let handleSocketMessage = async (socketMessage) => {
-    console.log(">> " + socketMessage);
-    let socketContent = socketMessage.split("|||");
-    let socketCommand = socketContent[0];
-    let socketData = socketContent[1];
-
-    if (socketCommand === "login_succeeded") {
-      let sessionData = JSON.parse(socketData);
-
-      window.localStorage.setItem("session_id", sessionData["session_id"]);
-
-      // User not exist in database
-      navigate("/app"); // Redirect to register page
-    } else if (socketCommand === "identifier_found") {
-      let userData = JSON.parse(socketData);
-      setUser(userData);
-      setIdentify(true);
-      setLogin(true);
-    }
   };
 
   let data;
@@ -47,7 +32,10 @@ export default function LoginForm({ identifier, username, ws }) {
     await sendSocketMessage(ws, `login_user||| ${JSON.stringify(data)}`);
 
     ws.addEventListener("message", (event) => {
-      handleSocketMessage(event.data);
+      handleSocketMessage(event.data).then(() => {
+        setLoader(false)
+        navigate('/app')
+      })
     });
   };
   // useEffect(() => {}, []);
@@ -96,7 +84,7 @@ export default function LoginForm({ identifier, username, ws }) {
             onInput={(e) => setPassword(e.currentTarget.value)}
           />
         </div>
-
+        {invalidPassword ? <h2 className="text-red-600">Le mot de passe est incorrect, veuillez réessayer</h2> : "" }
         <div className="flex w-full justify-end">
           <button
             type="submit"

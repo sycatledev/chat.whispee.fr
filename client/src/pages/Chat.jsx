@@ -11,7 +11,7 @@ import ParamsModal from "../components/ParamsModal.jsx";
 import ProfilModal from "../components/ProfilModal.jsx";
 
 export default function Chat({
-  WebSocket,
+  webSocket,
   chat,
   chats,
   ready,
@@ -33,6 +33,7 @@ export default function Chat({
   const [paramNav, setParamNav] = useState(false);
   const [showProfil, setShowProfil] = useState(false)
   const [showParams, setShowParams] = useState(false);
+  const navigate = useNavigate()
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -50,6 +51,28 @@ export default function Chat({
     setTheme(isDark);
   }, [isDark]);
 
+  
+  useEffect(() => {
+    if(!window.localStorage.getItem('session_id')){
+        navigate('/')
+      }
+    return () => {
+      
+    }
+  }, [])
+
+  useEffect(() => {
+    if (delated) {
+      setMessages(
+        messages.filter(
+          (message) => message.message_id !== delatedMessage?.message_id
+        )
+      ),
+        setReadyMessages(true);
+    }
+  }, [delatedMessage]);
+
+
   function setTheme(dark) {
     const root = document.documentElement;
     if (dark) {
@@ -62,19 +85,9 @@ export default function Chat({
   const displayChat = async (id) => {
     await loadChat(id);
   };
- 
-  useEffect(() => {
-    if (delated) {
-      setMessages(
-        messages.filter(
-          (message) => message.message_id !== delatedMessage?.message_id
-        )
-      ),
-        setReadyMessages(true);
-    }
-  }, [delatedMessage]);
 
-  const sendSocketMessage = async (ws, message) => {
+
+  let sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
 
     ws.send(message);
@@ -86,7 +99,7 @@ export default function Chat({
     setCurrentChat(chat_id);
     let request = { chat_id: chat_id };
     await sendSocketMessage(
-      WebSocket,
+      webSocket,
       "load_chat|||" + JSON.stringify(request)
     );
   };
@@ -98,7 +111,7 @@ export default function Chat({
     };
 
     await sendSocketMessage(
-      WebSocket,
+      webSocket,
       `send_chat_message|||${JSON.stringify(data)}`
     );
   };
@@ -107,7 +120,7 @@ export default function Chat({
       message_id,
     };
     await sendSocketMessage(
-      WebSocket,
+      webSocket,
       `delete_chat_message|||${JSON.stringify(data)}`
     );
   };
