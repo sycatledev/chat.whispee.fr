@@ -3,18 +3,15 @@ import ChatSkeleton from "./ChatSkeleton.jsx";
 import { Modal, Button } from "flowbite-react";
 import { useState } from "react";
 import { Tooltip } from "flowbite-react";
-const ChatContainer = ({
-  ready,
-  chat,
-  readyMessages,
-  sendChatMessage,
-  currentChat,
-  messages,
-  deleteChatMessage,
-}) => {
+import { useAppData } from "../Utils.jsx";
+const ChatContainer = ({currentChat, messages, ready, chat, readyMessages }) => {
   const chatContainerRef = useRef(null);
   const [openModal, setOpenModal] = useState(false);
   const inputRef = useRef(null);
+  const {
+    sendChatMessage
+   
+  } = useAppData()
   function scrollToBottom() {
     chatContainerRef?.current?.scrollIntoView({
       block: "end",
@@ -55,6 +52,7 @@ const ChatContainer = ({
   const handleSubmitForm = (e) => {
     e.preventDefault();
     const inputDatas = inputRef.current.value;
+    console.log(messages)
     if (inputDatas.length < 1) return;
     if (inputDatas.trim() === "") return;
     sendChatMessage(currentChat, inputDatas);

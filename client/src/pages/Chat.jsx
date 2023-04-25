@@ -9,24 +9,31 @@ import { Friend } from "../components/nav/Friends.jsx";
 import ProfilContainer from "../components/ProfilContainer.jsx";
 import ParamsModal from "../components/ParamsModal.jsx";
 import ProfilModal from "../components/ProfilModal.jsx";
+import { isEmpty, useAppData } from "../components/Utils.jsx";
 
-export default function Chat({
-  webSocket,
-  chat,
-  chats,
-  ready,
-  singleChat,
-  delated,
-  delatedMessage,
-  username,
-  currentChat,
-  setCurrentChat,
-  messages,
-  readyMessages,
-  setReadyMessages,
-  setMessages,
-}){
+export default function Chat(){
 
+  const { 
+    chat,
+    chats,
+    ready,
+    singleChat,
+    delated,
+    delatedMessage,
+    username,
+    currentChat,
+    setCurrentChat,
+    messages,
+    readyMessages,
+    setReadyMessages,
+    setMessages,
+    webSocket,
+    sendSocketMessage,
+    handleSocketMessage,
+    pending,
+    session,
+    setPending,
+  } = useAppData()
   const [isDark, setIsDark] = useState(false);
   const [messageNav, setMessageNav] = useState(true);
   const [friendNav, setFriendNav] = useState(false);
@@ -34,6 +41,17 @@ export default function Chat({
   const [showProfil, setShowProfil] = useState(false)
   const [showParams, setShowParams] = useState(false);
   const navigate = useNavigate()
+
+
+  useEffect(() => {
+    console.log(session)
+    if(session == false || session == null){
+      return navigate('/')
+    } else {
+      return
+    }
+  }, [session])
+
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -51,15 +69,6 @@ export default function Chat({
     setTheme(isDark);
   }, [isDark]);
 
-  
-  useEffect(() => {
-    if(!window.localStorage.getItem('session_id')){
-        navigate('/')
-      }
-    return () => {
-      
-    }
-  }, [])
 
   useEffect(() => {
     if (delated) {
@@ -82,18 +91,12 @@ export default function Chat({
     }
     Cookies.cookieManager.setCookie("theme", dark ? "dark" : "light");
   }
-  const displayChat = async (id) => {
+  let displayChat = async (id) => {
     await loadChat(id);
   };
 
-
-  let sendSocketMessage = async (ws, message) => {
-    console.log("<< " + message);
-
-    ws.send(message);
-  };
-
-  const loadChat = async (chat_id) => {
+  let loadChat = async (chat_id) => {
+    console.log(chat_id)
     if (currentChat === chat_id) return;
     if (chat_id === null) return;
     setCurrentChat(chat_id);
@@ -102,20 +105,10 @@ export default function Chat({
       webSocket,
       "load_chat|||" + JSON.stringify(request)
     );
+    console.log(messages)
   };
 
-  const sendChatMessage = async (chat_id, message) => {
-    let data = {
-      chat_id: chat_id,
-      content: message,
-    };
-
-    await sendSocketMessage(
-      webSocket,
-      `send_chat_message|||${JSON.stringify(data)}`
-    );
-  };
-  const deleteChatMessage = async (message_id) => {
+  let deleteChatMessage = async (message_id) => {
     let data = {
       message_id,
     };
@@ -136,7 +129,7 @@ export default function Chat({
         ""
       )}
       {showProfil ? (
-        <ProfilModal showProfil={showParams} setShowProfil={setShowProfil} />
+        <ProfilModal showProfil={showProfil} setShowProfil={setShowProfil} />
       ) : (
         ""
       )}
@@ -181,7 +174,6 @@ export default function Chat({
                   ready={ready}
                   chat={chat}
                   readyMessages={readyMessages}
-                  sendChatMessage={sendChatMessage}
                   currentChat={currentChat}
                   messages={messages}
                   deleteChatMessage={deleteChatMessage}

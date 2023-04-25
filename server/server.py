@@ -221,7 +221,8 @@ class Client:
 
             chat = get_database().get_chat(self.current_chat_id)
             current_time = datetime.now()
-
+            print(self.session)
+            print(self.session.user)
             message = chat.add_message(self.session.user.id, content, current_time.timestamp())
 
             await self.send_message_to_chat(self.current_chat_id, message)

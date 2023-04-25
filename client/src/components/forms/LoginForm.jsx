@@ -3,17 +3,17 @@ import { useNavigate } from "react-router-dom";
 import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
 import { useEffect } from "react";
+import { useAppData } from "../Utils.jsx";
 
 export default function LoginForm({ 
   identifier, 
-  username, 
-  ws,
-  handleSocketMessage,
+  username,
 }) {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
   const [invalidPassword, setInvalidPassword] = useState(false)
+  const { handleSocketMessage, webSocket } = useAppData()
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
@@ -29,16 +29,16 @@ export default function LoginForm({
       identifier,
       password,
     };
-    await sendSocketMessage(ws, `login_user||| ${JSON.stringify(data)}`);
+    await sendSocketMessage(webSocket, `login_user||| ${JSON.stringify(data)}`);
 
-    ws.addEventListener("message", (event) => {
+    webSocket.addEventListener("message", (event) => {
       handleSocketMessage(event.data).then(() => {
         setLoader(false)
         navigate('/app')
       })
     });
   };
-  // useEffect(() => {}, []);
+
   return (
     <>
       <div className="flex items-center">
