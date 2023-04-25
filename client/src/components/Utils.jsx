@@ -1,18 +1,18 @@
 import { useRef } from "react";
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
 export const isEmpty = (value) => {
-    return (
-        value === undefined ||
-        value === null ||
-        (typeof value === "object" && Object.keys(value).length === 0) ||
-        (typeof value === "string" && value.trim().length === 0)
-    )
-}
+  return (
+    value === undefined ||
+    value === null ||
+    (typeof value === "object" && Object.keys(value).length === 0) ||
+    (typeof value === "string" && value.trim().length === 0)
+  );
+};
 
 export const useAppData = () => {
   const [webSocket, setWebSocket] = useState(null);
-  const [pending, setPending] = useState(true)
+  const [pending, setPending] = useState(true);
   const [messages, setMessages] = useState([]);
   const [chats, setChats] = useState([]);
   const [chat, setChat] = useState(null);
@@ -30,7 +30,7 @@ export const useAppData = () => {
   const [friendReady, setFriendReady] = useState(false);
   const [currentChat, setCurrentChat] = useState(null);
   const [delatedMessage, setDelatedMessage] = useState("");
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState("");
 
   const currentChatRef = useRef(null);
 
@@ -64,15 +64,19 @@ export const useAppData = () => {
     ws.addEventListener("message", async (event) => {
       await handleSocketMessage(event.data);
     });
-    setWebSocket(ws)
+    setWebSocket(ws);
   };
 
+  useEffect(() => {
+    init();
+  }, []);
+
   if (currentChatRef.current !== currentChat) {
-      setReadyMessages(false);
-      setMessages([]);
-      setCurrentChat(currentChat);
-      currentChatRef.current = currentChat;
-    }
+    setReadyMessages(false);
+    setMessages([]);
+    setCurrentChat(currentChat);
+    currentChatRef.current = currentChat;
+  }
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
@@ -89,13 +93,13 @@ export const useAppData = () => {
 
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
-      console.log('session')
-      setSession(true)
-      setPending(false)
+      console.log("session");
+      setSession(true);
+      setPending(false);
       setUsername(sessionData.user.username);
     } else if (socketCommand === "session_inactive") {
-      setSession(false)
-      setPending(false)
+      setSession(false);
+      setPending(false);
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
 
@@ -113,7 +117,7 @@ export const useAppData = () => {
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messagesData = JSON.parse(socketData);
-      console.log(messages)
+      console.log(messages);
       setMessages(messagesData);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
@@ -134,7 +138,7 @@ export const useAppData = () => {
       let sessionData = JSON.parse(socketData);
 
       window.localStorage.setItem("session_id", sessionData["session_id"]);
-      setConnectedUser(true)
+      setConnectedUser(true);
     } else if (socketCommand === "friends_loaded") {
       let friendsData = JSON.parse(socketData);
       setFriends(friendsData);
@@ -152,7 +156,7 @@ export const useAppData = () => {
       `send_chat_message|||${JSON.stringify(data)}`
     );
   };
-  return { 
+  return {
     webSocket,
     session,
     init,
@@ -178,5 +182,5 @@ export const useAppData = () => {
     setCurrentChat,
     setReadyMessages,
     setMessages,
-}
-}
+  };
+};

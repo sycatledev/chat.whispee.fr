@@ -6,23 +6,22 @@ import { useNavigate } from "react-router-dom";
 import { isEmpty, useAppData } from "../components/Utils.jsx";
 
 export default function Authentification() {
-  const { identify,
+  const {
+    identify,
     webSocket,
     register,
     username,
     login,
     session,
     sendSocketMessage,
-   } = useAppData()
+  } = useAppData();
   const navigate = useNavigate();
   const [holder, setHolder] = useState("");
   const [loader, setLoader] = useState(false);
 
-
   useEffect(() => {
-    console.log(webSocket)
-
-  }, [webSocket])
+    console.log(webSocket);
+  }, [webSocket]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,12 +30,17 @@ export default function Authentification() {
     let data = {
       identifier: holder,
     };
-    
+
     await sendSocketMessage(
       webSocket,
       `check_identifier||| ${JSON.stringify(data)}`
     );
   };
+  useEffect(() => {
+    if (session === true) {
+      navigate("/app");
+    }
+  }, [session]);
 
   return (
     <div className="font-karla bg-gradient-to-br from-[#f8f6ff] to-[#ab94fd]">
@@ -121,4 +125,4 @@ export default function Authentification() {
       {/* <Footer /> */}
     </div>
   );
-};
+}

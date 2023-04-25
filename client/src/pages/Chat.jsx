@@ -11,9 +11,8 @@ import ParamsModal from "../components/ParamsModal.jsx";
 import ProfilModal from "../components/ProfilModal.jsx";
 import { isEmpty, useAppData } from "../components/Utils.jsx";
 
-export default function Chat(){
-
-  const { 
+export default function Chat() {
+  const {
     chat,
     chats,
     ready,
@@ -33,25 +32,14 @@ export default function Chat(){
     pending,
     session,
     setPending,
-  } = useAppData()
+  } = useAppData();
   const [isDark, setIsDark] = useState(false);
   const [messageNav, setMessageNav] = useState(true);
   const [friendNav, setFriendNav] = useState(false);
   const [paramNav, setParamNav] = useState(false);
-  const [showProfil, setShowProfil] = useState(false)
+  const [showProfil, setShowProfil] = useState(false);
   const [showParams, setShowParams] = useState(false);
-  const navigate = useNavigate()
-
-
-  useEffect(() => {
-    console.log(session)
-    if(session == false || session == null){
-      return navigate('/')
-    } else {
-      return
-    }
-  }, [session])
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const prefersDarkMode = window.matchMedia(
@@ -69,7 +57,13 @@ export default function Chat(){
     setTheme(isDark);
   }, [isDark]);
 
-
+  useEffect(() => {
+    if (session === true) {
+      return;
+    } else if (session === false) {
+      navigate("/");
+    }
+  }, [session]);
   useEffect(() => {
     if (delated) {
       setMessages(
@@ -80,7 +74,6 @@ export default function Chat(){
         setReadyMessages(true);
     }
   }, [delatedMessage]);
-
 
   function setTheme(dark) {
     const root = document.documentElement;
@@ -96,7 +89,7 @@ export default function Chat(){
   };
 
   let loadChat = async (chat_id) => {
-    console.log(chat_id)
+    console.log(chat_id);
     if (currentChat === chat_id) return;
     if (chat_id === null) return;
     setCurrentChat(chat_id);
@@ -105,7 +98,7 @@ export default function Chat(){
       webSocket,
       "load_chat|||" + JSON.stringify(request)
     );
-    console.log(messages)
+    console.log(messages);
   };
 
   let deleteChatMessage = async (message_id) => {
@@ -117,7 +110,6 @@ export default function Chat(){
       `delete_chat_message|||${JSON.stringify(data)}`
     );
   };
-  
 
   return (
     <div
@@ -187,4 +179,4 @@ export default function Chat(){
       </div>
     </div>
   );
-};
+}
