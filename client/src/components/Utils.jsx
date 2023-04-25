@@ -1,17 +1,18 @@
 import { useRef } from "react";
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 
 export const isEmpty = (value) => {
-    return (
-        value === undefined ||
-        value === null ||
-        (typeof value === "object" && Object.keys(value).length === 0) ||
-        (typeof value === "string" && value.trim().length === 0)
-    )
-}
+  return (
+    value === undefined ||
+    value === null ||
+    (typeof value === "object" && Object.keys(value).length === 0) ||
+    (typeof value === "string" && value.trim().length === 0)
+  );
+};
 
-export const useWebSocket = () => {
+export const useAppData = () => {
   const [webSocket, setWebSocket] = useState(null);
+  const [pending, setPending] = useState(true);
   const [messages, setMessages] = useState([]);
   const [chats, setChats] = useState([]);
   const [chat, setChat] = useState(null);
@@ -20,7 +21,7 @@ export const useWebSocket = () => {
   const [readyMessages, setReadyMessages] = useState(false);
   const [messageIds, setMessageIds] = useState([]);
   const [deletedMessage, setDeletedMessage] = useState(null);
-  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [session, setSession] = useState(null);
   const [connectedUser, setConnectedUser] = useState(false);
   const [identify, setIdentify] = useState(false);
   const [login, setLogin] = useState(false);
@@ -29,7 +30,7 @@ export const useWebSocket = () => {
   const [friendReady, setFriendReady] = useState(false);
   const [currentChat, setCurrentChat] = useState(null);
   const [delatedMessage, setDelatedMessage] = useState("");
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState("");
 
   const currentChatRef = useRef(null);
 
@@ -63,18 +64,19 @@ export const useWebSocket = () => {
     ws.addEventListener("message", async (event) => {
       await handleSocketMessage(event.data);
     });
-    setWebSocket(ws)
-    console.log(webSocket)
+    setWebSocket(ws);
   };
+
   useEffect(() => {
-    init()
-  }, [])
+    init();
+  }, []);
+
   if (currentChatRef.current !== currentChat) {
-      setReadyMessages(false);
-      setMessages([]);
-      setCurrentChat(currentChat);
-      currentChatRef.current = currentChat;
-    }
+    setReadyMessages(false);
+    setMessages([]);
+    setCurrentChat(currentChat);
+    currentChatRef.current = currentChat;
+  }
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
@@ -91,12 +93,13 @@ export const useWebSocket = () => {
 
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
-
+      console.log("session");
+      setSession(true);
+      setPending(false);
       setUsername(sessionData.user.username);
     } else if (socketCommand === "session_inactive") {
-      setIsSessionActive(false)
-    } else if (socketCommand === "active_session") {
-      setIsSessionActive(true)
+      setSession(false);
+      setPending(false);
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
 
@@ -113,8 +116,9 @@ export const useWebSocket = () => {
       setChat(chat_data);
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
-      let messages = JSON.parse(socketData);
-      setMessages(messages);
+      let messagesData = JSON.parse(socketData);
+      console.log(messages);
+      setMessages(messagesData);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
       let messageDate = JSON.parse(socketData);
@@ -134,15 +138,31 @@ export const useWebSocket = () => {
       let sessionData = JSON.parse(socketData);
 
       window.localStorage.setItem("session_id", sessionData["session_id"]);
-      setConnectedUser(true)
+      setConnectedUser(true);
     } else if (socketCommand === "friends_loaded") {
       let friendsData = JSON.parse(socketData);
       setFriends(friendsData);
       setFriendReady(true);
     }
   };
-  return { 
+  let sendChatMessage = async (chat_id, message) => {
+    let data = {
+      chat_id: chat_id,
+      content: message,
+    };
+
+    await sendSocketMessage(
+      webSocket,
+      `send_chat_message|||${JSON.stringify(data)}`
+    );
+  };
+  return {
     webSocket,
+    session,
+    init,
+    sendChatMessage,
+    handleSocketMessage,
+    sendSocketMessage,
     messages,
     chats,
     chat,
@@ -150,7 +170,6 @@ export const useWebSocket = () => {
     ready,
     readyMessages,
     deletedMessage,
-    isSessionActive,
     connectedUser,
     identify,
     login,
@@ -158,13 +177,10 @@ export const useWebSocket = () => {
     friends,
     friendReady,
     delatedMessage,
-    sendSocketMessage,
-    handleSocketMessage,
     username,
-    init,
     currentChat,
     setCurrentChat,
     setReadyMessages,
     setMessages,
-}
-}
+  };
+};

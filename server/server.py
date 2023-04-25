@@ -25,7 +25,6 @@ dbclient = None
 
 
 # Setting up logging to a file
-import os
 
 log_folder = "../logs/"
 log_file = "server.log"
@@ -45,15 +44,19 @@ logging.basicConfig(
 )
 
 # Function to start the server and websocket server
+
+
 async def start_server() -> None:
     # On production server (Web Secure Socket)
     # ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     # ssl_context.load_cert_chain('chemin/vers/certificat.pem', 'chemin/vers/cle_privee.pem')
 
-    server = await asyncio.start_server((), 'localhost', SERVER_PORT) #, ssl=ssl_context)
+    # , ssl=ssl_context)
+    server = await asyncio.start_server((), 'localhost', SERVER_PORT)
     logging.info(f"Server started on port: {SERVER_PORT}")
 
-    websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT) #, ssl=ssl_context)
+    # , ssl=ssl_context)
+    websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT)
     logging.info(f"Websocket server started on port: {WEBSOCKET_PORT}")
 
     await server.start_serving()
@@ -69,6 +72,8 @@ async def handle_websocket(websocket, path) -> None:
     await client.start()
 
 # Function to shut down the server
+
+
 async def shutdown(loop) -> None:
     logging.info("Closing connections...")
 
@@ -82,6 +87,7 @@ async def shutdown(loop) -> None:
 
 # Function to connect to database
 
+
 def get_database() -> Data:
     global dbclient
 
@@ -89,6 +95,7 @@ def get_database() -> Data:
         dbclient = Data(DB_HOST, DB_PORT)
 
     return dbclient
+
 
 async def get_all_sessions():
     sessions = list()
@@ -99,6 +106,7 @@ async def get_all_sessions():
         sessions.append(client.session)
 
     return sessions
+
 
 class Client:
     def __init__(self, websocket):
@@ -128,7 +136,7 @@ class Client:
                 session = sessions[session_id]
 
                 if session is not None:
-                #if session.is_valid():
+                    # if session.is_valid():
                     self.session = session
 
                     await self.send_socket_message("active_session|||" + json.dumps(session.to_object()))
@@ -170,7 +178,7 @@ class Client:
             if user is None:
                 await self.send_socket_message("login_failed|||")
                 return
-            
+
             user_instance = User(user["_id"], user["username"], user["email"])
 
             session_id = str(uuid.uuid4())
@@ -202,7 +210,7 @@ class Client:
             if (creation is None):
                 await self.send_socket_message("register_failed|||")
                 return
-            
+
             user_instance = User(creation, username, email)
 
             session_id = str(uuid.uuid4())
@@ -221,8 +229,10 @@ class Client:
 
             chat = get_database().get_chat(self.current_chat_id)
             current_time = datetime.now()
-
-            message = chat.add_message(self.session.user.id, content, current_time.timestamp())
+            print(self.session)
+            print(self.session.user)
+            message = chat.add_message(
+                self.session.user.id, content, current_time.timestamp())
 
             await self.send_message_to_chat(self.current_chat_id, message)
 

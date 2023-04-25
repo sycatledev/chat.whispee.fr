@@ -3,33 +3,26 @@ import RegisterForm from "../components/forms/RegisterForm.jsx";
 import LoginForm from "../components/forms/LoginForm.jsx";
 import Loader from "../components/Loader.jsx";
 import { useNavigate } from "react-router-dom";
+import { isEmpty, useAppData } from "../components/Utils.jsx";
 
-export default function Authentification({
-  webSocket,
-  identify,
-  register,
-  username,
-  login,
-  handleSocketMessage,
-}) {
+export default function Authentification() {
+  const {
+    identify,
+    webSocket,
+    register,
+    username,
+    login,
+    session,
+    sendSocketMessage,
+  } = useAppData();
   const navigate = useNavigate();
   const [holder, setHolder] = useState("");
   const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    if(window.localStorage.getItem('session_id')){
-        navigate('/app')
-      }
-    return () => {
-      
-    }
-  }, [])
+    console.log(webSocket);
+  }, [webSocket]);
 
-  const sendSocketMessage = async (ws, message) => {
-    console.log("<< " + message);
-
-    ws.send(message);
-  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);
@@ -37,12 +30,17 @@ export default function Authentification({
     let data = {
       identifier: holder,
     };
-    
+
     await sendSocketMessage(
       webSocket,
       `check_identifier||| ${JSON.stringify(data)}`
     );
   };
+  useEffect(() => {
+    if (session === true) {
+      navigate("/app");
+    }
+  }, [session]);
 
   return (
     <div className="font-karla bg-gradient-to-br from-[#f8f6ff] to-[#ab94fd]">
@@ -115,7 +113,6 @@ export default function Authentification({
                   identifier={holder}
                   username={username}
                   ws={webSocket}
-                  handleSocketMessage={handleSocketMessage}
                 />
               ) : null}
               {register ? (
@@ -128,4 +125,4 @@ export default function Authentification({
       {/* <Footer /> */}
     </div>
   );
-};
+}

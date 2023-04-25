@@ -1,6 +1,8 @@
 import React from "react";
+import { useAppData } from "../Utils";
 
-const Chats = ({ messageNav, chats, ready, displayChat }) => {
+const Chats = ({ messageNav, displayChat }) => {
+  const {chats, ready} = useAppData()
   return (
     <div className={`flex flex-col my-4 h-full ${!messageNav ? "hidden" : ""}`}>
       <div className="flex flex-row items-center justify-between text-xs">

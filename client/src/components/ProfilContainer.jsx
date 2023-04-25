@@ -11,10 +11,6 @@ export default function ProfilContainer({
   username,
 }) {
 
-  useEffect(() => {
-    console.log(showProfil)
-  }, [showProfil])
-
   return (
     <>
       <div className="flex justify-between items-center mt-5 pt-5 border-t-[1px] border-neutral-200 dark:border-neutral-600">

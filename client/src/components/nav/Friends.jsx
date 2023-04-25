@@ -1,53 +1,10 @@
 import { useEffect, useState } from "react";
-import { isEmpty } from "../Utils";
+import { isEmpty, useAppData } from "../Utils";
 
 export function Friend({ friendNav }) {
   const [friends, setFriends] = useState([]);
   const [readyFriend, setFriendReady] = useState(false);
 
-  useEffect(() => {
-    const init = async () => {
-      const ws = new WebSocket("ws://localhost:456/");
-      ws.addEventListener("open", async (event) => {
-        console.log("Connected to server");
-        await sendSocketMessage(ws, "load_friends|||");
-      });
-
-      ws.addEventListener("close", async (event) => {
-        console.log("Lost connection to server");
-      });
-
-      ws.addEventListener("error", async (event) => {
-        console.error("Websocket error", event);
-      });
-
-      ws.addEventListener("message", async (event) => {
-        await handleSocketMessage(event.data);
-      });
-    };
-
-    init();
-  }, []);
-
-  const handleSocketMessage = async (socketMessage) => {
-    console.log(">> " + socketMessage);
-
-    let socketContent = socketMessage.split("|||");
-    let socketCommand = socketContent[0];
-    let socketData = socketContent[1];
-
-    if (socketCommand === "friends_loaded") {
-      let friendsData = JSON.parse(socketData);
-      setFriends(friendsData);
-      setFriendReady(true);
-    }
-  };
-
-  const sendSocketMessage = async (ws, message) => {
-    console.log("<< " + message);
-
-    ws.send(message);
-  };
   return (
     <div className={`flex flex-col my-4 ${friendNav ? "" : "hidden"}`}>
       <div className="flex flex-row items-center justify-between text-xs">
