@@ -22,10 +22,6 @@ export default function Authentification() {
   const [holder, setHolder] = useState("");
   const [loader, setLoader] = useState(false);
 
-  useEffect(() => {
-    console.log(login);
-  }, [login]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoader(true);

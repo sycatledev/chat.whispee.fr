@@ -7,9 +7,32 @@ import ChatContainer from "../components/chats/ChatContainer.jsx";
 import EmptyChatContainer from "../components/chats/EmptyChatContainer.jsx";
 import { Friend } from "../components/nav/Friends.jsx";
 import ProfilContainer from "../components/ProfilContainer.jsx";
-import ParamsModal from "../components/ParamsModal.jsx";
-import ProfilModal from "../components/ProfilModal.jsx";
-import { isEmpty, useAppData } from "../components/Utils.jsx";
+import { useAppData } from "../components/Utils.jsx";
+import Modal from "../components/modals/Modal.jsx";
+
+
+function ProfilModal({ isOpen, onClose }) {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} height={'h-[30rem]'} width={'w-2/3'} >
+        <div className="h-full p-10 text-black">
+            <header>
+                <h1 className="text-4xl font-karla">Mon profil</h1>
+            </header>
+        </div>
+    </Modal>
+  )
+}
+function ParamsModal({ isOpen, onClose }) {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} height={'h-[30rem]'} width={'w-2/3'} >
+        <div className="h-full p-10 text-black">
+            <header>
+                <h1 className="text-4xl font-karla">Paramètre</h1>
+            </header>
+        </div>
+    </Modal>
+  )
+}
 
 export default function Chat() {
   const {
@@ -23,16 +46,13 @@ export default function Chat() {
     currentChat,
     setCurrentChat,
     messages,
-    readyMessages,
     setReadyMessages,
     setMessages,
     webSocket,
     sendSocketMessage,
-    handleSocketMessage,
-    pending,
     session,
-    setPending,
   } = useAppData();
+  
   const [isDark, setIsDark] = useState(false);
   const [messageNav, setMessageNav] = useState(true);
   const [friendNav, setFriendNav] = useState(false);
@@ -108,18 +128,24 @@ export default function Chat() {
       `delete_chat_message|||${JSON.stringify(data)}`
     );
   };
+  let handleCloseProfil = () => {
+      setShowProfil(false)
+  }
+  let handleCloseParams = () => {
+      setShowParams(false)
+  }
 
   return (
     <div
       className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-200 overflow-x-hidden`}
     >
       {showParams ? (
-        <ParamsModal showParams={showParams} setShowParams={setShowParams} />
+        <ParamsModal isOpen={showParams} onClose={handleCloseParams} />
       ) : (
         ""
       )}
       {showProfil ? (
-        <ProfilModal showProfil={showProfil} setShowProfil={setShowProfil} />
+        <ProfilModal isOpen={showProfil} onClose={handleCloseProfil} />
       ) : (
         ""
       )}
