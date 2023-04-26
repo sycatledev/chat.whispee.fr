@@ -13,14 +13,9 @@ export default function LoginForm({
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
-  const { handleSocketMessage, webSocket } = useAppData()
+  const { handleSocketMessage, webSocket, sendSocketMessage } = useAppData()
 
-  const sendSocketMessage = async (ws, message) => {
-    console.log("<< " + message);
-
-    ws.send(message);
-  };
-
+ 
   let data;
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,8 +33,6 @@ export default function LoginForm({
       })
     });
   };
-
-  
 
   return (
     <>
@@ -83,6 +76,7 @@ export default function LoginForm({
             required
             disabled={loader}
             placeholder="Password"
+            value={password}
             onInput={(e) => setPassword(e.currentTarget.value)}
           />
         </div>

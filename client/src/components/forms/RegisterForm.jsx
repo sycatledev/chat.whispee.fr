@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm({ identifier, ws, onClose }) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(identifier.includes('@') ? identifier : "");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(identifier.includes('@') ? "" : identifier);
   const [loader, setLoader] = useState(false);
+
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
