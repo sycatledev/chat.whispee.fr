@@ -4,7 +4,13 @@ import { Modal, Button } from "flowbite-react";
 import { useState } from "react";
 import { Tooltip } from "flowbite-react";
 import { useAppData } from "../Utils.jsx";
-const ChatContainer = ({ currentChat, ready, chat, messages }) => {
+const ChatContainer = ({
+  currentChat,
+  ready,
+  chat,
+  messages,
+  deleteChatMessage,
+}) => {
   const chatContainerRef = useRef(null);
   const { sendChatMessage, readyMessages, setReadyMessages } = useAppData();
   const [openModal, setOpenModal] = useState(false);
@@ -61,9 +67,15 @@ const ChatContainer = ({ currentChat, ready, chat, messages }) => {
   const handdleCloseModal = () => {
     setOpenModal(false);
   };
+
   useEffect(() => {
     setReadyMessages(true);
   }, [messages]);
+
+  const parseId = (id) => {
+    const parsedId = JSON.parse(id);
+    return parsedId.$oid;
+  };
   return (
     <>
       <div
@@ -100,7 +112,7 @@ const ChatContainer = ({ currentChat, ready, chat, messages }) => {
               messages.map((message, index) => (
                 <div
                   key={index}
-                  id={message.id}
+                  id={parseId(message._id)}
                   className="col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
                 >
                   <div className="items-center justify-start group">
