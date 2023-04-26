@@ -8,11 +8,11 @@ import { useAppData } from "../Utils.jsx";
 export default function LoginForm({ 
   identifier, 
   username,
+  onClose
 }) {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
-  const [invalidPassword, setInvalidPassword] = useState(false)
   const { handleSocketMessage, webSocket } = useAppData()
 
   const sendSocketMessage = async (ws, message) => {
@@ -39,10 +39,12 @@ export default function LoginForm({
     });
   };
 
+  
+
   return (
     <>
       <div className="flex items-center">
-        <BackButton />
+        <BackButton onClose={onClose} />
 
         <div className="flex flex-col ml-5">
           <h2 className="text-3xl">
@@ -84,7 +86,6 @@ export default function LoginForm({
             onInput={(e) => setPassword(e.currentTarget.value)}
           />
         </div>
-        {invalidPassword ? <h2 className="text-red-600">Le mot de passe est incorrect, veuillez réessayer</h2> : "" }
         <div className="flex w-full justify-end">
           <button
             type="submit"

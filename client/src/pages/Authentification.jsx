@@ -14,14 +14,17 @@ export default function Authentification() {
     login,
     session,
     sendSocketMessage,
+    setLogin,
+    setRegister,
+    setIdentify,
   } = useAppData();
   const navigate = useNavigate();
   const [holder, setHolder] = useState("");
   const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    console.log(webSocket);
-  }, [webSocket]);
+    console.log(login);
+  }, [login]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,6 +44,19 @@ export default function Authentification() {
       navigate("/app");
     }
   }, [session]);
+
+  let handleBackLogin = (e) => {
+    e.preventDefault(e)
+    setLoader(false)
+    setLogin(false)
+    setIdentify(false)
+}
+  let handleBackRegister = (e) => {
+    e.preventDefault(e)
+    setLoader(false)
+    setRegister(false)
+    setIdentify(false)
+}
 
   return (
     <div className="font-karla bg-gradient-to-br from-[#f8f6ff] to-[#ab94fd]">
@@ -113,10 +129,11 @@ export default function Authentification() {
                   identifier={holder}
                   username={username}
                   ws={webSocket}
+                  onClose={handleBackLogin}
                 />
               ) : null}
               {register ? (
-                <RegisterForm identifier={holder} ws={webSocket} />
+                <RegisterForm identifier={holder} ws={webSocket} onClose={handleBackRegister} />
               ) : null}
             </div>
           </div>

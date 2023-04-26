@@ -3,7 +3,7 @@ import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
 import { useNavigate } from "react-router-dom";
 
-export default function RegisterForm({ identifier, ws }) {
+export default function RegisterForm({ identifier, ws, onClose }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +58,7 @@ export default function RegisterForm({ identifier, ws }) {
   return (
     <>
       <div className="flex items-center">
-        <BackButton />
+        <BackButton onClose={onClose} />
 
         <div className="flex flex-col ml-5">
           <h2 className="text-3xl">Create your account</h2>

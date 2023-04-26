@@ -93,7 +93,6 @@ export const useAppData = () => {
 
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
-      console.log("session");
       setSession(true);
       setPending(false);
       setUsername(sessionData.user.username);
@@ -117,7 +116,6 @@ export const useAppData = () => {
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messagesData = JSON.parse(socketData);
-      console.log(messages);
       setMessages(messagesData);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
@@ -174,6 +172,9 @@ export const useAppData = () => {
     identify,
     login,
     register,
+    setLogin,
+    setRegister,
+    setIdentify,
     friends,
     friendReady,
     delatedMessage,
