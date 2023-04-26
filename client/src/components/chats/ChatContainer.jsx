@@ -1,23 +1,20 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import ChatSkeleton from "./ChatSkeleton.jsx";
 import { Modal, Button } from "flowbite-react";
 import { useState } from "react";
 import { Tooltip } from "flowbite-react";
 import { useAppData } from "../Utils.jsx";
-const ChatContainer = ({currentChat, messages, ready, chat, readyMessages }) => {
+const ChatContainer = ({ currentChat, ready, chat, messages }) => {
   const chatContainerRef = useRef(null);
+  const { sendChatMessage, readyMessages, setReadyMessages } = useAppData();
   const [openModal, setOpenModal] = useState(false);
   const inputRef = useRef(null);
-  const {
-    sendChatMessage
-   
-  } = useAppData()
+
   function scrollToBottom() {
     chatContainerRef?.current?.scrollIntoView({
       block: "end",
     });
   }
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -52,7 +49,6 @@ const ChatContainer = ({currentChat, messages, ready, chat, readyMessages }) => 
   const handleSubmitForm = (e) => {
     e.preventDefault();
     const inputDatas = inputRef.current.value;
-    console.log(messages)
     if (inputDatas.length < 1) return;
     if (inputDatas.trim() === "") return;
     sendChatMessage(currentChat, inputDatas);
@@ -65,7 +61,9 @@ const ChatContainer = ({currentChat, messages, ready, chat, readyMessages }) => 
   const handdleCloseModal = () => {
     setOpenModal(false);
   };
-
+  useEffect(() => {
+    setReadyMessages(true);
+  }, [messages]);
   return (
     <>
       <div

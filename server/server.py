@@ -227,27 +227,27 @@ class Client:
             chat_id = int(chat_data["chat_id"])
             content = str(chat_data["content"])
 
-            chat = get_database().get_chat(self.current_chat_id)
+            chat = get_database().get_chat(chat_id)
             current_time = datetime.now()
-            print(self.session)
-            print(self.session.user)
             message = chat.add_message(
                 self.session.user.id, content, current_time.timestamp())
 
-            await self.send_message_to_chat(self.current_chat_id, message)
+            await self.send_message_to_chat(self.session.user.opened_chat_id, message)
 
         elif socket_command == "delete_chat_message":
             chat_data = json.loads(socket_request)
             message_id = str(chat_data["message_id"])
+
             await get_database().delete_message(message_id)
             deleted_message = {"message_id": message_id}
 
             await self.message_deleted(deleted_message)
+
         elif socket_command == "load_chat":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])
 
-            self.current_chat_id = chat_id
+            self.session.user.opened_chat_id = chat_id
 
             await self.send_loaded_chat(chat_id)
 
@@ -281,7 +281,10 @@ class Client:
 
     async def send_message_to_chat(self, chat_id: int, message: str) -> None:
         for client in online_clients:
-            if client.current_chat_id == chat_id:
+            if client.session is None:
+                continue
+
+            if client.session.user.opened_chat_id == chat_id:
                 await client.send_socket_message("chat_message_sended|||" + json.dumps(message.to_object()))
 
     async def send_chat_message(self, message: str) -> None:

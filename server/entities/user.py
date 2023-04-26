@@ -2,14 +2,14 @@
 # from ..repositories.user_repository import UserRepository
 
 class User:
-    def __init__(self, id:str, username:str, email:str, display_name:str = None):
-        self.id :str = id
-        self.username :str = username
-        self.email :str = email
-        self.display_name : str = display_name
-        self.opened_chat_id : str = None
-        self.friends : list = []
-        self.chats : list = []
+    def __init__(self, id: str, username: str, email: str, display_name: str = None):
+        self.id: str = id
+        self.username: str = username
+        self.email: str = email
+        self.display_name: str = display_name
+        self.opened_chat_id: int = None
+        self.friends: list = []
+        self.chats: list = []
 
     def to_object(self) -> object:
         return {
@@ -35,4 +35,3 @@ class User:
             # self.friends = UserRepository.get_user_friends(self)
 
         return self.friends
-

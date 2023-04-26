@@ -101,23 +101,20 @@ export const useAppData = () => {
       setPending(false);
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
-
-      if (!messageIds.includes(messageData.message_id)) {
-        setMessageIds([...messageIds, messageData.message_id]);
-        setMessages((messages) => [...messages, messageData]);
-      }
+      setMessages((messages) => [...messages, messageData]);
     } else if (socketCommand === "chats_loaded") {
       let chatsData = JSON.parse(socketData);
       setChats(chatsData);
       setReady(true);
+      setReadyMessages(true);
     } else if (socketCommand === "chat_loaded") {
       let chat_data = JSON.parse(socketData);
       setChat(chat_data);
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messagesData = JSON.parse(socketData);
+
       setMessages(messagesData);
-      setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
       let messageDate = JSON.parse(socketData);
       setReadyMessages(false);

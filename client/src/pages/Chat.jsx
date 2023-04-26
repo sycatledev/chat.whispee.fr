@@ -89,7 +89,6 @@ export default function Chat() {
   };
 
   let loadChat = async (chat_id) => {
-    console.log(chat_id);
     if (currentChat === chat_id) return;
     if (chat_id === null) return;
     setCurrentChat(chat_id);
@@ -98,7 +97,6 @@ export default function Chat() {
       webSocket,
       "load_chat|||" + JSON.stringify(request)
     );
-    console.log(messages);
   };
 
   let deleteChatMessage = async (message_id) => {
@@ -165,7 +163,6 @@ export default function Chat() {
                 <ChatContainer
                   ready={ready}
                   chat={chat}
-                  readyMessages={readyMessages}
                   currentChat={currentChat}
                   messages={messages}
                   deleteChatMessage={deleteChatMessage}
