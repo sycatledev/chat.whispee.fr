@@ -55,7 +55,9 @@ export const useAppData = () => {
         let request = { chat_id: currentChat };
         await sendSocketMessage(ws, "load_chat|||" + JSON.stringify(request));
       }
-      await sendSocketMessage(ws, "load_chats|||");
+      if (sessionId != null) {
+        await sendSocketMessage(ws, "load_chats|||");
+      }
     });
     ws.addEventListener("close", async (event) => {
       console.log("Lost connection to server");
