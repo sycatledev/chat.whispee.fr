@@ -9,10 +9,15 @@ const ChatContainer = ({
   ready,
   chat,
   messages,
+  delated,
+  delatedMessage,
   deleteChatMessage,
+  setMessages,
+  setReadyMessages,
+  readyMessages,
 }) => {
   const chatContainerRef = useRef(null);
-  const { sendChatMessage, readyMessages, setReadyMessages } = useAppData();
+  const { sendChatMessage } = useAppData();
   const [openModal, setOpenModal] = useState(false);
   const inputRef = useRef(null);
 
@@ -22,8 +27,16 @@ const ChatContainer = ({
     });
   }
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    setMessages(
+      messages.filter(
+        (message) =>
+          JSON.parse(message._id || message.id).$oid !==
+          delatedMessage?.message_id
+      )
+    ),
+      setReadyMessages(true);
+  }, [delatedMessage]);
+
   const messageTime = (time) => {
     const timeMls = new Date(time * 1000);
     const timeDifference = new Date() - timeMls;
@@ -51,7 +64,6 @@ const ChatContainer = ({
       return `just now`;
     }
   };
-
   const handleSubmitForm = (e) => {
     e.preventDefault();
     const inputDatas = inputRef.current.value;
@@ -69,13 +81,20 @@ const ChatContainer = ({
   };
 
   useEffect(() => {
+    scrollToBottom();
     setReadyMessages(true);
   }, [messages]);
+  /* 
+  useEffect(() => {
+    setReadyMessages(!readyMessages);
+  }, [readyMessages]); */
 
-  const parseId = (id) => {
-    const parsedId = JSON.parse(id);
-    return parsedId.$oid;
+  const parseId = async (id) => {
+    const parsedId = await JSON.parse(id).$oid;
+    setReadyMessages(true);
+    return parsedId;
   };
+
   return (
     <>
       <div
@@ -112,7 +131,7 @@ const ChatContainer = ({
               messages.map((message, index) => (
                 <div
                   key={index}
-                  id={parseId(message._id)}
+                  id={JSON.parse(message._id || message.id).$oid}
                   className="col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
                 >
                   <div className="items-center justify-start group">
@@ -185,7 +204,9 @@ const ChatContainer = ({
                                 className="bg-rose-950"
                                 color="gray"
                                 onClick={() =>
-                                  handleDeleteChatMessage(message.message_id)
+                                  handleDeleteChatMessage(
+                                    JSON.parse(message._id || message.id).$oid
+                                  )
                                 }
                               >
                                 I accept

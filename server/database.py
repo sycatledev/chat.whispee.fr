@@ -4,7 +4,7 @@ from entities.chat import Chat
 from entities.user import User
 import bcrypt
 from bson import json_util
-
+from bson.objectid import ObjectId
 DB_HOST = 'localhost'
 DB_PORT = '27017'
 
@@ -65,14 +65,15 @@ class Data:
     def save_message(self, chat_id, sender_id, message_text, message_date) -> str:
         messages_collection = self.database.messages
 
-        message = {"chat_id": chat_id, "sender_id": sender_id, "content": message_text, "date": message_date}
+        message = {"chat_id": chat_id, "sender_id": sender_id,
+                   "content": message_text, "date": message_date}
         result = messages_collection.insert_one(message)
 
         return json_util.dumps(result.inserted_id)
 
     async def delete_message(self, message_id):
         messages_colletion = self.database.messages
-        messages_colletion.delete_one({"message_id": message_id})
+        messages_colletion.delete_one({"_id": ObjectId(message_id)})
 
     def get_chat(self, chat_id: int) -> Chat:
         chats_collection = self.database.chats
@@ -115,7 +116,8 @@ class Data:
         return user
 
     def create_user(self, username, email, password) -> dict:
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.hashpw(
+            password.encode('utf-8'), bcrypt.gensalt())
 
         user = {
             "username": username,

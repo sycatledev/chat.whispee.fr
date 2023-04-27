@@ -10,28 +10,37 @@ import ProfilContainer from "../components/ProfilContainer.jsx";
 import { useAppData } from "../components/Utils.jsx";
 import Modal from "../components/modals/Modal.jsx";
 
-
 function ProfilModal({ isOpen, onClose }) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} height={'h-[30rem]'} width={'w-2/3'} >
-        <div className="h-full p-10 text-black">
-            <header>
-                <h1 className="text-4xl font-karla">Mon profil</h1>
-            </header>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      height={"h-[30rem]"}
+      width={"w-2/3"}
+    >
+      <div className="h-full p-10 text-black">
+        <header>
+          <h1 className="text-4xl font-karla">Mon profil</h1>
+        </header>
+      </div>
     </Modal>
-  )
+  );
 }
 function ParamsModal({ isOpen, onClose }) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} height={'h-[30rem]'} width={'w-2/3'} >
-        <div className="h-full p-10 text-black">
-            <header>
-                <h1 className="text-4xl font-karla">Paramètre</h1>
-            </header>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      height={"h-[30rem]"}
+      width={"w-2/3"}
+    >
+      <div className="h-full p-10 text-black">
+        <header>
+          <h1 className="text-4xl font-karla">Paramètre</h1>
+        </header>
+      </div>
     </Modal>
-  )
+  );
 }
 
 export default function Chat() {
@@ -47,12 +56,14 @@ export default function Chat() {
     setCurrentChat,
     messages,
     setReadyMessages,
+    readyMessages,
     setMessages,
     webSocket,
     sendSocketMessage,
     session,
+    newMessage,
   } = useAppData();
-  
+
   const [isDark, setIsDark] = useState(false);
   const [messageNav, setMessageNav] = useState(true);
   const [friendNav, setFriendNav] = useState(false);
@@ -84,7 +95,7 @@ export default function Chat() {
       navigate("/");
     }
   }, [session]);
-  useEffect(() => {
+  /*   useEffect(() => {
     if (delated) {
       setMessages(
         messages.filter(
@@ -93,7 +104,7 @@ export default function Chat() {
       ),
         setReadyMessages(true);
     }
-  }, [delatedMessage]);
+  }, [delatedMessage]); */
 
   function setTheme(dark) {
     const root = document.documentElement;
@@ -129,11 +140,11 @@ export default function Chat() {
     );
   };
   let handleCloseProfil = () => {
-      setShowProfil(false)
-  }
+    setShowProfil(false);
+  };
   let handleCloseParams = () => {
-      setShowParams(false)
-  }
+    setShowParams(false);
+  };
 
   return (
     <div
@@ -191,7 +202,13 @@ export default function Chat() {
                   chat={chat}
                   currentChat={currentChat}
                   messages={messages}
+                  delatedMessage={delatedMessage}
+                  delated={delated}
                   deleteChatMessage={deleteChatMessage}
+                  setMessages={setMessages}
+                  setReadyMessages={setReadyMessages}
+                  readyMessages={readyMessages}
+                  newMessage={newMessage}
                 />
               ) : (
                 <EmptyChatContainer />

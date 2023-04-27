@@ -30,9 +30,11 @@ export const useAppData = () => {
   const [friendReady, setFriendReady] = useState(false);
   const [currentChat, setCurrentChat] = useState(null);
   const [delatedMessage, setDelatedMessage] = useState("");
+  const [delated, setdelated] = useState(null);
   const [username, setUsername] = useState("");
-
+  const [newMessage, setNewMessage] = useState([]);
   const currentChatRef = useRef(null);
+  const [isSessionActive, setIsSessionActive] = useState(false);
 
   const init = async () => {
     const ws = new WebSocket("ws://localhost:456/");
@@ -101,6 +103,7 @@ export const useAppData = () => {
       setPending(false);
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
+      setNewMessage(messageData);
       setMessages((messages) => [...messages, messageData]);
     } else if (socketCommand === "chats_loaded") {
       let chatsData = JSON.parse(socketData);
@@ -112,14 +115,15 @@ export const useAppData = () => {
       setChat(chat_data);
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
-      let messagesData = JSON.parse(socketData);
-
-      setMessages(messagesData);
+      let messagesDatas = JSON.parse(socketData);
+      setMessages(messagesDatas);
+      setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
       let messageDate = JSON.parse(socketData);
       setReadyMessages(false);
       setDelatedMessage(messageDate);
       setdelated(true);
+      setReadyMessages(true);
     } else if (socketCommand === "no_identifier_found") {
       // User not exist in database
       setIdentify(true);

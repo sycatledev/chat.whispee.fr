@@ -237,7 +237,7 @@ class Client:
         elif socket_command == "delete_chat_message":
             chat_data = json.loads(socket_request)
             message_id = str(chat_data["message_id"])
-
+            print(message_id)
             await get_database().delete_message(message_id)
             deleted_message = {"message_id": message_id}
 
@@ -276,7 +276,7 @@ class Client:
 
     async def load_chat_messages(self, chat_id: int) -> None:
         messages = get_database().get_messages_to_objects_from_chat_id(chat_id)
-
+        print(messages)
         await self.send_socket_message("chat_messages_loaded|||" + json.dumps(messages))
 
     async def send_message_to_chat(self, chat_id: int, message: str) -> None:
@@ -291,6 +291,9 @@ class Client:
         await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_object()))
 
     async def message_deleted(self, message):
+        for client in online_clients:
+            if client.session is None:
+                continue
         await self.send_socket_message("chat_message_deleted|||" + json.dumps(message))
 
     async def send_chat_message_to_everyone(self, message: str) -> None:
