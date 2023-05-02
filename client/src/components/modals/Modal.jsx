@@ -1,29 +1,63 @@
-import React from 'react';
+import React from "react";
 
-export default function Modal({ isOpen, onClose, width, height, children }) {
+//#TODO: Finish this systems
+
+export default function Modal({ title, isOpen, onClose, content, action }) {
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div className='fixed z-50 inset-0 overflow-y-auto'>
-      <div className='relative flex items-center justify-center min-h-screen'>
-        <div
-          className='fixed inset-0 bg-gray-500 bg-transparent backdrop-blur-sm transition-opacity duration-200'
-          aria-hidden='true'
-          onClick={onClose}
-        />
-        <div className={`relative bg-gradient-to-br from-slate-300 to-slate-400 rounded-lg z-50 ${width} ${height} p-6`}>
-            <button className='text-gray-700 absolute z-50 right-0 top-0 m-2 hover:text-black duration-200' onClick={onClose}>
-                <svg className='' width="35" height="35" fill="white" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z"></path>
-                    <path d="m14.829 9.172-5.657 5.657"></path>
-                    <path d="m9.172 9.172 5.656 5.657"></path>
-                </svg>
+    <>
+      <div
+        tabIndex="-1"
+        className="fixed flex inset-0 items-center mx-auto z-50 p-4 overflow-x-hidden overflow-y-auto"
+      >
+        <div className="flex relative w-full max-w-2xl m-auto bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white rounded-lg shadow">
+          <div className="flex items-center p-4 border-b rounded-t dark:border-gray-600">
+            <button
+              type="button"
+              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 mr-2 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+              onClick={onClose}
+            >
+              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2Z"></path>
+              </svg>
             </button>
-          <div className='absolute inset-0 z-40 h-full'>{children}</div>
+
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              {title}
+            </h3>
+          </div>
+
+          <div className="p-6 space-y-6">{content}</div>
+          {action != undefined ? (
+            <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+              {/* <button
+                data-modal-hide="staticModal"
+                type="button"
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                I accept
+              </button>
+              <button
+                data-modal-hide="staticModal"
+                type="button"
+                className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+              >
+                Decline
+              </button> */}
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
-    </div>
+
+      <div
+        className="bg-black/75 h-full w-full fixed z-40"
+        onClick={onClose}
+      ></div>
+    </>
   );
 }
