@@ -52,6 +52,7 @@ export default function Chat() {
     delated,
     delatedMessage,
     username,
+    userId,
     currentChat,
     setCurrentChat,
     messages,
@@ -209,6 +210,8 @@ export default function Chat() {
                   setReadyMessages={setReadyMessages}
                   readyMessages={readyMessages}
                   newMessage={newMessage}
+                  userId={userId}
+                  username={username}
                 />
               ) : (
                 <EmptyChatContainer />

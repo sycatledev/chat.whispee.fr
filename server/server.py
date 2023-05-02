@@ -43,6 +43,10 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+def log_message(message):
+    logging.info(message)
+    print(message)
+
 # Function to start the server and websocket server
 
 
@@ -136,13 +140,10 @@ class Client:
                 session = sessions[session_id]
 
                 if session is not None:
-                    # if session.is_valid():
                     self.session = session
 
                     await self.send_socket_message("active_session|||" + json.dumps(session.to_object()))
                     return
-                # else:
-                    # self.session = None
 
             await self.send_socket_message("session_inactive|||")
 
@@ -294,6 +295,7 @@ class Client:
         for client in online_clients:
             if client.session is None:
                 continue
+
         await self.send_socket_message("chat_message_deleted|||" + json.dumps(message))
 
     async def send_chat_message_to_everyone(self, message: str) -> None:

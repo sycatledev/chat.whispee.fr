@@ -32,6 +32,7 @@ export const useAppData = () => {
   const [delatedMessage, setDelatedMessage] = useState("");
   const [delated, setdelated] = useState(null);
   const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState(null);
   const [newMessage, setNewMessage] = useState([]);
   const currentChatRef = useRef(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
@@ -99,6 +100,7 @@ export const useAppData = () => {
       let sessionData = JSON.parse(socketData);
       setSession(true);
       setPending(false);
+      setUserId(sessionData.user.id);
       setUsername(sessionData.user.username);
     } else if (socketCommand === "session_inactive") {
       setSession(false);

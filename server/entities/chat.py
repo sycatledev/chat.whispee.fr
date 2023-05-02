@@ -4,13 +4,13 @@ class Chat:
         self.name = name
     
     # TODO: Add recipients and attachments
-    def add_message(self, author_id, content, date):
+    def add_message(self, sender_id, content, date):
         from server import get_database
         from entities.message import Message
 
-        result_id = get_database().save_message(self.id, author_id, content, date)
+        result_id = get_database().save_message(self.id, sender_id, content, date)
 
-        return Message(result_id, author_id, self.id, content, date)
+        return Message(result_id, sender_id, self.id, content, date)
 
     def get_messages(self):
         from server import get_database

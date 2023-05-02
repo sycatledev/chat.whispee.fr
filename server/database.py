@@ -27,9 +27,10 @@ class Data:
         client = self.get_client()
         try:
             database = client[database_name]
-            print(f"Successfuly connected to database '{database_name}'.")
-        except Exception as e:
+            print(f"Successfully connected to database '{database_name}'.")
+        except pymongo.errors.ConnectionError as e:
             print("Failed to connect to database")
+            raise e
 
         return database
 

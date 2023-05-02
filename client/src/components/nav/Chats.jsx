@@ -2,17 +2,21 @@ import React from "react";
 import { useAppData } from "../Utils";
 
 const Chats = ({ messageNav, displayChat }) => {
-  const {chats, ready} = useAppData()
+  const { chats, ready } = useAppData();
   return (
     <div className={`flex flex-col my-4 h-full ${!messageNav ? "hidden" : ""}`}>
       <div className="flex flex-row items-center justify-between text-xs">
-        <span className="font-bold">My Chats </span>
-        <span
-          id="active-chats-numbers"
-          className="flex items-center justify-center bg-indigo-300 dark:bg-indigo-700 h-4 w-4 rounded-full"
-        >
-          {chats.length}
-        </span>
+        <span className="font-bold">My Chats ({chats.length})</span>
+        <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black rounded-xl flex-shrink-0">
+          <svg
+            className="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" />
+          </svg>
+        </button>
       </div>
       <div
         className="flex flex-col h-full space-y-1 mt-4 -mx-2 overflow-y-auto"
