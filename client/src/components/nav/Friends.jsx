@@ -43,14 +43,6 @@ export function Friend({ friendNav }) {
               <div className="ml-2 text-sm font-semibold">
                 {friend.chat_name}
               </div>
-
-              {friend.chat_pending_messages > 0 ? (
-                <div className="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none">
-                  {friend.chat_pending_messages}
-                </div>
-              ) : (
-                ""
-              )}
             </button>
           ))
         ) : (

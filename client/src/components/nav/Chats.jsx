@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppData } from "../Utils";
+import Avatar from "../user/Avatar.jsx";
 
 const Chats = ({ messageNav, displayChat }) => {
   const { chats, ready } = useAppData();
@@ -30,9 +31,7 @@ const Chats = ({ messageNav, displayChat }) => {
               data-user-id={chat.chat_id}
               className="chat-button flex flex-row items-center hover:bg-slate-100 active:bg-slate-200 dark:hover:bg-slate-500 dark:active:bg-slate-600 rounded-xl p-2"
             >
-              <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
-                {chat.chat_name[0]}
-              </div>
+              <Avatar username={chat.chat_name}></Avatar>
               <div className="ml-2 text-sm font-semibold">{chat.chat_name}</div>
 
               {chat.chat_pending_messages > 0 ? (

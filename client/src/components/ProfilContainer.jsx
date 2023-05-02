@@ -1,16 +1,13 @@
-import { useEffect } from "react";
 import { Tooltip } from "flowbite-react";
 import { isEmpty } from "./Utils.jsx";
+import Avatar from "./user/Avatar.jsx";
 
 export default function ProfilContainer({
   toggle,
-  showParams,
-  setShowParams,
   showProfil,
   setShowProfil,
   username,
 }) {
-
   return (
     <>
       <div className="flex justify-between items-center mt-5 pt-5 border-t-[1px] border-neutral-200 dark:border-neutral-600">
@@ -18,12 +15,14 @@ export default function ProfilContainer({
           content="Click here to access your profile"
           animation="duration-200"
         >
-          <button className="flex items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 p-2 rounded-lg" onClick={() =>
-            showProfil ? setShowProfil(false) : setShowProfil(true)
-          }>
-            <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full uppercase">
-              {!isEmpty(username) && username ? username[0] : ""}
-            </div>
+          <button
+            className="flex items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 p-2 rounded-lg"
+            onClick={() =>
+              showProfil ? setShowProfil(false) : setShowProfil(true)
+            }
+          >
+            <Avatar username={username}></Avatar>
+
             <h1 className="font-karla ml-2">
               {!isEmpty(username) && username ? username : ""}
             </h1>
@@ -44,6 +43,7 @@ export default function ProfilContainer({
               </svg>
             </button>
           </Tooltip>
+
           <Tooltip
             content="Click here to open your settings"
             animation="duration-200"
@@ -52,9 +52,6 @@ export default function ProfilContainer({
               className={`active:bg-indigo-200 
                         dark:active:bg-indigo-400 p-2 rounded-xl text-gray-500 dark:hover:text-gray-300`}
               id="paramNav"
-              onClick={() =>
-                showParams ? setShowParams(false) : setShowParams(true)
-              }
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 16c2.206 0 4-1.794 4-4s-1.794-4-4-4-4 1.794-4 4 1.794 4 4 4Zm0-6c1.084 0 2 .916 2 2s-.916 2-2 2-2-.916-2-2 .916-2 2-2Z"></path>

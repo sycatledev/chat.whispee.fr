@@ -29,8 +29,7 @@ export const useAppData = () => {
   const [friends, setFriends] = useState([]);
   const [friendReady, setFriendReady] = useState(false);
   const [currentChat, setCurrentChat] = useState(null);
-  const [delatedMessage, setDelatedMessage] = useState("");
-  const [delated, setdelated] = useState(null);
+  const [deleted, setDeleted] = useState(null);
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState(null);
   const [newMessage, setNewMessage] = useState([]);
@@ -121,14 +120,13 @@ export const useAppData = () => {
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messagesDatas = JSON.parse(socketData);
-      console.log(messagesDatas);
       setMessages(messagesDatas);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
       let messageDate = JSON.parse(socketData);
       setReadyMessages(false);
-      setDelatedMessage(messageDate);
-      setdelated(true);
+      setDeletedMessage(messageDate);
+      setDeleted(true);
       setReadyMessages(true);
     } else if (socketCommand === "no_identifier_found") {
       // User not exist in database
@@ -184,7 +182,7 @@ export const useAppData = () => {
     setIdentify,
     friends,
     friendReady,
-    delatedMessage,
+    deletedMessage,
     username,
     currentChat,
     setCurrentChat,

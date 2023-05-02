@@ -5,9 +5,7 @@ const Nav = ({
   toggle,
   messageNav,
   setMessageNav,
-  paramNav,
-  setParamNav,
-  friendNav,
+  friendsNav,
   setFriendNav,
 }) => {
   const handleNav = (e) => {
@@ -15,12 +13,10 @@ const Nav = ({
     for (let i = 0; i < 5; i++) {
       if (parent.id === "messageNav") {
         setMessageNav(true);
-        setParamNav(false);
         setFriendNav(false);
         break;
       } else if (parent.id === "friendNav") {
         setMessageNav(false);
-        setParamNav(false);
         setFriendNav(true);
         break;
       } else {
@@ -52,13 +48,14 @@ const Nav = ({
             </svg>
           </button>
         </Tooltip>
+
         <Tooltip
           content="Click here to access to your friends"
           animation="duration-200"
         >
           <button
             className={`p-2 rounded-xl ${
-              friendNav
+              friendsNav
                 ? "dark:text-white text-black"
                 : "text-gray-500 dark:hover:text-gray-300 hover:text-black"
             }`}
