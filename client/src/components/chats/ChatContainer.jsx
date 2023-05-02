@@ -15,6 +15,8 @@ const ChatContainer = ({
   setMessages,
   setReadyMessages,
   readyMessages,
+  userId,
+  username,
 }) => {
   const chatContainerRef = useRef(null);
   const { sendChatMessage } = useAppData();
@@ -41,29 +43,60 @@ const ChatContainer = ({
     const timeMls = new Date(time * 1000);
     const timeDifference = new Date() - timeMls;
     const secondsDifference = Math.floor(timeDifference / 1000);
-    const minutesDDifferences = Math.floor(timeDifference / (1000 * 60));
+    const minutesDifference = Math.floor(timeDifference / (1000 * 60));
     const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
     const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const weeksDifference = Math.floor(
+      timeDifference / (1000 * 60 * 60 * 24 * 7)
+    );
+    const monthsDifference = Math.floor(
+      timeDifference / (1000 * 60 * 60 * 24 * 30.44)
+    );
+    const yearsDifference = Math.floor(
+      timeDifference / (1000 * 60 * 60 * 24 * 365.25)
+    );
 
-    if (daysDifference > 0) {
-      const day = timeMls.getDate();
-      const month = timeMls.getMonth() + 1;
-      const year = timeMls.getFullYear();
-      return `${day}/${month}/${year}`;
-    } else if (hoursDifference > 0) {
-      return `${hoursDifference} hour${hoursDifference > 1 ? "s" : ""} ago`;
-    } else if (minutesDDifferences > 0) {
-      return `${minutesDDifferences} minute${
-        minutesDDifferences > 1 ? "s" : ""
+    let result = "";
+
+    if (yearsDifference > 0) {
+      result = `${yearsDifference} year${yearsDifference > 1 ? "s" : ""} ago`;
+    } else if (monthsDifference > 0) {
+      result = `${monthsDifference} month${
+        monthsDifference > 1 ? "s" : ""
       } ago`;
-    } else if (secondsDifference > 0) {
-      return `${secondsDifference} second${
+    } else if (weeksDifference > 0) {
+      result = `${weeksDifference} week${weeksDifference > 1 ? "s" : ""} ago`;
+    } else if (daysDifference === 1) {
+      result = `1 day ago`;
+    } else if (daysDifference > 1) {
+      result = `${daysDifference} days ago`;
+    } else if (hoursDifference > 0) {
+      result = `${hoursDifference} hour${hoursDifference > 1 ? "s" : ""} ago`;
+    } else if (minutesDifference > 0) {
+      result = `${minutesDifference} minute${
+        minutesDifference > 1 ? "s" : ""
+      } ago`;
+    } else if (secondsDifference >= 5) {
+      result = `${secondsDifference} second${
         secondsDifference > 1 ? "s" : ""
       } ago`;
     } else {
-      return `just now`;
+      result = `just now`;
     }
+
+    if (hoursDifference > 1) {
+      const hour = timeMls.getHours();
+      const minutes = timeMls.getMinutes();
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+      result += `, ${formattedHour}:${
+        minutes < 10 ? "0" + minutes : minutes
+      }${ampm}`;
+    }
+
+    return result;
   };
+
   const handleSubmitForm = (e) => {
     e.preventDefault();
     const inputDatas = inputRef.current.value;
@@ -72,10 +105,12 @@ const ChatContainer = ({
     sendChatMessage(currentChat, inputDatas);
     inputRef.current.value = "";
   };
+
   const handleDeleteChatMessage = (chat_uuid) => {
     deleteChatMessage(chat_uuid);
     setOpenModal(false);
   };
+
   const handdleCloseModal = () => {
     setOpenModal(false);
   };
@@ -83,17 +118,16 @@ const ChatContainer = ({
   useEffect(() => {
     scrollToBottom();
     setReadyMessages(true);
-  }, [messages]);
-  /* 
-  useEffect(() => {
-    setReadyMessages(!readyMessages);
-  }, [readyMessages]); */
 
-  const parseId = async (id) => {
-    const parsedId = await JSON.parse(id).$oid;
-    setReadyMessages(true);
-    return parsedId;
-  };
+    console.log(userId);
+    console.log(username);
+  }, [messages]);
+
+  // const parseId = async (id) => {
+  //   const parsedId = await JSON.parse(id).$oid;
+  //   setReadyMessages(true);
+  //   return parsedId;
+  // };
 
   return (
     <>
@@ -111,11 +145,37 @@ const ChatContainer = ({
             </div>
           </div>
         </div>
-        <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl flex-shrink-0">
-          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"></path>
-          </svg>
-        </button>
+        <div className="flex items-center justify-center flex-shrink-0">
+          <Tooltip
+            content="Click here to add friends to this chat"
+            animation="duration-200"
+          >
+            <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl">
+              <svg
+                className="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 11c1.66 0 2.99-1.34 2.99-3S19.66 5 18 5c-.32 0-.63.05-.91.14.57.81.9 1.79.9 2.86 0 1.07-.34 2.04-.9 2.86.28.09.59.14.91.14ZM8 10H5V7H3v3H0v2h3v3h2v-3h3v-2Zm7.99-2c0 1.66-1.33 3-2.99 3-1.66 0-3-1.34-3-3s1.34-3 3-3 2.99 1.34 2.99 3Zm3.63 5.16c.83.73 1.38 1.66 1.38 2.84v2h3v-2c0-1.54-2.37-2.49-4.38-2.84ZM7 16c0-2 4-3 6-3s6 1 6 3v2H7v-2Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+          </Tooltip>
+          <Tooltip
+            content="Click here to access chat informations"
+            animation="duration-200"
+          >
+            <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"></path>
+              </svg>
+            </button>
+          </Tooltip>
+        </div>
       </div>
       <div
         id="chat-content"
@@ -136,8 +196,8 @@ const ChatContainer = ({
                 >
                   <div className="items-center justify-start group">
                     <div className="flex-row-reverse flex">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0">
-                        A
+                      <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0 uppercase">
+                        {ready && username[0]}
                       </div>
                       <div className="relative mx-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
                         <div>{message.content}</div>
@@ -167,7 +227,9 @@ const ChatContainer = ({
                             </button>
                           </Tooltip>
 
-                          <Tooltip
+                          {/* #TODO: Add message edition
+
+                           <Tooltip
                             content="Edit this message"
                             animation="duration-200"
                           >
@@ -180,7 +242,7 @@ const ChatContainer = ({
                                 <path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263ZM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414Z"></path>
                               </svg>
                             </button>
-                          </Tooltip>
+                          </Tooltip> */}
                         </div>
                       </div>
 
