@@ -98,10 +98,11 @@ export const useAppData = () => {
 
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
+      const userIdParsed = JSON.parse(sessionData.user.id).$oid;
+      setUserId(userIdParsed);
+      setUsername(sessionData.user.username);
       setSession(true);
       setPending(false);
-      setUserId(sessionData.user.id);
-      setUsername(sessionData.user.username);
     } else if (socketCommand === "session_inactive") {
       setSession(false);
       setPending(false);
@@ -120,6 +121,7 @@ export const useAppData = () => {
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messagesDatas = JSON.parse(socketData);
+      console.log(messagesDatas);
       setMessages(messagesDatas);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
@@ -188,5 +190,6 @@ export const useAppData = () => {
     setCurrentChat,
     setReadyMessages,
     setMessages,
+    userId,
   };
 };

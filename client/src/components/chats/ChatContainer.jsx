@@ -22,6 +22,9 @@ const ChatContainer = ({
   const { sendChatMessage } = useAppData();
   const [openModal, setOpenModal] = useState(false);
   const inputRef = useRef(null);
+  const [myMessages, setMyMessages] = useState([]);
+  const [filtredMessages, setFiltredMessages] = useState([]);
+  const allMessages = [...myMessages, ...filtredMessages];
 
   function scrollToBottom() {
     chatContainerRef?.current?.scrollIntoView({
@@ -38,6 +41,16 @@ const ChatContainer = ({
     ),
       setReadyMessages(true);
   }, [delatedMessage]);
+  /*   useEffect(() => {
+    const handleFilterMessages = async () => {
+      const senderId = await messages.filter(
+        (message) => JSON.parse(message.sender_id).$oid !== userId
+      );
+      console.log(senderId);
+      setFiltredMessages(senderId);
+    };
+    handleFilterMessages();
+  }, [messages]); */
 
   const messageTime = (time) => {
     const timeMls = new Date(time * 1000);
@@ -117,18 +130,15 @@ const ChatContainer = ({
 
   useEffect(() => {
     scrollToBottom();
+    console.log(messages);
+    const myMessage = messages.filter(
+      (message) => JSON.parse(message.sender_id).$oid === userId
+    );
+    setMyMessages(myMessage);
+
     setReadyMessages(true);
-
-    console.log(userId);
-    console.log(username);
   }, [messages]);
-
-  // const parseId = async (id) => {
-  //   const parsedId = await JSON.parse(id).$oid;
-  //   setReadyMessages(true);
-  //   return parsedId;
-  // };
-
+  console.log(messages);
   return (
     <>
       <div
@@ -192,15 +202,32 @@ const ChatContainer = ({
                 <div
                   key={index}
                   id={JSON.parse(message._id || message.id).$oid}
-                  className="col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
+                  className={
+                    JSON.parse(message.sender_id).$oid !== userId
+                      ? "col-start-1 lg:col-start-1 col-end-13 gap-3 p-3 rounded-lg group"
+                      : "col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
+                  }
                 >
                   <div className="items-center justify-start group">
-                    <div className="flex-row-reverse flex">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0 uppercase">
+                    <div
+                      className={
+                        JSON.parse(message.sender_id).$oid !== userId
+                          ? "flex"
+                          : "flex-row-reverse flex"
+                      }
+                    >
+                      <div
+                        className={
+                          JSON.parse(message.sender_id).$oid !== userId
+                            ? "flex items-center justify-center h-10 w-10 rounded-full text-white bg-green-400 flex-shrink-0 uppercase"
+                            : "flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0 uppercase"
+                        }
+                      >
                         {ready && username[0]}
                       </div>
                       <div className="relative mx-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
                         <div>{message.content}</div>
+
                         <div className="text-right ml-auto justify-end space-x-1 items-center text-xs text-gray-400">
                           <div>{messageTime(message.date)}</div>
                         </div>
@@ -226,23 +253,6 @@ const ChatContainer = ({
                               </svg>
                             </button>
                           </Tooltip>
-
-                          {/* #TODO: Add message edition
-
-                           <Tooltip
-                            content="Edit this message"
-                            animation="duration-200"
-                          >
-                            <button className="bg-slate-500 hover:bg-yellow-500 text-white p-1 rounded">
-                              <svg
-                                className="h-5 w-5"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M8.707 19.707 18 10.414 13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263ZM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586 19.414 9 21 7.414Z"></path>
-                              </svg>
-                            </button>
-                          </Tooltip> */}
                         </div>
                       </div>
 
