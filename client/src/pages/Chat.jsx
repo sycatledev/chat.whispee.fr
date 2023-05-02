@@ -4,7 +4,7 @@ import Nav from "../components/Nav.jsx";
 import { useNavigate } from "react-router-dom";
 import Chats from "../components/nav/Chats.jsx";
 import ChatContainer from "../components/chats/ChatContainer.jsx";
-import EmptyChatContainer from "../components/chats/EmptyChatContainer.jsx";
+import HomeContainer from "../components/chats/HomeContainer.jsx";
 import { Friend } from "../components/nav/Friends.jsx";
 import ProfilContainer from "../components/ProfilContainer.jsx";
 import { useAppData } from "../components/Utils.jsx";
@@ -12,33 +12,8 @@ import Modal from "../components/modals/Modal.jsx";
 
 function ProfilModal({ isOpen, onClose }) {
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      height={"h-[30rem]"}
-      width={"w-2/3"}
-    >
-      <div className="h-full p-10 text-black">
-        <header>
-          <h1 className="text-4xl font-karla">Mon profil</h1>
-        </header>
-      </div>
-    </Modal>
-  );
-}
-function ParamsModal({ isOpen, onClose }) {
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      height={"h-[30rem]"}
-      width={"w-2/3"}
-    >
-      <div className="h-full p-10 text-black">
-        <header>
-          <h1 className="text-4xl font-karla">Paramètre</h1>
-        </header>
-      </div>
+    <Modal title="Profil" isOpen={isOpen} onClose={onClose}>
+      <p>Ceci est le contenu?</p>
     </Modal>
   );
 }
@@ -49,8 +24,8 @@ export default function Chat() {
     chats,
     ready,
     singleChat,
-    delated,
-    delatedMessage,
+    deleted,
+    deletedMessage,
     username,
     userId,
     currentChat,
@@ -68,9 +43,7 @@ export default function Chat() {
   const [isDark, setIsDark] = useState(false);
   const [messageNav, setMessageNav] = useState(true);
   const [friendNav, setFriendNav] = useState(false);
-  const [paramNav, setParamNav] = useState(false);
   const [showProfil, setShowProfil] = useState(false);
-  const [showParams, setShowParams] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,15 +70,15 @@ export default function Chat() {
     }
   }, [session]);
   /*   useEffect(() => {
-    if (delated) {
+    if (deleted) {
       setMessages(
         messages.filter(
-          (message) => message.message_id !== delatedMessage?.message_id
+          (message) => message.message_id !== deletedMessage?.message_id
         )
       ),
         setReadyMessages(true);
     }
-  }, [delatedMessage]); */
+  }, [deletedMessage]); */
 
   function setTheme(dark) {
     const root = document.documentElement;
@@ -143,24 +116,21 @@ export default function Chat() {
   let handleCloseProfil = () => {
     setShowProfil(false);
   };
-  let handleCloseParams = () => {
-    setShowParams(false);
-  };
 
   return (
     <div
       className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-200 overflow-x-hidden`}
     >
-      {showParams ? (
-        <ParamsModal isOpen={showParams} onClose={handleCloseParams} />
-      ) : (
-        ""
-      )}
       {showProfil ? (
-        <ProfilModal isOpen={showProfil} onClose={handleCloseProfil} />
+        <ProfilModal
+          title="Profil"
+          isOpen={showProfil}
+          onClose={handleCloseProfil}
+        />
       ) : (
         ""
       )}
+
       <div className="flex h-screen antialiased text-gray-800">
         <div className="flex flex-row h-full w-full overflow-x-hidden">
           <div className="hidden lg:flex flex-col justify-between p-6 w-64 text-black dark:text-white bg-[#f7f7f7] dark:bg-[#1c1c1c] duration-200 flex-shrink-0">
@@ -168,8 +138,6 @@ export default function Chat() {
               <Nav
                 messageNav={messageNav}
                 setMessageNav={setMessageNav}
-                paramNav={paramNav}
-                setParamNav={setParamNav}
                 friendNav={friendNav}
                 setFriendNav={setFriendNav}
               />
@@ -184,8 +152,6 @@ export default function Chat() {
             </div>
             <ProfilContainer
               toggle={toggleTheme}
-              showParams={showParams}
-              setShowParams={setShowParams}
               showProfil={showProfil}
               setShowProfil={setShowProfil}
               username={username}
@@ -203,8 +169,8 @@ export default function Chat() {
                   chat={chat}
                   currentChat={currentChat}
                   messages={messages}
-                  delatedMessage={delatedMessage}
-                  delated={delated}
+                  deletedMessage={deletedMessage}
+                  deleted={deleted}
                   deleteChatMessage={deleteChatMessage}
                   setMessages={setMessages}
                   setReadyMessages={setReadyMessages}
@@ -214,7 +180,7 @@ export default function Chat() {
                   username={username}
                 />
               ) : (
-                <EmptyChatContainer />
+                <HomeContainer username={username} />
               )}
             </div>
           </div>

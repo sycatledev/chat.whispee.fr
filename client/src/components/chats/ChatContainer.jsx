@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useRef } from "react";
-import ChatSkeleton from "./ChatSkeleton.jsx";
+import MessagesSkeleton from "../skeletons/MessagesSkeleton.jsx";
 import { Modal, Button } from "flowbite-react";
 import { useState } from "react";
 import { Tooltip } from "flowbite-react";
 import { useAppData } from "../Utils.jsx";
+import Avatar from "../user/Avatar.jsx";
 const ChatContainer = ({
   currentChat,
   ready,
   chat,
   messages,
-  delated,
-  delatedMessage,
+  deletedMessage,
   deleteChatMessage,
   setMessages,
   setReadyMessages,
@@ -36,21 +36,11 @@ const ChatContainer = ({
       messages.filter(
         (message) =>
           JSON.parse(message._id || message.id).$oid !==
-          delatedMessage?.message_id
+          deletedMessage?.message_id
       )
     ),
       setReadyMessages(true);
-  }, [delatedMessage]);
-  /*   useEffect(() => {
-    const handleFilterMessages = async () => {
-      const senderId = await messages.filter(
-        (message) => JSON.parse(message.sender_id).$oid !== userId
-      );
-      console.log(senderId);
-      setFiltredMessages(senderId);
-    };
-    handleFilterMessages();
-  }, [messages]); */
+  }, [deletedMessage]);
 
   const messageTime = (time) => {
     const timeMls = new Date(time * 1000);
@@ -97,7 +87,7 @@ const ChatContainer = ({
       result = `just now`;
     }
 
-    if (hoursDifference > 1) {
+    if (secondsDifference >= 5) {
       const hour = timeMls.getHours();
       const minutes = timeMls.getMinutes();
       const ampm = hour >= 12 ? "PM" : "AM";
@@ -112,11 +102,15 @@ const ChatContainer = ({
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
+
     const inputDatas = inputRef.current.value;
+
     if (inputDatas.length < 1) return;
     if (inputDatas.trim() === "") return;
-    sendChatMessage(currentChat, inputDatas);
+
     inputRef.current.value = "";
+
+    sendChatMessage(currentChat, inputDatas);
   };
 
   const handleDeleteChatMessage = (chat_uuid) => {
@@ -124,13 +118,12 @@ const ChatContainer = ({
     setOpenModal(false);
   };
 
-  const handdleCloseModal = () => {
+  const handleCloseModal = () => {
     setOpenModal(false);
   };
 
   useEffect(() => {
     scrollToBottom();
-    console.log(messages);
     const myMessage = messages.filter(
       (message) => JSON.parse(message.sender_id).$oid === userId
     );
@@ -138,7 +131,7 @@ const ChatContainer = ({
 
     setReadyMessages(true);
   }, [messages]);
-  console.log(messages);
+
   return (
     <>
       <div
@@ -147,44 +140,51 @@ const ChatContainer = ({
       >
         <div className="flex-grow cursor-pointer">
           <div className="flex flex-row items-center relative w-full">
-            <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
-              {ready && chat?.chat_name[0]}
-            </div>
-            <div className="ml-2 text-sm font-semibold">
-              {ready && chat?.chat_name}
-            </div>
+            {ready ? (
+              <>
+                <button className="flex lg:hidden items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black rounded-xl">
+                  <svg
+                    className="h-8 w-8"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M3 18h18v-2H3v2Zm0-5h18v-2H3v2Zm0-7v2h18V6H3Z"></path>
+                  </svg>
+                </button>
+
+                <Avatar username={chat?.chat_name}></Avatar>
+
+                <div className="ml-2 text-sm font-semibold">
+                  {chat?.chat_name}
+                </div>
+              </>
+            ) : (
+              ""
+            )}
           </div>
         </div>
-        <div className="flex items-center justify-center flex-shrink-0">
-          <Tooltip
-            content="Click here to add friends to this chat"
-            animation="duration-200"
-          >
-            <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl">
-              <svg
-                className="w-6 h-6"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 11c1.66 0 2.99-1.34 2.99-3S19.66 5 18 5c-.32 0-.63.05-.91.14.57.81.9 1.79.9 2.86 0 1.07-.34 2.04-.9 2.86.28.09.59.14.91.14ZM8 10H5V7H3v3H0v2h3v3h2v-3h3v-2Zm7.99-2c0 1.66-1.33 3-2.99 3-1.66 0-3-1.34-3-3s1.34-3 3-3 2.99 1.34 2.99 3Zm3.63 5.16c.83.73 1.38 1.66 1.38 2.84v2h3v-2c0-1.54-2.37-2.49-4.38-2.84ZM7 16c0-2 4-3 6-3s6 1 6 3v2H7v-2Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </Tooltip>
-          <Tooltip
-            content="Click here to access chat informations"
-            animation="duration-200"
-          >
-            <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"></path>
-              </svg>
-            </button>
-          </Tooltip>
+
+        <div className="flex items-center justify-center">
+          <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl">
+            <svg
+              className="w-6 h-6"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 11c1.66 0 2.99-1.34 2.99-3S19.66 5 18 5c-.32 0-.63.05-.91.14.57.81.9 1.79.9 2.86 0 1.07-.34 2.04-.9 2.86.28.09.59.14.91.14ZM8 10H5V7H3v3H0v2h3v3h2v-3h3v-2Zm7.99-2c0 1.66-1.33 3-2.99 3-1.66 0-3-1.34-3-3s1.34-3 3-3 2.99 1.34 2.99 3Zm3.63 5.16c.83.73 1.38 1.66 1.38 2.84v2h3v-2c0-1.54-2.37-2.49-4.38-2.84ZM7 16c0-2 4-3 6-3s6 1 6 3v2H7v-2Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black p-2 rounded-xl">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z"></path>
+            </svg>
+          </button>
         </div>
       </div>
       <div
@@ -216,86 +216,99 @@ const ChatContainer = ({
                           : "flex-row-reverse flex"
                       }
                     >
-                      <div
-                        className={
-                          JSON.parse(message.sender_id).$oid !== userId
-                            ? "flex items-center justify-center h-10 w-10 rounded-full text-white bg-green-400 flex-shrink-0 uppercase"
-                            : "flex items-center justify-center h-10 w-10 rounded-full text-white bg-indigo-400 flex-shrink-0 uppercase"
-                        }
-                      >
-                        {ready && username[0]}
-                      </div>
+                      {ready ? (
+                        <Avatar username={username} size={10}></Avatar>
+                      ) : (
+                        ""
+                      )}
+
                       <div className="relative mx-3 text-sm bg-white text-black dark:bg-black dark:text-white py-2 px-4 shadow rounded-xl">
                         <div>{message.content}</div>
 
-                        <div className="text-right ml-auto justify-end space-x-1 items-center text-xs text-gray-400">
+                        <div
+                          className={
+                            (JSON.parse(message.sender_id).$oid !== userId
+                              ? "text-right"
+                              : "text-left") +
+                            "ml-auto justify-end space-x-1 items-center text-xs text-gray-400"
+                          }
+                        >
                           <div>{messageTime(message.date)}</div>
                         </div>
 
-                        <div
-                          id="message-actions"
-                          className="absolute -top-6 left-0 w-full hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
-                        >
-                          <Tooltip
-                            content="Delete this message"
-                            animation="duration-200"
+                        {JSON.parse(message.sender_id).$oid == userId ? (
+                          <div
+                            id="message-actions"
+                            className="absolute -top-6 left-0 w-full hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
                           >
-                            <button
-                              onClick={() => setOpenModal(true)}
-                              className="bg-slate-500 hover:bg-red-500 text-white p-1 rounded duration-200"
+                            <Tooltip
+                              content="Delete this message"
+                              animation="duration-200"
                             >
-                              <svg
-                                className="h-5 w-5"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
+                              <button
+                                onClick={() => setOpenModal(true)}
+                                className="bg-slate-500 hover:bg-red-500 text-white p-1 rounded duration-200"
                               >
-                                <path d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7H6Zm4 12H8v-9h2v9Zm6 0h-2v-9h2v9Zm.618-15L15 2H9L7.382 4H3v2h18V4h-4.382Z"></path>
-                              </svg>
-                            </button>
-                          </Tooltip>
-                        </div>
+                                <svg
+                                  className="h-5 w-5"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7H6Zm4 12H8v-9h2v9Zm6 0h-2v-9h2v9Zm.618-15L15 2H9L7.382 4H3v2h18V4h-4.382Z"></path>
+                                </svg>
+                              </button>
+                            </Tooltip>
+                          </div>
+                        ) : (
+                          ""
+                        )}
                       </div>
 
-                      <div className="modal">
-                        <React.Fragment>
-                          <Modal
-                            show={openModal}
-                            onClose={() => setOpenModal(false)}
-                          >
-                            <Modal.Header>Delete a message</Modal.Header>
-                            <Modal.Body>
-                              <div className="space-y-6">
-                                <p className="text-base leading-relaxed text-gray-900 dark:text-gray-400">
-                                  Are you sure you want to delete this message ?
-                                </p>
-                                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400"></p>
-                              </div>
-                            </Modal.Body>
-                            <Modal.Footer>
-                              <Button
-                                className="bg-rose-950"
-                                color="gray"
-                                onClick={() =>
-                                  handleDeleteChatMessage(
-                                    JSON.parse(message._id || message.id).$oid
-                                  )
-                                }
-                              >
-                                I accept
-                              </Button>
-                              <Button color="gray" onClick={handdleCloseModal}>
-                                Decline
-                              </Button>
-                            </Modal.Footer>
-                          </Modal>
-                        </React.Fragment>
-                      </div>
+                      {JSON.parse(message.sender_id).$oid == userId ? (
+                        <div className="modal">
+                          <React.Fragment>
+                            <Modal
+                              show={openModal}
+                              onClose={() => setOpenModal(false)}
+                            >
+                              <Modal.Header>Delete a message</Modal.Header>
+                              <Modal.Body>
+                                <div className="space-y-6">
+                                  <p className="text-base leading-relaxed text-gray-900 dark:text-gray-400">
+                                    Are you sure you want to delete this message
+                                    ?
+                                  </p>
+                                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400"></p>
+                                </div>
+                              </Modal.Body>
+                              <Modal.Footer>
+                                <Button
+                                  className="bg-rose-950"
+                                  color="gray"
+                                  onClick={() =>
+                                    handleDeleteChatMessage(
+                                      JSON.parse(message._id || message.id).$oid
+                                    )
+                                  }
+                                >
+                                  I accept
+                                </Button>
+                                <Button color="gray" onClick={handleCloseModal}>
+                                  Decline
+                                </Button>
+                              </Modal.Footer>
+                            </Modal>
+                          </React.Fragment>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <ChatSkeleton />
+              <MessagesSkeleton />
             )}
           </div>
         </div>
