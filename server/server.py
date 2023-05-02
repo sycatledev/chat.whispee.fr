@@ -1,35 +1,29 @@
-# Importing necessary modules
 import asyncio
-from datetime import datetime
 import logging
-import websockets
 import os
-
 import json
 import uuid
-from entities.user import User
+import websockets
+from datetime import datetime
+
 from database import Data
+from entities.user import User
 from session import Session
-# import ssl
 
 
-# Setting up server ports and variables
 SERVER_PORT = 654
 WEBSOCKET_PORT = 456
 DB_HOST = 'localhost'
 DB_PORT = '27017'
 
-online_clients = list()
-sessions = dict()
-dbclient = None
-
-
-# Setting up logging to a file
-
 log_folder = "../logs/"
 log_file = "server.log"
 
-# Créer le dossier logs s'il n'existe pas déjà
+online_clients = []
+sessions = {}
+db_client = None
+
+
 if not os.path.exists(log_folder):
     os.makedirs(log_folder)
 
@@ -37,6 +31,7 @@ log_file_path = os.path.join(log_folder, log_file)
 if not os.path.exists(log_file_path):
     with open(log_file_path, 'w') as f:
         print("The file ./logs/server.log has been created.")
+
 logging.basicConfig(
     filename=log_folder + log_file,
     level=logging.INFO,
@@ -44,30 +39,18 @@ logging.basicConfig(
 )
 
 def log_message(message):
-    logging.info(message)
+    logging.info(f"{message}")
     print(message)
 
-# Function to start the server and websocket server
-
-
 async def start_server() -> None:
-    # On production server (Web Secure Socket)
-    # ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    # ssl_context.load_cert_chain('chemin/vers/certificat.pem', 'chemin/vers/cle_privee.pem')
-
-    # , ssl=ssl_context)
     server = await asyncio.start_server((), 'localhost', SERVER_PORT)
     logging.info(f"Server started on port: {SERVER_PORT}")
 
-    # , ssl=ssl_context)
     websocket_server = await websockets.serve(handle_websocket, 'localhost', WEBSOCKET_PORT)
     logging.info(f"Websocket server started on port: {WEBSOCKET_PORT}")
 
     await server.start_serving()
     await websocket_server.wait_closed()
-
-# Function to handle incoming websocket connections
-
 
 async def handle_websocket(websocket, path) -> None:
     client = Client(websocket)
@@ -75,47 +58,29 @@ async def handle_websocket(websocket, path) -> None:
 
     await client.start()
 
-# Function to shut down the server
-
-
 async def shutdown(loop) -> None:
     logging.info("Closing connections...")
 
-    # Cancelling all tasks except the current task
     tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
     [task.cancel() for task in tasks]
 
-    # Waiting for all tasks to complete
     await asyncio.gather(*tasks, return_exceptions=True)
     loop.stop()
 
-# Function to connect to database
-
-
 def get_database() -> Data:
-    global dbclient
+    global db_client
 
-    if (dbclient == None):
-        dbclient = Data(DB_HOST, DB_PORT)
+    if db_client is None:
+        db_client = Data(DB_HOST, DB_PORT)
 
-    return dbclient
-
+    return db_client
 
 async def get_all_sessions():
-    sessions = list()
-
-    for client in online_clients:
-        if client.session is None:
-            continue
-        sessions.append(client.session)
-
-    return sessions
-
+    return [c.session for c in online_clients if c.session]
 
 class Client:
     def __init__(self, websocket):
         self.websocket = websocket
-        self.current_chat_id = None
         self.session = None
 
     async def start(self) -> None:
@@ -238,7 +203,6 @@ class Client:
         elif socket_command == "delete_chat_message":
             chat_data = json.loads(socket_request)
             message_id = str(chat_data["message_id"])
-            print(message_id)
             await get_database().delete_message(message_id)
             deleted_message = {"message_id": message_id}
 
@@ -277,7 +241,6 @@ class Client:
 
     async def load_chat_messages(self, chat_id: int) -> None:
         messages = get_database().get_messages_to_objects_from_chat_id(chat_id)
-        print(messages)
         await self.send_socket_message("chat_messages_loaded|||" + json.dumps(messages))
 
     async def send_message_to_chat(self, chat_id: int, message: str) -> None:
