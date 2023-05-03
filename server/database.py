@@ -5,15 +5,12 @@ from entities.user import User
 import bcrypt
 from bson import json_util
 from bson.objectid import ObjectId
-DB_HOST = 'localhost'
-DB_PORT = '27017'
 
-
-class Data:
-    def __init__(self, dbhost, dbport):
+class MongoDatabase:
+    def __init__(self, dbhost, dbport, dbname):
         self.dbhost = dbhost
         self.dbport = dbport
-        self.database = self.get_database("privatemessage")
+        self.database = self.get_database(dbname)
 
     # private method
     def get_client(self):

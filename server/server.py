@@ -5,14 +5,14 @@ import json
 import uuid
 import websockets
 from datetime import datetime
-
-from database import Data
+from database import MongoDatabase
 from entities.user import User
 from session import Session
 
-
 SERVER_PORT = 654
 WEBSOCKET_PORT = 456
+
+DB_NAME = "privatemessage"
 DB_HOST = 'localhost'
 DB_PORT = '27017'
 
@@ -67,11 +67,11 @@ async def shutdown(loop) -> None:
     await asyncio.gather(*tasks, return_exceptions=True)
     loop.stop()
 
-def get_database() -> Data:
+def get_database() -> MongoDatabase:
     global db_client
 
     if db_client is None:
-        db_client = Data(DB_HOST, DB_PORT)
+        db_client = MongoDatabase(DB_HOST, DB_PORT, DB_NAME)
 
     return db_client
 
