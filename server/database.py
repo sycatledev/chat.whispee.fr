@@ -34,7 +34,10 @@ class MongoDatabase:
     # public method
     def get_messages_from_chat_id(self, chat_id, offset=0):
         messages_collection = self.database.messages
-        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", -1).skip(offset).limit(20)
+        
+        total_messages = messages_collection.count_documents({"chat_id": chat_id})
+        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", 1).skip(max(0, total_messages - 15)).limit(15)
+        
         messages = []
         for message_json in messages_cursor:
             message = Message(
@@ -53,7 +56,8 @@ class MongoDatabase:
         messages_collection = self.database.messages
         messages = []
 
-        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", -1).skip(offset).limit(20)
+        total_messages = messages_collection.count_documents({"chat_id": chat_id})
+        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", 1).skip(max(0, total_messages - 15)).limit(15)
 
         for message_json in messages_cursor:
             message_json['_id'] = json_util.dumps(message_json['_id'])
