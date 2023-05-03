@@ -6,7 +6,8 @@ import Chats from "../components/nav/Chats.jsx";
 import ChatContainer from "../components/chats/ChatContainer.jsx";
 import HomeContainer from "../components/chats/HomeContainer.jsx";
 import { Friend } from "../components/nav/Friends.jsx";
-import ProfilContainer from "../components/ProfilContainer.jsx";
+// import ProfilContainer from "./ProfilContainer.jsx";
+import ProfilDropdown from "../components/Dropdown.jsx";
 import { useAppData } from "../components/Utils.jsx";
 import Modal from "../components/modals/Modal.jsx";
 
@@ -151,10 +152,11 @@ export default function Chat() {
               />
               <Friend friendNav={friendNav} />
             </div>
-            <ProfilContainer
+
+            <ProfilDropdown
               toggle={toggleTheme}
-              showProfil={showProfil}
-              setShowProfil={setShowProfil}
+              // showProfil={showProfil}
+              // setShowProfil={setShowProfil}
               username={username}
             />
           </div>
