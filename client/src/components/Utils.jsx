@@ -36,6 +36,11 @@ export const useAppData = () => {
   const currentChatRef = useRef(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
 
+  function getWebsocketInstance() {
+    if (isEmpty(webSocket)) {
+    }
+  }
+
   const init = async () => {
     const ws = new WebSocket("ws://localhost:456/");
     ws.addEventListener("open", async (event) => {

@@ -15,12 +15,12 @@ export default function HomeContainer({ username }) {
         </button>
 
         <div className="flex flex-row items-center relative w-full">
-          <div className="ml-2 text-sm font-semibold">Home</div>
+          <div className="ml-2 text-sm font-semibold select-none">Home</div>
         </div>
       </div>
       <div
         id="chat-content"
-        className="flex flex-col h-full overflow-x-auto p-4 my-2"
+        className="flex flex-col h-full overflow-x-auto p-4"
       >
         <div className="flex h-full my-auto rounded-2xl">
           <div className="flex flex-col items-center text-center m-auto space-y-4">

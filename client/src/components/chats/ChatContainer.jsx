@@ -161,7 +161,7 @@ const ChatContainer = ({
 
                 <Avatar username={chat?.chat_name}></Avatar>
 
-                <div className="ml-2 text-sm font-semibold">
+                <div className="ml-2 text-sm font-semibold select-none">
                   {chat?.chat_name}
                 </div>
               </>
@@ -196,7 +196,7 @@ const ChatContainer = ({
       </div>
       <div
         id="chat-content"
-        className="flex flex-col h-full overflow-x-hidden p-4 my-2"
+        className="flex flex-col h-full overflow-x-hidden p-4"
       >
         <div className="flex flex-col h-full rounded-2xl">
           <div

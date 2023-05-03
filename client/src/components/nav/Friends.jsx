@@ -40,7 +40,7 @@ export function Friend({ friendNav }) {
               <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
                 {friend.chat_name[0]}
               </div>
-              <div className="ml-2 text-sm font-semibold">
+              <div className="ml-2 text-sm font-semibold select-none">
                 {friend.chat_name}
               </div>
             </button>
