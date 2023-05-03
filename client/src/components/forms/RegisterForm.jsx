@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm({ identifier, ws, onClose }) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState(identifier.includes('@') ? identifier : "");
+  const [email, setEmail] = useState(
+    identifier.includes("@") ? identifier : ""
+  );
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState(identifier.includes('@') ? "" : identifier);
+  const [username, setUsername] = useState(
+    identifier.includes("@") ? "" : identifier
+  );
   const [loader, setLoader] = useState(false);
-
 
   const sendSocketMessage = async (ws, message) => {
     console.log("<< " + message);
@@ -88,7 +91,7 @@ export default function RegisterForm({ identifier, ws, onClose }) {
           <input
             type="text"
             id="identifier"
-            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 block w-full pl-10 p-2.5 duration-200"
+            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-primary focus:border-primary disabled:bg-slate-100 block w-full pl-10 p-2.5 duration-200"
             disabled={loader}
             minLength={4}
             maxLength={32}
@@ -113,7 +116,7 @@ export default function RegisterForm({ identifier, ws, onClose }) {
           <input
             type="email"
             id="email"
-            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 block w-full pl-10 p-2.5 duration-200"
+            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-primary focus:border-primary disabled:bg-slate-100 block w-full pl-10 p-2.5 duration-200"
             disabled={loader}
             minLength={7}
             maxLength={30}
@@ -138,7 +141,7 @@ export default function RegisterForm({ identifier, ws, onClose }) {
           <input
             type="password"
             id="password"
-            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 block w-full pl-10 p-2.5 duration-200"
+            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-primary focus:border-primary disabled:bg-slate-100 block w-full pl-10 p-2.5 duration-200"
             disabled={loader}
             minLength={7}
             maxLength={30}
@@ -152,7 +155,7 @@ export default function RegisterForm({ identifier, ws, onClose }) {
         <div className="flex w-full justify-end">
           <button
             type="submit"
-            className="relative py-2 px-3 w-24 bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-700 disabled:cursor-not-allowed duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
+            className="relative py-2 px-3 w-24 bg-primarydark hover:bg-primarydarker disabled:bg-primary disabled:cursor-not-allowed duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
             disabled={loader}
           >
             <p className="mx-auto">{loader ? <Loader /> : "Sign up"}</p>

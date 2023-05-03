@@ -15,6 +15,8 @@ export default function ProfilContainer({
           content="Click here to access your profile"
           animation="duration-200"
         >
+          <ProfilDropdown />
+
           <button
             className="flex items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 p-2 rounded-lg"
             onClick={() =>
@@ -36,7 +38,7 @@ export default function ProfilContainer({
             <button
               id="theme-button"
               onClick={toggle}
-              className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 dark:active:bg-indigo-400 active:bg-indigo-200 p-2 rounded-xl"
+              className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 dark:active:bg-primary active:bg-primary p-2 rounded-xl"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19.072 19.072c3.832-3.833 3.832-10.31 0-14.143-3.833-3.833-10.31-3.833-14.144 0-3.833 3.833-3.833 10.31 0 14.143s10.31 3.833 14.143 0ZM7.052 7.052c2.705-2.707 7.19-2.708 9.898 0l-9.9 9.898c-2.708-2.707-2.71-7.19 0-9.898Z"></path>
@@ -49,8 +51,8 @@ export default function ProfilContainer({
             animation="duration-200"
           >
             <button
-              className={`active:bg-indigo-200 
-                        dark:active:bg-indigo-400 p-2 rounded-xl text-gray-500 dark:hover:text-gray-300`}
+              className={`active:bg-primary 
+                        dark:active:bg-primary p-2 rounded-xl text-gray-500 dark:hover:text-gray-300`}
               id="paramNav"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

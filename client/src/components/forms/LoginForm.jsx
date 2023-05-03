@@ -65,7 +65,7 @@ export default function LoginForm({ identifier, username, onClose }) {
           <input
             type="password"
             id="password"
-            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-slate-100 disabled:cursor-not-allowed block w-full pl-10 p-2.5 duration-200"
+            className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-primary focus:border-primary disabled:bg-slate-100 disabled:cursor-not-allowed block w-full pl-10 p-2.5 duration-200"
             minLength={7}
             maxLength={30}
             required
@@ -79,7 +79,7 @@ export default function LoginForm({ identifier, username, onClose }) {
         <div className="flex w-full justify-end">
           <button
             type="submit"
-            className="relative py-2 px-3 w-24 bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-700 disabled:cursor-not-allowed duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
+            className="relative py-2 px-3 w-24 bg-primarydark hover:bg-primarydarker disabled:bg-primary disabled:cursor-not-allowed duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
             disabled={loader}
           >
             <p className="mx-auto">{loader ? <Loader /> : "Login"}</p>

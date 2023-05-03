@@ -35,9 +35,9 @@ export function Friend({ friendNav }) {
             <button
               key={friend.chat_id}
               data-user-id={friend.chat_id}
-              className="chat-button flex flex-row items-center hover:bg-indigo-100 active:bg-indigo-200 dark:hover:bg-indigo-500 dark:active:bg-indigo-600 rounded-xl p-2"
+              className="chat-button flex flex-row items-center hover:bg-primary active:bg-primary dark:hover:bg-primary dark:active:bg-primary rounded-xl p-2"
             >
-              <div className="flex items-center justify-center h-8 w-8 bg-indigo-400 text-white rounded-full">
+              <div className="flex items-center justify-center h-8 w-8 bg-primary text-white rounded-full">
                 {friend.chat_name[0]}
               </div>
               <div className="ml-2 text-sm font-semibold select-none">

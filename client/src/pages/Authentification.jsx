@@ -60,12 +60,12 @@ export default function Authentification() {
         {/* <section className="grid grid-cols-12 sm:space-y-10">
           <div className="col-span-12 lg:col-span-7 font-bold m-auto text-center">
             <h1 className="text-5xl p-5 sm:p-0">
-              <span className="text-indigo-500 font-extrabold">Whispee</span>{" "}
+              <span className="text-primary font-extrabold">Whispee</span>{" "}
               Chat
             </h1>
             <p className="text-lg lg:text-left">
               A place where your{" "}
-              <span className="text-indigo-500">privacy</span> is by default.
+              <span className="text-primary">privacy</span> is by default.
             </p>
           </div>
 
@@ -100,7 +100,7 @@ export default function Authentification() {
                   <input
                     type="text"
                     id="email"
-                    className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 duration-200"
+                    className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5 duration-200"
                     placeholder="Email or Username"
                     required
                     onInput={(e) => setHolder(e.currentTarget.value)}
@@ -110,7 +110,7 @@ export default function Authentification() {
                 <div className="flex w-full justify-end">
                   <button
                     type="submit"
-                    className="relative py-2 px-3 w-24 bg-indigo-500 hover:bg-indigo-600 duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
+                    className="relative py-2 px-3 w-24 bg-primarydark hover:bg-primarydarker disabled:bg-primary duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
                   >
                     <p className="mx-auto">
                       {loader ? <Loader /> : "Continue"}

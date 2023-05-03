@@ -30,7 +30,7 @@ export default function HomeContainer({ username }) {
             </h1>
             <p className="text-gray-400 text-sm">
               Select a conversation from your contacts list and start chatting
-              in <span className="text-indigo-400">private</span>.
+              in <span className="text-primary">private</span>.
             </p>
           </div>
         </div>

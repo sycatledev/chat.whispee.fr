@@ -50,7 +50,7 @@ const Footer = () => {
                 id="subscribe-newsletter"
                 placeholder="Your Email Adress"
               />
-              <button className="bg-indigo-700 text-white w-48 px-4 py-3 my-5 rounded-lg text-md">
+              <button className="bg-primary text-white w-48 px-4 py-3 my-5 rounded-lg text-md">
                 Subscribe newsletter
               </button>
             </label>
