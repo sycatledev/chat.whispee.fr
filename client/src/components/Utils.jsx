@@ -182,7 +182,6 @@ export const useAppData = () => {
     setIdentify,
     friends,
     friendReady,
-    deletedMessage,
     username,
     currentChat,
     setCurrentChat,
