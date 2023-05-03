@@ -103,6 +103,7 @@ export const useAppData = () => {
     if (socketCommand === "active_session") {
       let sessionData = JSON.parse(socketData);
       const userIdParsed = JSON.parse(sessionData.user.id).$oid;
+
       setUserId(userIdParsed);
       setUsername(sessionData.user.username);
       setSession(true);
@@ -112,23 +113,28 @@ export const useAppData = () => {
       setPending(false);
     } else if (socketCommand === "chat_message_sended") {
       let messageData = JSON.parse(socketData);
+
       setNewMessage(messageData);
       setMessages((messages) => [...messages, messageData]);
     } else if (socketCommand === "chats_loaded") {
       let chatsData = JSON.parse(socketData);
+
       setChats(chatsData);
       setReady(true);
       setReadyMessages(true);
     } else if (socketCommand === "chat_loaded") {
       let chat_data = JSON.parse(socketData);
+
       setChat(chat_data);
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
       let messagesDatas = JSON.parse(socketData);
+
       setMessages(messagesDatas);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
       let messageDate = JSON.parse(socketData);
+
       setReadyMessages(false);
       setDeletedMessage(messageDate);
       setDeleted(true);
@@ -139,6 +145,7 @@ export const useAppData = () => {
       setRegister(true); // Redirect to register page
     } else if (socketCommand === "identifier_found") {
       let userData = JSON.parse(socketData);
+
       setUsername(userData.username);
       setIdentify(true);
       setLogin(true);
@@ -149,6 +156,7 @@ export const useAppData = () => {
       setConnectedUser(true);
     } else if (socketCommand === "friends_loaded") {
       let friendsData = JSON.parse(socketData);
+
       setFriends(friendsData);
       setFriendReady(true);
     }
