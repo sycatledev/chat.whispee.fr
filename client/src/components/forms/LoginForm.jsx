@@ -5,17 +5,12 @@ import Loader from "../Loader.jsx";
 import { useEffect } from "react";
 import { useAppData } from "../Utils.jsx";
 
-export default function LoginForm({ 
-  identifier, 
-  username,
-  onClose
-}) {
+export default function LoginForm({ identifier, username, onClose }) {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [loader, setLoader] = useState(false);
-  const { handleSocketMessage, webSocket, sendSocketMessage } = useAppData()
+  const { handleSocketMessage, webSocket, sendSocketMessage } = useAppData();
 
- 
   let data;
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +23,9 @@ export default function LoginForm({
 
     webSocket.addEventListener("message", (event) => {
       handleSocketMessage(event.data).then(() => {
-        setLoader(false)
-        navigate('/app')
-      })
+        setLoader(false);
+        navigate("/app");
+      });
     });
   };
 
@@ -74,6 +69,7 @@ export default function LoginForm({
             minLength={7}
             maxLength={30}
             required
+            autoComplete="password"
             disabled={loader}
             placeholder="Password"
             value={password}
