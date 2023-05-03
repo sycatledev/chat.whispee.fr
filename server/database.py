@@ -35,9 +35,9 @@ class Data:
         return database
 
     # public method
-    def get_messages_from_chat_id(self, chat_id):
+    def get_messages_from_chat_id(self, chat_id, offset=0):
         messages_collection = self.database.messages
-        messages_cursor = messages_collection.find({"chat_id": chat_id})
+        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", -1).skip(offset).limit(20)
         messages = []
         for message_json in messages_cursor:
             message = Message(
@@ -50,12 +50,13 @@ class Data:
             messages.append(message)
         return messages
 
+
     # public method
-    def get_messages_to_objects_from_chat_id(self, chat_id):
+    def get_messages_to_objects_from_chat_id(self, chat_id, offset=0):
         messages_collection = self.database.messages
         messages = []
 
-        messages_cursor = messages_collection.find({"chat_id": chat_id})
+        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", -1).skip(offset).limit(20)
 
         for message_json in messages_cursor:
             message_json['_id'] = json_util.dumps(message_json['_id'])
