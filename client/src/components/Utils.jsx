@@ -32,7 +32,7 @@ export const useAppData = () => {
   const [deleted, setDeleted] = useState(null);
   const [username, setUsername] = useState("");
   const [userId, setUserId] = useState(null);
-  const [newMessage, setNewMessage] = useState([]);
+  const [newMessage, setNewMessage] = useState(null);
   const currentChatRef = useRef(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
 
@@ -189,5 +189,7 @@ export const useAppData = () => {
     setReadyMessages,
     setMessages,
     userId,
+    newMessage,
+    setNewMessage,
   };
 };

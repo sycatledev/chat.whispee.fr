@@ -38,6 +38,7 @@ export default function Chat() {
     sendSocketMessage,
     session,
     newMessage,
+    setNewMessage,
   } = useAppData();
 
   const [isDark, setIsDark] = useState(false);
@@ -178,6 +179,7 @@ export default function Chat() {
                   newMessage={newMessage}
                   userId={userId}
                   username={username}
+                  setNewMessage={setNewMessage}
                 />
               ) : (
                 <HomeContainer username={username} />

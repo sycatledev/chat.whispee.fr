@@ -17,14 +17,15 @@ const ChatContainer = ({
   readyMessages,
   userId,
   username,
+  newMessage,
+  setNewMessage,
 }) => {
   const chatContainerRef = useRef(null);
   const { sendChatMessage } = useAppData();
   const [openModal, setOpenModal] = useState(false);
   const inputRef = useRef(null);
-  const [myMessages, setMyMessages] = useState([]);
-  const [filtredMessages, setFiltredMessages] = useState([]);
-  const allMessages = [...myMessages, ...filtredMessages];
+  const audioRef = useRef(null);
+  const sendRef = useRef(null);
 
   function scrollToBottom() {
     chatContainerRef?.current?.scrollIntoView({
@@ -109,7 +110,7 @@ const ChatContainer = ({
     if (inputDatas.trim() === "") return;
 
     inputRef.current.value = "";
-
+    sendRef.current.play();
     sendChatMessage(currentChat, inputDatas);
   };
 
@@ -124,20 +125,26 @@ const ChatContainer = ({
 
   useEffect(() => {
     scrollToBottom();
-    const myMessage = messages.filter(
-      (message) => JSON.parse(message.sender_id).$oid === userId
-    );
-    setMyMessages(myMessage);
-
-    setReadyMessages(true);
-  }, [messages]);
-
+    if (newMessage) {
+      if (JSON.parse(newMessage.sender_id).$oid !== userId) {
+        audioRef.current.play();
+      } else {
+        sendRef.current.play();
+      }
+    }
+  }, [newMessage]);
   return (
     <>
       <div
         id="chat-header"
         className="flex flex-row items-center h-16 lg:rounded-t-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-2 shadow-sm border-b border-neutral-200 dark:border-neutral-700"
       >
+        <audio ref={audioRef}>
+          <source src="./sounds/message_received.wav" type="audio/mpeg" />
+        </audio>
+        <audio ref={sendRef}>
+          <source src="./sounds/message_sent.wav" type="audio/mpeg" />
+        </audio>
         <div className="flex-grow cursor-pointer">
           <div className="flex flex-row items-center relative w-full">
             {ready ? (
