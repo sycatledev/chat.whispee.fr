@@ -128,6 +128,11 @@ export const useAppData = () => {
 
       window.localStorage.setItem("session_id", sessionData["session_id"]);
       setConnectedUser(true);
+    } else if (socketCommand === "register_succeeded") {
+      let sessionData = JSON.parse(socketData);
+
+      window.localStorage.setItem("session_id", sessionData["session_id"]);
+      setConnectedUser(true);
     } else if (socketCommand === "user_disconnected") {
       window.localStorage.setItem("session_id", "");
 

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
 import { useNavigate } from "react-router-dom";
+import { useAppData } from "../Utils.jsx";
 
 export default function RegisterForm({ identifier, ws, onClose }) {
   const navigate = useNavigate();
+  const { handleSocketMessage, webSocket, sendSocketMessage } = useAppData();
   const [email, setEmail] = useState(
     identifier.includes("@") ? identifier : ""
   );
@@ -13,28 +15,6 @@ export default function RegisterForm({ identifier, ws, onClose }) {
     identifier.includes("@") ? "" : identifier
   );
   const [loader, setLoader] = useState(false);
-
-  const sendSocketMessage = async (ws, message) => {
-    console.log("<< " + message);
-
-    ws.send(message);
-  };
-
-  let handleSocketMessage = async (socketMessage) => {
-    console.log(">> " + socketMessage);
-    let socketContent = socketMessage.split("|||");
-    let socketCommand = socketContent[0];
-    let socketData = socketContent[1];
-
-    if (socketCommand === "register_succeeded") {
-      let sessionData = JSON.parse(socketData);
-
-      window.localStorage.setItem("session_id", sessionData["session_id"]);
-
-      navigate("/app");
-    }
-  };
-
   let data;
 
   const handleSubmit = async (e) => {
@@ -52,10 +32,14 @@ export default function RegisterForm({ identifier, ws, onClose }) {
       email: email,
       password: password,
     };
+
     await sendSocketMessage(ws, `register_user|||${JSON.stringify(data)}`);
 
-    ws.addEventListener("message", (event) => {
-      handleSocketMessage(event.data);
+    webSocket.addEventListener("message", (event) => {
+      handleSocketMessage(event.data).then(() => {
+        setLoader(false);
+        navigate("/app");
+      });
     });
   };
 
