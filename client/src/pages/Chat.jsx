@@ -40,6 +40,7 @@ export default function Chat() {
     session,
     newMessage,
     setNewMessage,
+    handleDisconnect,
   } = useAppData();
 
   const [isDark, setIsDark] = useState(false);
@@ -71,16 +72,6 @@ export default function Chat() {
       navigate("/");
     }
   }, [session]);
-  /*   useEffect(() => {
-    if (deleted) {
-      setMessages(
-        messages.filter(
-          (message) => message.message_id !== deletedMessage?.message_id
-        )
-      ),
-        setReadyMessages(true);
-    }
-  }, [deletedMessage]); */
 
   function setTheme(dark) {
     const root = document.documentElement;
@@ -158,6 +149,7 @@ export default function Chat() {
               // showProfil={showProfil}
               // setShowProfil={setShowProfil}
               username={username}
+              handleDisconnect={handleDisconnect}
             />
           </div>
           <div></div>

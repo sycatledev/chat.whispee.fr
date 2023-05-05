@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { isEmpty } from "./Utils.jsx";
 import Avatar from "./user/Avatar.jsx";
 
-export default function ProfilDropdown({ username, toggle }) {
+export default function ProfilDropdown({ username, toggle, handleDisconnect }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isUpwards, setIsUpwards] = useState(false);
   const ref = useRef(null);
@@ -60,8 +60,7 @@ export default function ProfilDropdown({ username, toggle }) {
           </button>
 
           <button
-            className={`active:bg-primary 
-                        dark:active:bg-primary p-2 rounded-xl text-gray-500 dark:hover:text-gray-300`}
+            className="active:bg-primary dark:active:bg-primary p-2 rounded-xl text-gray-500 dark:hover:text-gray-300"
             id="paramNav"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -71,32 +70,18 @@ export default function ProfilDropdown({ username, toggle }) {
           </button>
         </div>
 
-        <div
-          className={`${
-            isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-          } 
-          absolute bottom-full
-        } z-50 bg-white shadow-lg mt-2 py-2 w-48 rounded dropdown-content transition-all duration-300 ease-in-out`}
-        >
-          <a
-            href="#"
-            className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
-          >
-            Option 1
-          </a>
-          <a
-            href="#"
-            className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
-          >
-            Option 2
-          </a>
-          <a
-            href="#"
-            className="block px-4 py-2 text-gray-800 hover:bg-gray-500 hover:text-white"
-          >
-            Option 3
-          </a>
-        </div>
+        {isOpen ? (
+          <div className="flex flex-col text-center translate-y-2 absolute bottom-full z-40 bg-slate-100 dark:bg-slate-600 shadow-lg py-0.5 rounded-lg w-48">
+            <button
+              className="flex p-2 font-semibold bg-slate-100 dark:bg-slate-600 text-red-500 hover:bg-red-500 dark:hover:bg-red-500 hover:text-white rounded duration-200"
+              onClick={handleDisconnect}
+            >
+              <span className="mx-auto">Disconnect</span>
+            </button>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </>
   );

@@ -188,6 +188,12 @@ class Client:
             }
             await self.send_socket_message("register_succeeded|||" + json.dumps(session_data))
 
+        elif socket_command == "disconnect":
+            if self.session is not None:
+                sessions[self.session.session_id] = None
+            
+            await self.send_socket_message("user_disconnected|||")
+
         elif socket_command == "send_chat_message":
             chat_data = json.loads(socket_request)
             chat_id = int(chat_data["chat_id"])

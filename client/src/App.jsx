@@ -7,8 +7,16 @@ import { useAppData } from "./components/Utils.jsx";
 
 export default function App() {
   const [currentChat, setCurrentChat] = useState(null);
-  const { messages, chats, chat, singleChat, ready, readyMessages, init } =
-    useAppData();
+  const {
+    messages,
+    chats,
+    chat,
+    singleChat,
+    ready,
+    readyMessages,
+    init,
+    handleDisconnect,
+  } = useAppData();
 
   useEffect(() => {
     init();
@@ -31,6 +39,7 @@ export default function App() {
                 setCurrentChat={setCurrentChat}
                 messages={messages}
                 readyMessages={readyMessages}
+                handleDisconnect={handleDisconnect}
               />
             }
           />
