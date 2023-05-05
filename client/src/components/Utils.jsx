@@ -36,10 +36,10 @@ export const useAppData = () => {
   const currentChatRef = useRef(null);
   const [isSessionActive, setIsSessionActive] = useState(false);
 
-  function getWebsocketInstance() {
-    if (isEmpty(webSocket)) {
-    }
-  }
+  // function getWebsocketInstance() {
+  //   if (isEmpty(webSocket)) {
+  //   }
+  // }
 
   const init = async () => {
     const ws = new WebSocket("ws://localhost:456/");
@@ -109,6 +109,29 @@ export const useAppData = () => {
       setSession(true);
       setPending(false);
     } else if (socketCommand === "session_inactive") {
+      window.localStorage.setItem("session_id", "");
+
+      setSession(false);
+      setPending(false);
+    } else if (socketCommand === "no_identifier_found") {
+      // User not exist in database
+      setIdentify(true);
+      setRegister(true); // Redirect to register page
+    } else if (socketCommand === "identifier_found") {
+      let userData = JSON.parse(socketData);
+
+      setUsername(userData.username);
+      setIdentify(true);
+      setLogin(true);
+    } else if (socketCommand === "login_succeeded") {
+      let sessionData = JSON.parse(socketData);
+
+      window.localStorage.setItem("session_id", sessionData["session_id"]);
+      setConnectedUser(true);
+    } else if (socketCommand === "user_disconnected") {
+      window.localStorage.setItem("session_id", "");
+
+      setConnectedUser(false);
       setSession(false);
       setPending(false);
     } else if (socketCommand === "chat_message_sended") {
@@ -139,21 +162,6 @@ export const useAppData = () => {
       setDeletedMessage(messageDate);
       setDeleted(true);
       setReadyMessages(true);
-    } else if (socketCommand === "no_identifier_found") {
-      // User not exist in database
-      setIdentify(true);
-      setRegister(true); // Redirect to register page
-    } else if (socketCommand === "identifier_found") {
-      let userData = JSON.parse(socketData);
-
-      setUsername(userData.username);
-      setIdentify(true);
-      setLogin(true);
-    } else if (socketCommand === "login_succeeded") {
-      let sessionData = JSON.parse(socketData);
-
-      window.localStorage.setItem("session_id", sessionData["session_id"]);
-      setConnectedUser(true);
     } else if (socketCommand === "friends_loaded") {
       let friendsData = JSON.parse(socketData);
 
@@ -172,6 +180,14 @@ export const useAppData = () => {
       `send_chat_message|||${JSON.stringify(data)}`
     );
   };
+
+  const handleDisconnect = async () => {
+    if (webSocket == null) return;
+    if (session == null) return;
+
+    await sendSocketMessage(webSocket, `disconnect|||`);
+  };
+
   return {
     webSocket,
     session,
@@ -203,5 +219,6 @@ export const useAppData = () => {
     userId,
     newMessage,
     setNewMessage,
+    handleDisconnect,
   };
 };

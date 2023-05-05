@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function ChatFooter({ chat, inputRef, handleSubmitForm }) {
   return (
     <form

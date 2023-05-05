@@ -4,6 +4,7 @@ import LoginForm from "../components/forms/LoginForm.jsx";
 import Loader from "../components/Loader.jsx";
 import { useNavigate } from "react-router-dom";
 import { isEmpty, useAppData } from "../components/Utils.jsx";
+import brandIcon from "../assets/whispee_icon.png";
 
 export default function Authentification() {
   const {
@@ -56,29 +57,21 @@ export default function Authentification() {
 
   return (
     <div className="font-karla bg-gradient-to-br from-[#f8f6ff] to-[#ab94fd]">
-      <div className="flex min-h-screen justify-center sm:items-center">
-        {/* <section className="grid grid-cols-12 sm:space-y-10">
-          <div className="col-span-12 lg:col-span-7 font-bold m-auto text-center">
-            <h1 className="text-5xl p-5 sm:p-0">
-              <span className="text-primary font-extrabold">Whispee</span>{" "}
-              Chat
-            </h1>
-            <p className="text-lg lg:text-left">
-              A place where your{" "}
-              <span className="text-primary">privacy</span> is by default.
-            </p>
-          </div>
+      <img
+        src={brandIcon}
+        className="fixed h-16 object-contain m-4"
+        title="Whispee Chat"
+        alt="Whispee Chat"
+      />
 
-          <div className="col-span-12 lg:col-span-4"> */}
-        <div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-200 w-full lg:w-[420px]">
+      <div className="flex min-h-screen justify-center items-center">
+        <div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-200 max-w-[420px]">
           {!identify ? (
             <>
               <h2 className="text-3xl">Login or register</h2>
               <p className="text-gray-400 text-sm">
-                Enter your identifier to connect to Whispee.
+                Enter your identifier to connect to Whispee Chat.
               </p>
-
-              {/* Form identify check */}
 
               <form
                 action=""
@@ -136,10 +129,7 @@ export default function Authentification() {
             />
           ) : null}
         </div>
-        {/* </div>
-        </section> */}
       </div>
-      {/* <Footer /> */}
     </div>
   );
 }
