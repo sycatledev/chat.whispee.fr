@@ -20,7 +20,10 @@ export default function LoginForm({ identifier, username, onClose }) {
       password,
     };
 
-    await sendSocketMessage(webSocket, `login_user||| ${JSON.stringify(data)}`);
+    await sendSocketMessage(webSocket, JSON.stringify({
+      command: "login_user",
+      data,
+    }));
 
     webSocket.addEventListener("message", (event) => {
       handleSocketMessage(event.data).then(() => {

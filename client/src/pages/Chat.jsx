@@ -90,7 +90,10 @@ export default function Chat() {
 		let request = { chat_id: chat_id };
 		await sendSocketMessage(
 			webSocket,
-			"load_chat|||" + JSON.stringify(request)
+			JSON.stringify({
+				command: "load_chat",
+				data: request
+			})
 		);
 	};
 
@@ -100,7 +103,10 @@ export default function Chat() {
 		};
 		await sendSocketMessage(
 			webSocket,
-			`delete_chat_message|||${JSON.stringify(data)}`
+			JSON.stringify({
+				command: "delete_chat_message",
+				data
+			})
 		);
 	};
 	let handleCloseProfil = () => {

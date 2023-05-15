@@ -53,15 +53,24 @@ export const useAppData = () => {
 
       await sendSocketMessage(
         ws,
-        "check_session|||" + JSON.stringify(sessionData)
-      );
+        JSON.stringify({
+					command: "check_session",
+					data: sessionData,
+				})
+      ); 
 
       if (currentChat != null) {
         let request = { chat_id: currentChat };
-        await sendSocketMessage(ws, "load_chat|||" + JSON.stringify(request));
+        await sendSocketMessage(ws, JSON.stringify({
+					command: "load_chats",
+					data: request,
+				}));
       }
       if (sessionId != null) {
-        await sendSocketMessage(ws, "load_chats|||");
+        await sendSocketMessage(ws, JSON.stringify({
+					command: "load_chats",
+					data: {},
+				}));
       }
     });
     ws.addEventListener("close", async (event) => {
@@ -96,16 +105,15 @@ export const useAppData = () => {
   const handleSocketMessage = async (socketMessage) => {
     console.log(">> " + socketMessage);
 
-    let socketContent = socketMessage.split("|||");
-    let socketCommand = socketContent[0];
-    let socketData = socketContent[1];
+    let socketContent = JSON.parse(socketMessage)
+    let socketCommand = socketContent.command;
+    let socketData = socketContent.data;
 
     if (socketCommand === "active_session") {
-      let sessionData = JSON.parse(socketData);
-      const userIdParsed = JSON.parse(sessionData.user.id).$oid;
+      const userIdParsed = JSON.parse(socketData.user.id).$oid;
 
       setUserId(userIdParsed);
-      setUsername(sessionData.user.username);
+      setUsername(socketData.user.username);
       setSession(true);
       setPending(false);
     } else if (socketCommand === "session_inactive") {
@@ -118,20 +126,14 @@ export const useAppData = () => {
       setIdentify(true);
       setRegister(true); // Redirect to register page
     } else if (socketCommand === "identifier_found") {
-      let userData = JSON.parse(socketData);
-
-      setUsername(userData.username);
+      setUsername(socketData.username);
       setIdentify(true);
       setLogin(true);
     } else if (socketCommand === "login_succeeded") {
-      let sessionData = JSON.parse(socketData);
-
-      window.localStorage.setItem("session_id", sessionData["session_id"]);
+      window.localStorage.setItem("session_id", socketData["session_id"]);
       setConnectedUser(true);
     } else if (socketCommand === "register_succeeded") {
-      let sessionData = JSON.parse(socketData);
-
-      window.localStorage.setItem("session_id", sessionData["session_id"]);
+      window.localStorage.setItem("session_id", socketData["session_id"]);
       setConnectedUser(true);
     } else if (socketCommand === "user_disconnected") {
       window.localStorage.setItem("session_id", "");
@@ -140,37 +142,25 @@ export const useAppData = () => {
       setSession(false);
       setPending(false);
     } else if (socketCommand === "chat_message_sended") {
-      let messageData = JSON.parse(socketData);
-
-      setNewMessage(messageData);
-      setMessages((messages) => [...messages, messageData]);
+      setNewMessage(socketData);
+      setMessages((messages) => [...messages, socketData]);
     } else if (socketCommand === "chats_loaded") {
-      let chatsData = JSON.parse(socketData);
-
-      setChats(chatsData);
+      setChats(socketData);
       setReady(true);
       setReadyMessages(true);
     } else if (socketCommand === "chat_loaded") {
-      let chat_data = JSON.parse(socketData);
-
-      setChat(chat_data);
+      setChat(socketData);
       setSingleChat(true);
     } else if (socketCommand === "chat_messages_loaded") {
-      let messagesDatas = JSON.parse(socketData);
-
-      setMessages(messagesDatas);
+      setMessages(socketData);
       setReadyMessages(true);
     } else if (socketCommand === "chat_message_deleted") {
-      let messageDate = JSON.parse(socketData);
-
       setReadyMessages(false);
-      setDeletedMessage(messageDate);
+      setDeletedMessage(socketData);
       setDeleted(true);
       setReadyMessages(true);
     } else if (socketCommand === "friends_loaded") {
-      let friendsData = JSON.parse(socketData);
-
-      setFriends(friendsData);
+      setFriends(socketData);
       setFriendReady(true);
     }
   };
@@ -182,7 +172,10 @@ export const useAppData = () => {
 
     await sendSocketMessage(
       webSocket,
-      `send_chat_message|||${JSON.stringify(data)}`
+      JSON.stringify({
+        command: "send_chat_message",
+        data
+      })
     );
   };
 
@@ -190,7 +183,10 @@ export const useAppData = () => {
     if (webSocket == null) return;
     if (session == null) return;
 
-    await sendSocketMessage(webSocket, `disconnect|||`);
+    await sendSocketMessage(webSocket, JSON.stringify({
+      command: "disconnect",
+      data: {}
+    }));
   };
 
   return {

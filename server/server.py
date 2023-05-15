@@ -85,8 +85,8 @@ class Client:
 
     async def start(self) -> None:
         async for message in self.websocket:
-            socket_command, socket_request = message.split("|||", 1)
-            await self.handle_socket_command(socket_command, socket_request)
+            request = json.loads(message)
+            await self.handle_socket_command(request["command"], request["data"])
 
         await self.websocket.close()
         online_clients.remove(self)
@@ -96,25 +96,28 @@ class Client:
 
         await self.websocket.send(message)
 
-    async def handle_socket_command(self, socket_command: str, socket_request: str) -> None:
+    async def handle_socket_command(self, socket_command: str, socket_request: dict) -> None:
         if socket_command == "check_session":
-            session_data = json.loads(socket_request)
-            session_id = session_data["session_id"]
-
+            session_id = socket_request["session_id"]
             if session_id in sessions:
                 session = sessions[session_id]
 
                 if session is not None:
                     self.session = session
 
-                    await self.send_socket_message("active_session|||" + json.dumps(session.to_object()))
+                    await self.send_socket_message(json.dumps({
+                        "command": "active_session",
+                        "data": session.to_object()
+                    }))
                     return
 
-            await self.send_socket_message("session_inactive|||")
+            await self.send_socket_message(json.dumps({
+                "command": "session_inactive",
+                "data": {}
+            }))
 
         elif socket_command == "check_identifier":
-            credential = json.loads(socket_request)
-            identifier = credential["identifier"]
+            identifier = socket_request["identifier"]
 
             # Check if identifier is email or username
             if '@' in identifier:
@@ -123,18 +126,22 @@ class Client:
                 user = get_database().get_user_by_username(identifier)
 
             if user is None:
-                await self.send_socket_message("no_identifier_found|||")
+                await self.send_socket_message(json.dumps({
+                    "command": "no_identifier_found",
+                    "data": {}
+                }))
             else:
-                await self.send_socket_message("identifier_found|||" + json.dumps(user))
+                await self.send_socket_message(json.dumps({
+                    "command": "identifier_found",
+                    "data": user
+                }))
 
         elif socket_command == "login_user":
-            credentials = json.loads(socket_request)
-
-            user_identifier = credentials["identifier"]
+            user_identifier = socket_request["identifier"]
             if user_identifier == "":
                 return
 
-            user_password = credentials["password"]
+            user_password = socket_request["password"]
             if user_password == "":
                 return
 
@@ -142,7 +149,10 @@ class Client:
 
             # If connection has not been established
             if user is None:
-                await self.send_socket_message("login_failed|||")
+                await self.send_socket_message(json.dumps({
+                    "command": "login_failed",
+                    "data": {}
+                }))
                 return
 
             user_instance = User(user["_id"], user["username"], user["email"])
@@ -154,27 +164,31 @@ class Client:
             session_data = {
                 "session_id": self.session.session_id
             }
-            await self.send_socket_message("login_succeeded|||" + json.dumps(session_data))
+            await self.send_socket_message(json.dumps({
+                "command": "login_succeeded",
+                "data": session_data
+            }))
 
         elif socket_command == "register_user":
-            credentials = json.loads(socket_request)
-
-            username = credentials["username"]
+            username = socket_request["username"]
             if username == "":
                 return
 
-            email = credentials["email"]
+            email = socket_request["email"]
             if email == "":
                 return
 
-            password = credentials["password"]
+            password = socket_request["password"]
             if password == "":
                 return
 
             creation = get_database().create_user(username, email, password)
 
             if (creation is None):
-                await self.send_socket_message("register_failed|||")
+                await self.send_socket_message(json.dumps({
+                    "command": "register_failed",
+                    "data": {}
+                }))
                 return
 
             user_instance = User(creation, username, email)
@@ -186,18 +200,23 @@ class Client:
             session_data = {
                 "session_id": self.session.session_id
             }
-            await self.send_socket_message("register_succeeded|||" + json.dumps(session_data))
+            await self.send_socket_message(json.dumps({
+                "command": "register_succeeded",
+                "data": session_data
+            }))
 
         elif socket_command == "disconnect":
             if self.session is not None:
                 sessions[self.session.session_id] = None
             
-            await self.send_socket_message("user_disconnected|||")
+            await self.send_socket_message(json.dumps({
+                "command": "user_disconnected",
+                "data": {}
+            }))
 
         elif socket_command == "send_chat_message":
-            chat_data = json.loads(socket_request)
-            chat_id = int(chat_data["chat_id"])
-            content = str(chat_data["content"])
+            chat_id = int(socket_request["chat_id"])
+            content = str(socket_request["content"])
 
             chat = get_database().get_chat(chat_id)
             current_time = datetime.now()
@@ -207,16 +226,14 @@ class Client:
             await self.send_message_to_chat(self.session.user.opened_chat_id, message)
 
         elif socket_command == "delete_chat_message":
-            chat_data = json.loads(socket_request)
-            message_id = str(chat_data["message_id"])
+            message_id = str(socket_request["message_id"])
             await get_database().delete_message(message_id)
             deleted_message = {"message_id": message_id}
 
             await self.message_deleted(deleted_message)
 
         elif socket_command == "load_chat":
-            chat_data = json.loads(socket_request)
-            chat_id = int(chat_data["chat_id"])
+            chat_id = int(socket_request["chat_id"])
 
             self.session.user.opened_chat_id = chat_id
 
@@ -233,7 +250,10 @@ class Client:
     # ------------------------------------------
 
     async def send_loaded_chats(self) -> None:
-        await self.send_socket_message("chats_loaded|||" + json.dumps(get_database().get_all_chats_to_objects()))
+        await self.send_socket_message(json.dumps({
+            "command": "chats_loaded",
+            "data": get_database().get_all_chats_to_objects()
+        }))
 
     async def send_loaded_chat(self, chat_id: int) -> None:
         chat = get_database().get_chat(chat_id)
@@ -242,12 +262,18 @@ class Client:
             print("No chat found")
             return
 
-        await self.send_socket_message("chat_loaded|||" + json.dumps(chat.to_object()))
+        await self.send_socket_message(json.dumps({
+            "command": "chat_loaded",
+            "data": chat.to_object()
+        }))
         await self.load_chat_messages(chat.id)
 
     async def load_chat_messages(self, chat_id: int) -> None:
         messages = get_database().get_messages_to_objects_from_chat_id(chat_id)
-        await self.send_socket_message("chat_messages_loaded|||" + json.dumps(messages))
+        await self.send_socket_message(json.dumps({
+            "command": "chat_messages_loaded",
+            "data": messages
+        }))
 
     async def send_message_to_chat(self, chat_id: int, message: str) -> None:
         for client in online_clients:
@@ -255,17 +281,26 @@ class Client:
                 continue
 
             if client.session.user.opened_chat_id == chat_id:
-                await client.send_socket_message("chat_message_sended|||" + json.dumps(message.to_object()))
+                await client.send_socket_message(json.dumps({
+            "command": "chat_message_sended",
+            "data": message.to_object()
+        }))
 
     async def send_chat_message(self, message: str) -> None:
-        await self.send_socket_message("chat_message_sended|||" + json.dumps(message.to_object()))
+        await self.send_socket_message(json.dumps({
+            "command": "chat_message_sended",
+            "data": message.to_object()
+        }))
 
     async def message_deleted(self, message):
         for client in online_clients:
             if client.session is None:
                 continue
 
-        await self.send_socket_message("chat_message_deleted|||" + json.dumps(message))
+        await self.send_socket_message(json.dumps({
+            "command": "chat_message_deleted",
+            "data": message
+        }))
 
     async def send_chat_message_to_everyone(self, message: str) -> None:
         for client in online_clients:

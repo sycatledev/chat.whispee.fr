@@ -33,7 +33,10 @@ export default function RegisterForm({ identifier, ws, onClose }) {
       password: password,
     };
 
-    await sendSocketMessage(ws, `register_user|||${JSON.stringify(data)}`);
+    await sendSocketMessage(ws, JSON.stringify({
+      command: "register_user",
+      data,
+    }));
 
     webSocket.addEventListener("message", (event) => {
       handleSocketMessage(event.data).then(() => {

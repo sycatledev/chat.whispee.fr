@@ -33,7 +33,10 @@ export default function Authentification() {
 
     await sendSocketMessage(
       webSocket,
-      `check_identifier||| ${JSON.stringify(data)}`
+      JSON.stringify({
+        command: "check_identifier",
+        data,
+      })
     );
   };
   useEffect(() => {
