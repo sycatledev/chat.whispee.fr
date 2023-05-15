@@ -40,8 +40,7 @@ const ChatContainer = ({
     setMessages(
       messages.filter(
         (message) =>
-          JSON.parse(message._id || message.id).$oid !==
-          deletedMessage?.message_id
+          message._id !== deletedMessage?.message_id
       )
     ),
       setReadyMessages(true);
@@ -72,7 +71,7 @@ const ChatContainer = ({
   useEffect(() => {
     scrollToBottom();
     if (newMessage) {
-      if (JSON.parse(newMessage.sender_id).$oid !== userId) {
+      if (newMessage.sender_id !== userId) {
         audioRef.current.play();
       } else {
         sendRef.current.play();
@@ -153,9 +152,9 @@ const ChatContainer = ({
               messages.map((message, index) => (
                 <li
                   key={index}
-                  id={JSON.parse(message._id || message.id).$oid}
+                  id={message._id}
                   className={
-                    JSON.parse(message.sender_id).$oid !== userId
+                    message.sender_id !== userId
                       ? "col-start-1 lg:col-start-1 col-end-13 gap-3 p-3 rounded-lg group"
                       : "col-start-1 lg:col-start-3 col-end-13 gap-3 p-3 rounded-lg group"
                   }
@@ -163,7 +162,7 @@ const ChatContainer = ({
                   <div className="items-center justify-start group">
                     <div
                       className={
-                        JSON.parse(message.sender_id).$oid !== userId
+                        message.sender_id !== userId
                           ? "flex"
                           : "flex-row-reverse flex"
                       }
@@ -179,7 +178,7 @@ const ChatContainer = ({
 
                         <div
                           className={
-                            (JSON.parse(message.sender_id).$oid !== userId
+                            (message.sender_id !== userId
                               ? "text-right"
                               : "text-left") +
                             "ml-auto justify-end space-x-1 items-center text-xs text-gray-400"
@@ -190,7 +189,7 @@ const ChatContainer = ({
                           </div>
                         </div>
 
-                        {JSON.parse(message.sender_id).$oid == userId ? (
+                        {message.sender_id == userId ? (
                           <div
                             id="message-actions"
                             className="absolute -top-4 left-0 w-full hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
@@ -218,7 +217,7 @@ const ChatContainer = ({
                         )}
                       </div>
 
-                      {JSON.parse(message.sender_id).$oid == userId ? (
+                      {message.sender_id == userId ? (
                         <div className="modal">
                           <React.Fragment>
                             <Modal
@@ -241,7 +240,7 @@ const ChatContainer = ({
                                   color="gray"
                                   onClick={() =>
                                     handleDeleteChatMessage(
-                                      JSON.parse(message._id || message.id).$oid
+                                      message._id
                                     )
                                   }
                                 >

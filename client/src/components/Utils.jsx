@@ -110,9 +110,7 @@ export const useAppData = () => {
     let socketData = socketContent.data;
 
     if (socketCommand === "active_session") {
-      const userIdParsed = JSON.parse(socketData.user.id).$oid;
-
-      setUserId(userIdParsed);
+      setUserId(socketData.user.id);
       setUsername(socketData.user.username);
       setSession(true);
       setPending(false);

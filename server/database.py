@@ -106,7 +106,7 @@ class MongoDatabase:
         user = self.database.users.find_one({"email": email})
 
         if user is not None:
-            user['_id'] = json_util.dumps(user['_id'])
+            user['_id'] = str(user['_id'])
 
         return user
 
@@ -114,7 +114,7 @@ class MongoDatabase:
         user = self.database.users.find_one({"username": username})
 
         if user is not None:
-            user['_id'] = json_util.dumps(user['_id'])
+            user['_id'] = str(user['_id'])
 
         return user
 
