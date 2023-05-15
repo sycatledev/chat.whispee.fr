@@ -9,6 +9,7 @@ import ChatFooter from "./ChatFooter.jsx";
 import formatTimestampToTimeDifference from "../../utils/time.js";
 
 const ChatContainer = ({
+  handleSidebarToggle,
   currentChat,
   ready,
   chat,
@@ -89,8 +90,17 @@ const ChatContainer = ({
 
       <div
         id="chat-header"
-        className="flex flex-row items-center h-16 lg:rounded-t-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-2 shadow-sm border-b border-neutral-200 dark:border-neutral-700"
+        className="flex flex-row items-center h-16 rounded-t-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-2 shadow-sm border-b border-neutral-200 dark:border-neutral-700"
       >
+        <button
+          onClick={handleSidebarToggle}
+          className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black rounded-xl mr-1 lg:mr-2"
+        >
+          <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 18h18v-2H3v2Zm0-5h18v-2H3v2Zm0-7v2h18V6H3Z"></path>
+          </svg>
+        </button>
+
         <div className="flex-grow cursor-pointer">
           <div className="flex flex-row items-center relative w-full">
             {ready ? (
@@ -134,14 +144,14 @@ const ChatContainer = ({
         className="flex flex-col h-full overflow-x-hidden p-4"
       >
         <div className="flex flex-col h-full rounded-2xl">
-          <div
+          <ul
             ref={chatContainerRef}
             className="grid grid-cols-12 gap-y-2"
             id="messages-container"
           >
             {readyMessages ? (
               messages.map((message, index) => (
-                <div
+                <li
                   key={index}
                   id={JSON.parse(message._id || message.id).$oid}
                   className={
@@ -183,7 +193,7 @@ const ChatContainer = ({
                         {JSON.parse(message.sender_id).$oid == userId ? (
                           <div
                             id="message-actions"
-                            className="absolute -top-6 left-0 w-full hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
+                            className="absolute -top-4 left-0 w-full hidden group-hover:inline-flex space-x-1 mb-2 mt-1"
                           >
                             <Tooltip
                               content="Delete this message"
@@ -219,7 +229,8 @@ const ChatContainer = ({
                               <Modal.Body>
                                 <div className="space-y-6">
                                   <p className="text-base leading-relaxed text-gray-900 dark:text-gray-400">
-                                    Are you sure you want to delete this message ?
+                                    Are you sure you want to delete this message
+                                    ?
                                   </p>
                                   <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400"></p>
                                 </div>
@@ -248,12 +259,12 @@ const ChatContainer = ({
                       )}
                     </div>
                   </div>
-                </div>
+                </li>
               ))
             ) : (
               <MessagesSkeleton />
             )}
-          </div>
+          </ul>
         </div>
       </div>
       <ChatFooter

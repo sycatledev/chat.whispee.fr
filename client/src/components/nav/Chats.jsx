@@ -29,7 +29,7 @@ const Chats = ({ messageNav, displayChat }) => {
               onClick={() => displayChat(chat.chat_id)}
               key={chat.chat_id}
               data-user-id={chat.chat_id}
-              className="chat-button flex flex-row items-center hover:bg-slate-100 active:bg-slate-200 dark:hover:bg-slate-500 dark:active:bg-slate-600 rounded-xl p-2"
+              className="chat-button flex flex-row items-center hover:bg-neutral-200 dark:hover:bg-neutral-800 rounded-xl p-2"
             >
               <Avatar username={chat.chat_name}></Avatar>
               <div className="ml-2 text-sm font-semibold select-none">

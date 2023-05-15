@@ -30,9 +30,9 @@ export default function Modal({ title, isOpen, onClose, content, action }) {
             </h3>
           </div>
 
-          <div className="p-6 space-y-6">{content}</div>
+          <div className="p-4 space-y-6">{content}</div>
           {action != undefined ? (
-            <div className="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div className="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
               {/* <button
                 data-modal-hide="staticModal"
                 type="button"

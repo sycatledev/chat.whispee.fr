@@ -5,7 +5,7 @@ export default function ChatFooter({ chat, inputRef, handleSubmitForm }) {
     <form
       onSubmit={handleSubmitForm}
       id="chat-form"
-      className="flex flex-row items-center h-16 p-4 lg:rounded-b-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-4 shadow-sm border-t border-neutral-200 dark:border-neutral-700"
+      className="flex flex-row items-center h-16 p-4 rounded-b-xl bg-[#f7f7f7] dark:bg-[#1c1c1c] text-black dark:text-white duration-200 w-full px-4 shadow-sm border-t border-neutral-200 dark:border-neutral-700"
     >
       <div className="flex-grow">
         <div className="relative w-full">
