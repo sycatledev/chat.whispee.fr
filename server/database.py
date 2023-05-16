@@ -60,7 +60,7 @@ class MongoDatabase:
         messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", 1).skip(max(0, total_messages - 15)).limit(15)
 
         for message_json in messages_cursor:
-            message_json['_id'] = json_util.dumps(message_json['_id'])
+            message_json['_id'] = str(message_json['_id'])
             messages.append(message_json)
 
         return messages
@@ -72,7 +72,7 @@ class MongoDatabase:
                    "content": message_text, "date": message_date}
         result = messages_collection.insert_one(message)
 
-        return json_util.dumps(result.inserted_id)
+        return str(result.inserted_id)
 
     async def delete_message(self, message_id):
         messages_colletion = self.database.messages
@@ -96,7 +96,7 @@ class MongoDatabase:
         chats_cursor = chats_collection.find({})
 
         for chat_json in chats_cursor:
-            chat_json['_id'] = json_util.dumps(chat_json['_id'])
+            chat_json['_id'] = str(chat_json['_id'])
             chats.append(chat_json)
 
         return chats
