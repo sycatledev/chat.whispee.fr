@@ -139,9 +139,7 @@ export default function App() {
 			setChat(socketData);
 			setSingleChat(true);
 		} else if (socketCommand === "chat_messages_loaded") {
-			console.log(socketData);
 			setMessages(socketData);
-			console.log("message depuis app.jsx", messages);
 		} else if (socketCommand === "chat_message_deleted") {
 			setReadyMessages(false);
 			setDeletedMessage(socketData);
