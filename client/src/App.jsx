@@ -58,7 +58,7 @@ export default function App() {
 						})
 					);
 				}
-				if (sessionId != null) {
+				/* 	if (sessionId != null) {
 					await sendSocketMessage(
 						ws,
 						JSON.stringify({
@@ -66,7 +66,7 @@ export default function App() {
 							data: {},
 						})
 					);
-				}
+				} */
 			});
 			ws.addEventListener("close", async (event) => {
 				console.log("Lost connection to server");
