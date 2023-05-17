@@ -43,6 +43,7 @@ export default function Chat({
 	const [isDark, setIsDark] = useState(false);
 	const [messageNav, setMessageNav] = useState(true);
 	const [friendNav, setFriendNav] = useState(false);
+	const [settingsNav, setSettingsNav] = useState(false);
 	const [showProfil, setShowProfil] = useState(false);
 	const [sidebarToggled, toggleSidebar] = useState(true);
 	const navigate = useNavigate();
@@ -183,6 +184,8 @@ export default function Chat({
 						setMessageNav={setMessageNav}
 						friendNav={friendNav}
 						setFriendNav={setFriendNav}
+						settingsNav={settingsNav}
+						setSettingsNav={setSettingsNav}
 						chats={chats}
 						ready={ready}
 						displayChat={displayChat}

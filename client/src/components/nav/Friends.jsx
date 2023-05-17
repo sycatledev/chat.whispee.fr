@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { isEmpty } from "../Utils";
+import Avatar from "../user/Avatar.jsx";
 
 export function Friend({ friendNav, friends, readyFriend }) {
 	return (
 		<div
-			className={`flex flex-col my-4 flex-grow ${friendNav ? "" : "hidden"}`}>
+			className={`flex flex-col my-4 flex-grow ${!friendNav ? "hidden" : ""}`}>
 			<div className="flex flex-row items-center justify-between text-xs">
 				<span className="font-bold">My Friends ({friends.length})</span>
 				<button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black rounded-xl flex-shrink-0">
@@ -13,31 +12,25 @@ export function Friend({ friendNav, friends, readyFriend }) {
 						fill="currentColor"
 						viewBox="0 0 24 24"
 						xmlns="http://www.w3.org/2000/svg">
-						<path
-							fillRule="evenodd"
-							d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6Zm1 8c0-2.66 5.33-4 8-4s8 1.34 8 4v2H7v-2Z"
-							clipRule="evenodd"
-						/>
+						<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" />
 					</svg>
 				</button>
 			</div>
-
 			<div
-				className="flex flex-col space-y-1 mt-4 -mx-2 h-[22rem] overflow-y-auto"
+				className="flex flex-col h-full space-y-1 mt-4 -mx-2 overflow-y-auto"
 				id="chats-container">
 				{readyFriend ? (
-					!isEmpty(friends) &&
-					friends.map((friend) => (
+					friends.map((c) => (
 						<button
-							key={friend.chat_id}
-							data-user-id={friend.chat_id}
-							className="chat-button flex flex-row items-center hover:bg-primary active:bg-primary dark:hover:bg-primary dark:active:bg-primary rounded-xl p-2">
-							<div className="flex items-center justify-center h-8 w-8 bg-primary text-white rounded-full">
-								{friend.chat_name[0]}
+							// onClick={() => displayChat(c.chat_id)}
+							key={c.chat_id}
+							className={
+								"hover:bg-neutral-200 dark:hover:bg-neutral-900 font-normal chat-button flex flex-row items-center rounded-xl p-2 group space-x-2"
+							}>
+							<div className="items-center flex flex-row relative pl-2">
+								<Avatar username={c.chat_name}></Avatar>
 							</div>
-							<div className="ml-2 text-sm font-semibold select-none">
-								{friend.chat_name}
-							</div>
+							<div className="text-sm select-none">{c.chat_name}</div>
 						</button>
 					))
 				) : (

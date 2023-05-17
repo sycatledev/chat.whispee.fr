@@ -1,6 +1,7 @@
 import Nav from "../components/Nav.jsx";
 import Chats from "../components/nav/Chats.jsx";
 import { Friend } from "../components/nav/Friends.jsx";
+import Settings from "../components/nav/Settings.jsx";
 import ProfilDropdown from "../components/Dropdown.jsx";
 
 export default function Sidebar({
@@ -9,6 +10,8 @@ export default function Sidebar({
 	setMessageNav,
 	friendNav,
 	setFriendNav,
+	settingsNav,
+	setSettingsNav,
 	chats,
 	ready,
 	displayChat,
@@ -32,6 +35,8 @@ export default function Sidebar({
 					setMessageNav={setMessageNav}
 					friendNav={friendNav}
 					setFriendNav={setFriendNav}
+					settingsNav={settingsNav}
+					setSettingsNav={setSettingsNav}
 				/>
 				<Chats
 					chats={chats}
@@ -46,6 +51,7 @@ export default function Sidebar({
 					readyFriend={readyFriend}
 					friends={friends}
 				/>
+				<Settings settingsNav={settingsNav} />
 
 				<ProfilDropdown
 					toggle={toggleTheme}
