@@ -38,9 +38,11 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 def log_message(message):
     logging.info(f"{message}")
     print(message)
+
 
 async def start_server() -> None:
     server = await asyncio.start_server((), 'localhost', SERVER_PORT)
@@ -52,11 +54,13 @@ async def start_server() -> None:
     await server.start_serving()
     await websocket_server.wait_closed()
 
+
 async def handle_websocket(websocket, path) -> None:
     client = Client(websocket)
     online_clients.append(client)
 
     await client.start()
+
 
 async def shutdown(loop) -> None:
     logging.info("Closing connections...")
@@ -67,6 +71,7 @@ async def shutdown(loop) -> None:
     await asyncio.gather(*tasks, return_exceptions=True)
     loop.stop()
 
+
 def get_database() -> MongoDatabase:
     global db_client
 
@@ -75,8 +80,10 @@ def get_database() -> MongoDatabase:
 
     return db_client
 
+
 async def get_all_sessions():
     return [c.session for c in online_clients if c.session]
+
 
 class Client:
     def __init__(self, websocket):
@@ -208,7 +215,7 @@ class Client:
         elif socket_command == "disconnect":
             if self.session is not None:
                 sessions[self.session.session_id] = None
-            
+
             await self.send_socket_message(json.dumps({
                 "command": "user_disconnected",
                 "data": {}
@@ -282,9 +289,9 @@ class Client:
 
             if client.session.user.opened_chat_id == chat_id:
                 await client.send_socket_message(json.dumps({
-            "command": "chat_message_sended",
-            "data": message.to_object()
-        }))
+                    "command": "chat_message_sended",
+                    "data": message.to_object()
+                }))
 
     async def send_chat_message(self, message: str) -> None:
         await self.send_socket_message(json.dumps({

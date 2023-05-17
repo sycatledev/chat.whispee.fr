@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppData } from "../components/Utils.jsx";
 import * as Cookies from "../utils/cookies.js";
 import ChatContainer from "../components/chats/ChatContainer.jsx";
 import HomeContainer from "../components/chats/HomeContainer.jsx";
-
 import Modal from "../components/modals/Modal.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 
@@ -16,30 +14,30 @@ function ProfilModal({ isOpen, onClose }) {
 	);
 }
 
-export default function Chat() {
-	const {
-		chat,
-		chats,
-		ready,
-		singleChat,
-		deleted,
-		deletedMessage,
-		username,
-		userId,
-		currentChat,
-		setCurrentChat,
-		messages,
-		setReadyMessages,
-		readyMessages,
-		setMessages,
-		webSocket,
-		sendSocketMessage,
-		session,
-		newMessage,
-		setNewMessage,
-		handleDisconnect,
-	} = useAppData();
-
+export default function Chat({
+	chat,
+	chats,
+	ready,
+	singleChat,
+	deletedMessage,
+	deleted,
+	username,
+	userId,
+	currentChat,
+	setCurrentChat,
+	messages,
+	setReadyMessages,
+	readyMessages,
+	setMessages,
+	webSocket,
+	sendSocketMessage,
+	session,
+	sendChatMessage,
+	newMessage,
+	setNewMessage,
+	handleDisconnect,
+	connectedUser,
+}) {
 	const [isDark, setIsDark] = useState(false);
 	const [messageNav, setMessageNav] = useState(true);
 	const [friendNav, setFriendNav] = useState(false);
@@ -92,7 +90,7 @@ export default function Chat() {
 			webSocket,
 			JSON.stringify({
 				command: "load_chat",
-				data: request
+				data: request,
 			})
 		);
 	};
@@ -105,7 +103,7 @@ export default function Chat() {
 			webSocket,
 			JSON.stringify({
 				command: "delete_chat_message",
-				data
+				data,
 			})
 		);
 	};
@@ -124,6 +122,37 @@ export default function Chat() {
 		}
 	}, [chat]);
 
+	useEffect(() => {
+		if (session === true || connectedUser) {
+			return;
+		} else if (session === false || !connectedUser) {
+			navigate("/");
+		}
+	}, [session]);
+	useEffect(() => {
+		if (connectedUser) {
+			const sessionId = window.localStorage.getItem("session_id");
+			let sessionData = {
+				session_id: sessionId,
+			};
+
+			sendSocketMessage(
+				webSocket,
+				JSON.stringify({
+					command: "check_session",
+					data: sessionData,
+				})
+			);
+			sendSocketMessage(
+				webSocket,
+				JSON.stringify({
+					command: "load_chats",
+					data: {},
+				})
+			);
+		}
+	}, [connectedUser]);
+	console.log("message depuis chat", messages);
 	return (
 		<div
 			className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-200 overflow-x-hidden`}>
@@ -159,6 +188,8 @@ export default function Chat() {
 							className="flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full bg-[#f7f7f7] dark:bg-[#1c1c1c]">
 							{singleChat ? (
 								<ChatContainer
+									webSocket={webSocket}
+									sendChatMessage={sendChatMessage}
 									handleSidebarToggle={handleSidebarToggle}
 									ready={ready}
 									chat={chat}
