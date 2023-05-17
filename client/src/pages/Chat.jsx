@@ -152,7 +152,7 @@ export default function Chat({
 			);
 		}
 	}, [connectedUser]);
-	console.log("message depuis chat", messages);
+
 	return (
 		<div
 			className={`bg-[#fefefe] dark:bg-[#080808] text-black dark:text-white duration-200 overflow-x-hidden`}>
@@ -181,11 +181,13 @@ export default function Chat({
 						toggleTheme={toggleTheme}
 						username={username}
 						handleDisconnect={handleDisconnect}
+						currentChat={currentChat}
 					/>
-					<div className="flex flex-col flex-auto h-full p-2 lg:p-4 duration-200">
+					<div className="flex flex-col flex-auto h-full p-2 duration-200">
 						<div
 							id="chat-wrapper"
 							className="flex flex-col flex-auto flex-shrink-0 rounded-2xl h-full bg-[#f7f7f7] dark:bg-[#1c1c1c]">
+							{/* bg-[url(https://www.technocrazed.com/wp-content/uploads/2015/12/beautiful-wallpaper-download-17.jpg)] */}
 							{singleChat ? (
 								<ChatContainer
 									webSocket={webSocket}
