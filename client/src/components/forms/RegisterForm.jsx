@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BackButton from "../buttons/BackButton.jsx";
 import Loader from "../Loader.jsx";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +20,6 @@ export default function RegisterForm({
 		identifier.includes("@") ? "" : identifier
 	);
 	const [loader, setLoader] = useState(false);
-	let data;
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -33,10 +32,14 @@ export default function RegisterForm({
 		}
 
 		await sendSocketMessage(
-			ws,
+			webSocket,
 			JSON.stringify({
 				command: "register_user",
-				data,
+				data: {
+					username: username,
+					email: email,
+					password: password,
+				},
 			})
 		);
 
