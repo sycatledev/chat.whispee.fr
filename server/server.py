@@ -248,7 +248,8 @@ class Client:
 
         elif socket_command == "load_chats":
             await self.send_loaded_chats()
-
+        elif socket_command == "load_friends":
+            await self.send_loaded_friends()
         else:
             print("Unknown socket command: %s" % socket_command)
 
@@ -260,6 +261,12 @@ class Client:
         await self.send_socket_message(json.dumps({
             "command": "chats_loaded",
             "data": get_database().get_all_chats_to_objects()
+        }))
+
+    async def send_loaded_friends(self) -> None:
+        await self.send_socket_message(json.dumps({
+            "command": "friends_loaded",
+            "data": get_database().get_all_friends_to_objects()
         }))
 
     async def send_loaded_chat(self, chat_id: int) -> None:

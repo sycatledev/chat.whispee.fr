@@ -217,6 +217,9 @@ export default function App() {
 								setReadyMessages={setReadyMessages}
 								readyMessages={readyMessages}
 								setMessages={setMessages}
+								friends={friends}
+								setFriendReady={setFriendReady}
+								readyFriend={friendReady}
 								sendSocketMessage={sendSocketMessage}
 								session={session}
 								newMessage={newMessage}

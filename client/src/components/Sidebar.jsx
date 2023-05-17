@@ -17,6 +17,8 @@ export default function Sidebar({
 	username,
 	handleDisconnect,
 	currentChat,
+	readyFriend,
+	friends,
 }) {
 	return (
 		<div
@@ -39,7 +41,11 @@ export default function Sidebar({
 					messageNav={messageNav}
 					currentChat={currentChat}
 				/>
-				<Friend friendNav={friendNav} />
+				<Friend
+					friendNav={friendNav}
+					readyFriend={readyFriend}
+					friends={friends}
+				/>
 
 				<ProfilDropdown
 					toggle={toggleTheme}

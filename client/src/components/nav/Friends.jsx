@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { isEmpty } from "../Utils";
 
-export function Friend({ friendNav }) {
-	const [friends, setFriends] = useState([]);
-	const [readyFriend, setFriendReady] = useState(false);
-
+export function Friend({ friendNav, friends, readyFriend }) {
 	return (
 		<div
 			className={`flex flex-col my-4 flex-grow ${friendNav ? "" : "hidden"}`}>

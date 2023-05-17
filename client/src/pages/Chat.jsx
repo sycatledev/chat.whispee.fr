@@ -37,6 +37,8 @@ export default function Chat({
 	setNewMessage,
 	handleDisconnect,
 	connectedUser,
+	friends,
+	readyFriend,
 }) {
 	const [isDark, setIsDark] = useState(false);
 	const [messageNav, setMessageNav] = useState(true);
@@ -150,6 +152,13 @@ export default function Chat({
 					data: {},
 				})
 			);
+			sendSocketMessage(
+				webSocket,
+				JSON.stringify({
+					command: "load_friends",
+					data: {},
+				})
+			);
 		}
 	}, [connectedUser]);
 
@@ -182,6 +191,8 @@ export default function Chat({
 						username={username}
 						handleDisconnect={handleDisconnect}
 						currentChat={currentChat}
+						readyFriend={readyFriend}
+						friends={friends}
 					/>
 					<div className="flex flex-col flex-auto h-full p-2 duration-200">
 						<div

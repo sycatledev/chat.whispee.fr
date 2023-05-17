@@ -6,6 +6,7 @@ import bcrypt
 from bson import json_util
 from bson.objectid import ObjectId
 
+
 class MongoDatabase:
     def __init__(self, dbhost, dbport, dbname):
         self.dbhost = dbhost
@@ -34,10 +35,12 @@ class MongoDatabase:
     # public method
     def get_messages_from_chat_id(self, chat_id, offset=0):
         messages_collection = self.database.messages
-        
-        total_messages = messages_collection.count_documents({"chat_id": chat_id})
-        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", 1).skip(max(0, total_messages - 15)).limit(15)
-        
+
+        total_messages = messages_collection.count_documents(
+            {"chat_id": chat_id})
+        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort(
+            "date", 1).skip(max(0, total_messages - 15)).limit(15)
+
         messages = []
         for message_json in messages_cursor:
             message = Message(
@@ -50,14 +53,16 @@ class MongoDatabase:
             messages.append(message)
         return messages
 
-
     # public method
+
     def get_messages_to_objects_from_chat_id(self, chat_id, offset=0):
         messages_collection = self.database.messages
         messages = []
 
-        total_messages = messages_collection.count_documents({"chat_id": chat_id})
-        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort("date", 1).skip(max(0, total_messages - 15)).limit(15)
+        total_messages = messages_collection.count_documents(
+            {"chat_id": chat_id})
+        messages_cursor = messages_collection.find({"chat_id": chat_id}).sort(
+            "date", 1).skip(max(0, total_messages - 15)).limit(15)
 
         for message_json in messages_cursor:
             message_json['_id'] = str(message_json['_id'])
@@ -92,7 +97,6 @@ class MongoDatabase:
         chats = []
 
         chats_collection = self.database.chats
-
         chats_cursor = chats_collection.find({})
 
         for chat_json in chats_cursor:
@@ -100,6 +104,21 @@ class MongoDatabase:
             chats.append(chat_json)
 
         return chats
+
+    def get_all_friends_to_objects(self):
+        friends = []
+
+        friends_collection = self.database.users
+        friends_cursor = friends_collection.find({})
+
+        for user_json in friends_cursor:
+            user_json['_id'] = str(user_json['_id'])
+            user_json['chat_id'] = user_json['_id']
+            user_json['chat_name'] = user_json['username']
+            user_json["chat_pending_messages"] = 0
+            friends.append(user_json)
+
+        return friends
 
     # public method
     def get_user_by_email(self, email) -> dict:
