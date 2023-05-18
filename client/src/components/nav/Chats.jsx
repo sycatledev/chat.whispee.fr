@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
 import Avatar from "../user/Avatar.jsx";
+import formatTimestampToTimeDifference from "../../utils/time.js";
 
 const Chats = ({ messageNav, displayChat, chats, ready, currentChat }) => {
-	useEffect(() => {
-		console.log(currentChat);
-	}, []);
-
 	return (
 		<div
 			className={`flex flex-col my-4 flex-grow ${!messageNav ? "hidden" : ""}`}>
@@ -33,11 +30,9 @@ const Chats = ({ messageNav, displayChat, chats, ready, currentChat }) => {
 								(c.chat_id == currentChat
 									? "bg-neutral-200 dark:bg-neutral-900 font-semibold"
 									: "hover:bg-neutral-200 dark:hover:bg-neutral-900 font-normal") +
-								" chat-button flex flex-row items-center rounded-xl p-2 group space-x-2"
+								" chat-button flex flex-row items-center rounded-xl p-2 group "
 							}>
-							<div className="items-center flex flex-row relative pl-2">
-								<Avatar username={c.chat_name}></Avatar>
-
+							<div className="items-center flex flex-row relative pl-2 space-x-2">
 								{c.chat_pending_messages > 0 ? (
 									<div className="absolute left-0 bottom-4 flex items-center justify-center text-xs text-white bg-red-500 dark:bg-red-400 h-4 w-4 group-hover:-translate-y-1 duration-300 rounded shadow-lg leading-none z-20">
 										{c.chat_pending_messages}
@@ -45,8 +40,14 @@ const Chats = ({ messageNav, displayChat, chats, ready, currentChat }) => {
 								) : (
 									""
 								)}
+
+								<Avatar username={c.chat_name}></Avatar>
+								<div className="text-sm select-none">{c.chat_name}</div>
+
+								<div className="flex ml-auto text-xs font-thin text-gray-400">
+									{formatTimestampToTimeDifference(c.last_message_date)}
+								</div>
 							</div>
-							<div className="text-sm select-none">{c.chat_name}</div>
 						</button>
 					))
 				) : (

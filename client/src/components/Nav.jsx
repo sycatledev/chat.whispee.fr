@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 const Nav = ({
-	toggle,
 	messageNav,
 	setMessageNav,
 	friendsNav,
@@ -31,7 +30,7 @@ const Nav = ({
 				setSettingsNav(true);
 				break;
 			} else {
-				parent = parent.parentNode;
+				parent = parent.parentElement;
 			}
 		}
 	};
@@ -66,7 +65,7 @@ const Nav = ({
 
 			<button
 				className={`p-2 rounded-xl ${
-					friendsNav
+					settingsNav
 						? "dark:text-white text-black"
 						: "text-gray-500 dark:hover:text-gray-300 hover:text-black"
 				}`}

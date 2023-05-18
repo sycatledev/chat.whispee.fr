@@ -106,7 +106,7 @@ const ChatContainer = ({
 				<source src="./sounds/message_received.wav" type="audio/mpeg" />
 			</audio>
 			<audio ref={sendRef}>
-				<source src="./sounds/message_sent.wav" type="audio/mpeg" />
+				{/* <source src="./sounds/message_sent.wav" type="audio/mpeg" /> */}
 			</audio>
 
 			<ChatHeader
@@ -157,7 +157,10 @@ const ChatContainer = ({
 														"ml-auto justify-end space-x-1 items-center text-xs text-gray-400"
 													}>
 													<div>
-														{formatTimestampToTimeDifference(message.date)}
+														{formatTimestampToTimeDifference(
+															message.date,
+															true
+														)}
 													</div>
 												</div>
 

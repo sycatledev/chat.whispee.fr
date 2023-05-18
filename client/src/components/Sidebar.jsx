@@ -3,8 +3,11 @@ import Chats from "../components/nav/Chats.jsx";
 import { Friend } from "../components/nav/Friends.jsx";
 import Settings from "../components/nav/Settings.jsx";
 import ProfilDropdown from "../components/Dropdown.jsx";
+import { useEffect } from "react";
 
 export default function Sidebar({
+	session,
+	webSocket,
 	visible,
 	messageNav,
 	setMessageNav,
@@ -16,13 +19,34 @@ export default function Sidebar({
 	ready,
 	displayChat,
 	messages,
-	toggleTheme,
+	toggle,
 	username,
 	handleDisconnect,
 	currentChat,
 	readyFriend,
 	friends,
+	sendSocketMessage,
 }) {
+	useEffect(() => {
+		if (session) {
+			sendSocketMessage(
+				webSocket,
+				JSON.stringify({
+					command: "load_chats",
+					data: {},
+				})
+			);
+
+			sendSocketMessage(
+				webSocket,
+				JSON.stringify({
+					command: "load_friends",
+					data: {},
+				})
+			);
+		}
+	}, [session]);
+
 	return (
 		<div
 			className={
@@ -51,10 +75,9 @@ export default function Sidebar({
 					readyFriend={readyFriend}
 					friends={friends}
 				/>
-				<Settings settingsNav={settingsNav} />
+				<Settings settingsNav={settingsNav} toggleTheme={toggle} />
 
 				<ProfilDropdown
-					toggle={toggleTheme}
 					username={username}
 					handleDisconnect={handleDisconnect}
 				/>

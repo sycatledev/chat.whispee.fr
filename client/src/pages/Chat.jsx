@@ -146,20 +146,6 @@ export default function Chat({
 					data: sessionData,
 				})
 			);
-			sendSocketMessage(
-				webSocket,
-				JSON.stringify({
-					command: "load_chats",
-					data: {},
-				})
-			);
-			sendSocketMessage(
-				webSocket,
-				JSON.stringify({
-					command: "load_friends",
-					data: {},
-				})
-			);
 		}
 	}, [connectedUser]);
 
@@ -179,6 +165,8 @@ export default function Chat({
 			<div className="flex h-screen antialiased text-gray-800">
 				<div className="flex flex-row h-full w-full overflow-x-hidden duration-200">
 					<Sidebar
+						webSocket={webSocket}
+						session={session}
 						visible={sidebarToggled}
 						messageNav={messageNav}
 						setMessageNav={setMessageNav}
@@ -190,12 +178,13 @@ export default function Chat({
 						ready={ready}
 						displayChat={displayChat}
 						messages={messages}
-						toggleTheme={toggleTheme}
+						toggle={toggleTheme}
 						username={username}
 						handleDisconnect={handleDisconnect}
 						currentChat={currentChat}
 						readyFriend={readyFriend}
 						friends={friends}
+						sendSocketMessage={sendSocketMessage}
 					/>
 					<div className="flex flex-col flex-auto h-full p-2 duration-200">
 						<div

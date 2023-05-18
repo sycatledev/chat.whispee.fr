@@ -101,9 +101,25 @@ class MongoDatabase:
 
         for chat_json in chats_cursor:
             chat_json['_id'] = str(chat_json['_id'])
+            chat_json['last_message_date'] = self.get_last_message_date(
+                chat_json['chat_id'])
+
             chats.append(chat_json)
 
         return chats
+
+    def get_last_message_date(self, chat_id):
+        messages_collection = self.database.messages
+
+        # Recherche du dernier message pour le chat_id donné
+        query = {"chat_id": int(chat_id)}
+        sort = [("date", pymongo.DESCENDING)]
+        last_message = messages_collection.find_one(query, sort=sort)
+
+        if last_message is not None:
+            return last_message['date']
+        else:
+            return False
 
     def get_all_friends_to_objects(self):
         friends = []
@@ -119,6 +135,9 @@ class MongoDatabase:
             friends.append(user_json)
 
         return friends
+
+    def get_last_message_from_chat_id(self, chat_id):
+        pass
 
     # public method
     def get_user_by_email(self, email) -> dict:
