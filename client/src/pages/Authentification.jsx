@@ -69,7 +69,7 @@ export default function Authentification({
 			/>
 
 			<div className="flex min-h-screen justify-center items-center">
-				<div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-200 w-[420px]">
+				<div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-200 w-[450px]">
 					{!identify ? (
 						<>
 							<h2 className="text-3xl">{translate("login_or_register")}</h2>
