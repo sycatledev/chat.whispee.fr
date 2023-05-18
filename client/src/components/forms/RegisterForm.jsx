@@ -4,6 +4,7 @@ import Loader from "../Loader.jsx";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm({
+	translate,
 	identifier,
 	webSocket,
 	onClose,
@@ -57,9 +58,11 @@ export default function RegisterForm({
 				<BackButton onClose={onClose} />
 
 				<div className="flex flex-col ml-5">
-					<h2 className="text-3xl">Create your account</h2>
+					<h2 className="text-3xl">{translate("create_your_account")}</h2>
 					<p className="text-gray-400 text-sm">
-						Please enter your informations to create your Whispee account.
+						{translate(
+							"please_enter_your_informations_to_create_your_whispee_account"
+						)}
 					</p>
 				</div>
 			</div>
@@ -86,7 +89,7 @@ export default function RegisterForm({
 						minLength={4}
 						maxLength={32}
 						required
-						placeholder="Username"
+						placeholder={translate("username")}
 						onInput={(e) => setUsername(e.currentTarget.value)}
 						value={username}
 					/>
@@ -110,7 +113,7 @@ export default function RegisterForm({
 						minLength={7}
 						maxLength={30}
 						required
-						placeholder="Email"
+						placeholder={translate("email")}
 						value={email}
 						onInput={(e) => setEmail(e.currentTarget.value)}
 					/>
@@ -134,7 +137,7 @@ export default function RegisterForm({
 						minLength={7}
 						maxLength={30}
 						required
-						placeholder="Password"
+						placeholder={translate("password")}
 						value={password}
 						onInput={(e) => setPassword(e.currentTarget.value)}
 					/>
@@ -145,7 +148,9 @@ export default function RegisterForm({
 						type="submit"
 						className="relative py-2 px-3 w-24 bg-primarydark hover:bg-primarydarker disabled:bg-primary disabled:cursor-not-allowed duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
 						disabled={loader}>
-						<p className="mx-auto">{loader ? <Loader /> : "Sign up"}</p>
+						<p className="mx-auto">
+							{loader ? <Loader /> : translate("sign_up")}
+						</p>
 					</button>
 				</div>
 			</form>

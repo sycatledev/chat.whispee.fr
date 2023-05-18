@@ -5,6 +5,7 @@ import Loader from "../Loader.jsx";
 import { useEffect } from "react";
 
 export default function LoginForm({
+	translate,
 	identifier,
 	username,
 	onClose,
@@ -62,7 +63,9 @@ export default function LoginForm({
 					</h2>
 
 					<p className="text-gray-400 text-sm">
-						Please enter your password to log back to your Whispee account.
+						{translate(
+							"please_enter_your_password_to_log_back_to_your_whispee_account"
+						)}
 					</p>
 				</div>
 			</div>
@@ -90,7 +93,7 @@ export default function LoginForm({
 						required
 						autoComplete="password"
 						disabled={loader}
-						placeholder="Password"
+						placeholder={translate("password")}
 						value={password}
 						onInput={(e) => setPassword(e.currentTarget.value)}
 					/>
@@ -100,7 +103,9 @@ export default function LoginForm({
 						type="submit"
 						className="relative py-2 px-3 w-24 bg-primarydark hover:bg-primarydarker disabled:bg-primary disabled:cursor-not-allowed duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md"
 						disabled={loader}>
-						<p className="mx-auto">{loader ? <Loader /> : "Login"}</p>
+						<p className="mx-auto">
+							{loader ? <Loader /> : translate("login")}
+						</p>
 					</button>
 				</div>
 			</form>

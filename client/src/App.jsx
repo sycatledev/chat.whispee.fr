@@ -3,8 +3,10 @@ import Authentification from "./pages/Authentification.jsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Chat from "./pages/Chat.jsx";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function App() {
+	const [translate] = useTranslation();
 	const [webSocket, setWebSocket] = useState(null);
 	const [pending, setPending] = useState(true);
 	const currentChatRef = useRef(null);
@@ -47,26 +49,6 @@ export default function App() {
 						data: sessionData,
 					})
 				);
-
-				if (currentChat != null) {
-					let request = { chat_id: currentChat };
-					await sendSocketMessage(
-						ws,
-						JSON.stringify({
-							command: "load_chat",
-							data: request,
-						})
-					);
-				}
-				/* 	if (sessionId != null) {
-					await sendSocketMessage(
-						ws,
-						JSON.stringify({
-							command: "load_chats",
-							data: {},
-						})
-					);
-				} */
 			});
 			ws.addEventListener("close", async (event) => {
 				console.log("Lost connection to server");
@@ -82,7 +64,6 @@ export default function App() {
 		init();
 	}, []);
 	if (currentChatRef.current !== currentChat) {
-		/* setMessages([]); */
 		setCurrentChat(currentChat);
 		currentChatRef.current = currentChat;
 	}
@@ -185,6 +166,7 @@ export default function App() {
 						path="/"
 						element={
 							<Authentification
+								translate={translate}
 								identify={identify}
 								webSocket={webSocket}
 								register={register}
@@ -204,6 +186,7 @@ export default function App() {
 						path="/app"
 						element={
 							<Chat
+								translate={translate}
 								chat={chat}
 								chats={chats}
 								ready={ready}

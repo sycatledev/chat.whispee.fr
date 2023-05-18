@@ -15,6 +15,7 @@ function ProfilModal({ isOpen, onClose }) {
 }
 
 export default function Chat({
+	translate,
 	chat,
 	chats,
 	ready,
@@ -165,6 +166,7 @@ export default function Chat({
 			<div className="flex h-screen antialiased text-gray-800">
 				<div className="flex flex-row h-full w-full overflow-x-hidden duration-200">
 					<Sidebar
+						translate={translate}
 						webSocket={webSocket}
 						session={session}
 						visible={sidebarToggled}
@@ -193,6 +195,7 @@ export default function Chat({
 							{/* bg-[url(https://www.technocrazed.com/wp-content/uploads/2015/12/beautiful-wallpaper-download-17.jpg)] */}
 							{singleChat ? (
 								<ChatContainer
+									translate={translate}
 									webSocket={webSocket}
 									sendChatMessage={sendChatMessage}
 									handleSidebarToggle={handleSidebarToggle}
@@ -213,6 +216,7 @@ export default function Chat({
 								/>
 							) : (
 								<HomeContainer
+									translate={translate}
 									username={username}
 									handleSidebarToggle={handleSidebarToggle}
 								/>

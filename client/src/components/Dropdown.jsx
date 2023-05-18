@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import Avatar from "./user/Avatar.jsx";
 
-export default function ProfilDropdown({ username, toggle, handleDisconnect }) {
+export default function ProfilDropdown({
+	translate,
+	username,
+	toggle,
+	handleDisconnect,
+}) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isUpwards, setIsUpwards] = useState(false);
 	const ref = useRef(null);
@@ -45,7 +50,7 @@ export default function ProfilDropdown({ username, toggle, handleDisconnect }) {
 					<button
 						className="flex p-2 font-semibold bg-slate-100 dark:bg-slate-600 text-red-500 hover:bg-red-500 dark:hover:bg-red-500 hover:text-white rounded duration-200"
 						onClick={handleDisconnect}>
-						<span className="mx-auto">Disconnect</span>
+						<span className="mx-auto">{translate("logout")}</span>
 					</button>
 				</div>
 			) : (

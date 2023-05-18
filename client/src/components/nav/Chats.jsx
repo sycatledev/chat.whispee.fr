@@ -2,12 +2,21 @@ import React, { useEffect } from "react";
 import Avatar from "../user/Avatar.jsx";
 import formatTimestampToTimeDifference from "../../utils/time.js";
 
-const Chats = ({ messageNav, displayChat, chats, ready, currentChat }) => {
+const Chats = ({
+	translate,
+	messageNav,
+	displayChat,
+	chats,
+	ready,
+	currentChat,
+}) => {
 	return (
 		<div
 			className={`flex flex-col my-4 flex-grow ${!messageNav ? "hidden" : ""}`}>
 			<div className="flex flex-row items-center justify-between text-xs">
-				<span className="font-bold">My Chats ({chats.length})</span>
+				<span className="font-bold">
+					{translate("my_chats")} - {chats.length}
+				</span>
 				<button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black rounded-xl flex-shrink-0">
 					<svg
 						className="w-5 h-5"
@@ -34,7 +43,7 @@ const Chats = ({ messageNav, displayChat, chats, ready, currentChat }) => {
 							}>
 							<div className="items-center flex flex-row relative pl-2 space-x-2">
 								{c.chat_pending_messages > 0 ? (
-									<div className="absolute left-0 bottom-4 flex items-center justify-center text-xs text-white bg-red-500 dark:bg-red-400 h-4 w-4 group-hover:-translate-y-1 duration-300 rounded shadow-lg leading-none z-20">
+									<div className="absolute left-0 bottom-4 flex items-center justify-center text-xs text-white bg-red-500 h-4 w-4 group-hover:-translate-y-1 duration-300 rounded shadow-lg leading-none z-20">
 										{c.chat_pending_messages}
 									</div>
 								) : (
@@ -45,7 +54,11 @@ const Chats = ({ messageNav, displayChat, chats, ready, currentChat }) => {
 								<div className="text-sm select-none">{c.chat_name}</div>
 
 								<div className="flex ml-auto text-xs font-thin text-gray-400">
-									{formatTimestampToTimeDifference(c.last_message_date)}
+									{formatTimestampToTimeDifference(
+										c.last_message_date,
+										false,
+										translate
+									)}
 								</div>
 							</div>
 						</button>

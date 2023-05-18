@@ -91,12 +91,18 @@ class Client:
         self.session = None
 
     async def start(self) -> None:
+
         async for message in self.websocket:
             request = json.loads(message)
+            print(
+                f"New session connected. There is now {len(await get_all_sessions())} online users")
+
             await self.handle_socket_command(request["command"], request["data"])
 
         await self.websocket.close()
         online_clients.remove(self)
+        print(
+            f"Session disconnected. There is now {len(await get_all_sessions())} online users")
 
     async def send_socket_message(self, message: str) -> None:
         logging.info(f">> {message}")

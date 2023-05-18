@@ -1,11 +1,13 @@
 import Avatar from "../user/Avatar.jsx";
 
-export function Friend({ friendNav, friends, readyFriend }) {
+export function Friend({ translate, friendNav, friends, readyFriend }) {
 	return (
 		<div
 			className={`flex flex-col my-4 flex-grow ${!friendNav ? "hidden" : ""}`}>
 			<div className="flex flex-row items-center justify-between text-xs">
-				<span className="font-bold">My Friends ({friends.length})</span>
+				<span className="font-bold">
+					{translate("my_friends")} - {friends.length}
+				</span>
 				<button className="flex items-center justify-center text-gray-500 dark:hover:text-gray-300 hover:text-black rounded-xl flex-shrink-0">
 					<svg
 						className="w-5 h-5"

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import brandIcon from "../assets/whispee_icon.png";
 
 export default function Authentification({
+	translate,
 	identify,
 	webSocket,
 	register,
@@ -71,9 +72,9 @@ export default function Authentification({
 				<div className="p-10 px-18 rounded-xl shadow bg-white hover:shadow-lg duration-200 w-[420px]">
 					{!identify ? (
 						<>
-							<h2 className="text-3xl">Login or register</h2>
+							<h2 className="text-3xl">{translate("login_or_register")}</h2>
 							<p className="text-gray-400 text-sm">
-								Enter your identifier to connect to Whispee Chat.
+								{translate("enter_your_identifier_to_connect_to_whispee_chat")}
 							</p>
 
 							<form
@@ -95,7 +96,7 @@ export default function Authentification({
 										type="text"
 										id="email"
 										className="bg-white border border-neutral-300 text-black text-sm rounded-lg focus:ring-primary focus:border-primary block w-full pl-10 p-2.5 duration-200"
-										placeholder="Email or Username"
+										placeholder={translate("email_adress_or_username")}
 										required
 										onInput={(e) => setHolder(e.currentTarget.value)}
 									/>
@@ -106,7 +107,7 @@ export default function Authentification({
 										type="submit"
 										className="relative py-2 px-3 w-24 bg-primarydark hover:bg-primarydarker disabled:bg-primary duration-200 hover:shadow active:scale-95 text-white right-0 rounded-md">
 										<p className="mx-auto">
-											{loader ? <Loader /> : "Continue"}
+											{loader ? <Loader /> : translate("continue")}
 										</p>
 									</button>
 								</div>
@@ -115,6 +116,7 @@ export default function Authentification({
 					) : null}
 					{login ? (
 						<LoginForm
+							translate={translate}
 							identifier={holder}
 							username={username}
 							webSocket={webSocket}
@@ -127,6 +129,7 @@ export default function Authentification({
 					) : null}
 					{register ? (
 						<RegisterForm
+							translate={translate}
 							identifier={holder}
 							webSocket={webSocket}
 							onClose={handleBackRegister}

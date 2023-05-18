@@ -6,6 +6,7 @@ import ProfilDropdown from "../components/Dropdown.jsx";
 import { useEffect } from "react";
 
 export default function Sidebar({
+	translate,
 	session,
 	webSocket,
 	visible,
@@ -63,6 +64,7 @@ export default function Sidebar({
 					setSettingsNav={setSettingsNav}
 				/>
 				<Chats
+					translate={translate}
 					chats={chats}
 					ready={ready}
 					displayChat={displayChat}
@@ -71,13 +73,19 @@ export default function Sidebar({
 					currentChat={currentChat}
 				/>
 				<Friend
+					translate={translate}
 					friendNav={friendNav}
 					readyFriend={readyFriend}
 					friends={friends}
 				/>
-				<Settings settingsNav={settingsNav} toggleTheme={toggle} />
+				<Settings
+					translate={translate}
+					settingsNav={settingsNav}
+					toggleTheme={toggle}
+				/>
 
 				<ProfilDropdown
+					translate={translate}
 					username={username}
 					handleDisconnect={handleDisconnect}
 				/>

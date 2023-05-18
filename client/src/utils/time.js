@@ -1,4 +1,8 @@
-export default function formatTimestampToTimeDifference(timestamp, details) {
+export default function formatTimestampToTimeDifference(
+	timestamp,
+	details,
+	translate
+) {
 	const timeMls = new Date(timestamp * 1000);
 	const timeDifference = new Date() - timeMls;
 	const secondsDifference = Math.floor(timeDifference / 1000);
