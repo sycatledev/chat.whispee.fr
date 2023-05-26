@@ -16,7 +16,7 @@ i18n.use(initReactI18next).init({
 			translation: esTranslation,
 		},
 	},
-	lng: "fr", // Langue par défaut
+	lng: "en", // Langue par défaut
 	fallbackLng: "en", // Langue de secours en cas de traduction manquante
 	interpolation: {
 		escapeValue: false, // Pour éviter l'échappement automatique des valeurs
