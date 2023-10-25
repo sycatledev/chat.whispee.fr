@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.2.0",
     "flowbite": "^1.6.5",
     "flowbite-react": "^0.4.3",
     "i18next": "^22.4.15",
